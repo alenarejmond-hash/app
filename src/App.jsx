@@ -728,7 +728,7 @@ export default function App() {
       {/* --- 7. VIDEO MODAL (RUTUBE) --- */}
       {activeVideo && (
         <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 backdrop-blur-[30px] transition-all duration-700 ${isLightTheme ? 'bg-[#EFECE8]/70' : 'bg-black/70'}`}>
-          <div className={`relative w-full max-w-4xl aspect-video rounded-[2rem] border overflow-hidden shadow-2xl animate-in zoom-in-95 duration-500 transition-colors ${isLightTheme ? 'bg-[#FAF7F2] border-[#C48766]/30 shadow-[0_0_50px_rgba(196,135,102,0.15)]' : 'bg-[#0a0a0a] border-white/20 shadow-[0_0_50px_rgba(255,255,255,0.05)]'}`}>
+          <div className={`relative h-[80vh] sm:h-[85vh] max-h-[850px] aspect-[9/16] max-w-[calc(100vw-2rem)] rounded-[2rem] sm:rounded-[2.5rem] border overflow-hidden shadow-2xl animate-in zoom-in-95 duration-500 transition-colors ${isLightTheme ? 'bg-[#FAF7F2] border-[#C48766]/30 shadow-[0_0_50px_rgba(196,135,102,0.15)]' : 'bg-[#0a0a0a] border-white/20 shadow-[0_0_50px_rgba(255,255,255,0.05)]'}`}>
 
             <button
               onClick={() => {
