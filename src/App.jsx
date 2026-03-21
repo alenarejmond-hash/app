@@ -101,6 +101,7 @@ export default function App() {
   const pointerPos = useRef({ x: -1000, y: -1000 });
   
   const [isHeroRevealed, setIsHeroRevealed] = useState(false);
+  const [isTelegram, setIsTelegram] = useState(false);
 
   // State for Tariffs (Apple Wallet Vibe)
   const [activeTariff, setActiveTariff] = useState('base');
@@ -116,6 +117,22 @@ export default function App() {
 
   // State for Video Modal (Стеклянный Кинотеатр)
   const [activeVideo, setActiveVideo] = useState(null);
+
+  // State for Portfolio Carousel (Cover Flow)
+  const [portfolioIndex, setPortfolioIndex] = useState(0);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  const handlePortfolioSwipe = () => {
+    const swipeDistance = touchStartX.current - touchEndX.current;
+    if (swipeDistance > 40) { // Свайп влево
+      triggerHaptic('selection');
+      setPortfolioIndex(prev => Math.min(prev + 1, CONFIG.portfolio.length - 1));
+    } else if (swipeDistance < -40) { // Свайп вправо
+      triggerHaptic('selection');
+      setPortfolioIndex(prev => Math.max(prev - 1, 0));
+    }
+  };
 
   // Отступ для Hero-блока в зависимости от платформы
   const [heroPadding, setHeroPadding] = useState('pt-28');
@@ -166,8 +183,10 @@ export default function App() {
         // Динамический отступ: pt-16 для браузера, pt-28 для Telegram
         if (tg.platform === 'unknown' || !tg.platform) {
           setHeroPadding('pt-10');
+          setIsTelegram(false);
         } else {
           setHeroPadding('pt-28');
+          setIsTelegram(true);
         }
 
         if (typeof tg.ready === 'function') tg.ready();
@@ -458,77 +477,110 @@ export default function App() {
           </div>
         </section>
 
-        {/* --- 2. ЦЕННОСТЬ --- */}
-        <section className="flex flex-col gap-6">
-          <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>Ценность</h2>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className={`border rounded-2xl p-5 flex flex-col gap-4 opacity-60 grayscale transition-colors duration-700 ${isLightTheme ? 'bg-[#4A302B]/[0.02] border-[#4A302B]/10' : 'bg-white/[0.02] border-white/5'}`}>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-700 ${isLightTheme ? 'bg-[#4A302B]/5' : 'bg-white/5'}`}>
-                <Lock size={14} className={isLightTheme ? 'text-[#4A302B]/50' : 'text-white/50'} />
-              </div>
-              <div>
-                <h3 className={`text-sm font-medium mb-1 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/80' : 'text-white/80'}`}>Конструкторы</h3>
-                <ul className={`text-[11px] space-y-1.5 font-light transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/40'}`}>
-                  <li>— Бесконечные подписки</li>
-                  <li>— Шаблонный дизайн</li>
-                  <li>— Ограничения кода</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className={`border rounded-2xl p-5 flex flex-col gap-4 relative overflow-hidden transition-colors duration-700 ${isLightTheme ? 'bg-[#C48766]/5 border-[#C48766]/30 shadow-[0_0_30px_rgba(196,135,102,0.1)]' : 'bg-white/[0.05] border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.05)]'}`}>
-              <div className={`absolute top-0 right-0 w-24 h-24 blur-2xl rounded-full translate-x-1/2 -translate-y-1/2 transition-colors duration-700 ${isLightTheme ? 'bg-[#D89B93]/20' : 'bg-white/10'}`}></div>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center border relative z-10 transition-colors duration-700 ${isLightTheme ? 'bg-[#C48766]/10 border-[#C48766]/30' : 'bg-white/10 border-white/20'}`}>
-                <Key size={14} className={isLightTheme ? 'text-[#C48766]' : 'text-white'} />
-              </div>
-              <div className="relative z-10">
-                <h3 className={`text-sm font-medium mb-1 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>Твоя визитка</h3>
-                <ul className={`text-[11px] space-y-1.5 font-light tracking-wide transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/70' : 'text-white/70'}`}>
-                  <li className={`font-bold transition-colors duration-700 ${isLightTheme ? 'text-[#C48766]' : 'text-white'}`}>— 0₽ в месяц</li>
-                  <li>— Уникальный код</li>
-                  <li>— Твоя навсегда</li>
-                </ul>
-              </div>
+        {/* --- 3. ПОРТФОЛИО (COVER FLOW) --- */}
+        <section className="flex flex-col gap-6 w-full overflow-hidden">
+          <div className="flex justify-between items-end mb-2">
+            <h2 className={`text-xs uppercase tracking-[0.3em] transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>Портфолио</h2>
+            <div className={`text-[10px] tracking-widest uppercase transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>
+              {portfolioIndex + 1} / {CONFIG.portfolio.length}
             </div>
           </div>
-        </section>
-
-        {/* --- 3. ПОРТФОЛИО --- */}
-        <section className="flex flex-col gap-6 w-full">
-          <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>Портфолио</h2>
           
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full">
+          <div 
+            className="relative h-[280px] sm:h-[320px] w-full flex justify-center items-center touch-pan-y"
+            style={{ perspective: '1200px', transformStyle: 'preserve-3d' }}
+            onTouchStart={(e) => {
+              touchStartX.current = e.touches[0].clientX;
+              touchEndX.current = e.touches[0].clientX; // сбрасываем, чтобы избежать ложных срабатываний
+            }}
+            onTouchMove={(e) => touchEndX.current = e.touches[0].clientX}
+            onTouchEnd={handlePortfolioSwipe}
+          >
             {CONFIG.portfolio.map((item, idx) => {
-              const isFeatured = idx === 0;
+              const distance = idx - portfolioIndex;
+              const isCenter = distance === 0;
+              const absDistance = Math.abs(distance);
+              
+              // Настройки пространственной 3D-трансформации
+              let transform = 'translateX(0px) translateZ(0px) rotateY(0deg) scale(1)';
+              let zIndex = 10;
+              let opacity = 0;
+              let pointerEvents = 'none';
+
+              if (isCenter) {
+                // Центральная (активная) карточка
+                transform = 'translateX(0px) translateZ(50px) rotateY(0deg) scale(1)';
+                zIndex = 30;
+                opacity = 1;
+                pointerEvents = 'auto';
+              } else if (absDistance === 1) {
+                // Соседние карточки (слева и справа)
+                const sign = Math.sign(distance);
+                transform = `translateX(${sign * 60}%) translateZ(-100px) rotateY(${sign * -35}deg) scale(0.9)`;
+                zIndex = 20;
+                opacity = 0.5;
+                pointerEvents = 'auto';
+              } else if (absDistance === 2) {
+                // Дальние карточки
+                const sign = Math.sign(distance);
+                transform = `translateX(${sign * 85}%) translateZ(-250px) rotateY(${sign * -45}deg) scale(0.8)`;
+                zIndex = 10;
+                opacity = 0.1;
+              }
+
               return (
                 <div 
                   key={idx}
                   onClick={() => {
-                    triggerHaptic('impact', 'light');
-                    if (item.videoId) setActiveVideo(item.videoId);
+                    if (isCenter) {
+                      triggerHaptic('impact', 'light');
+                      if (item.videoId) setActiveVideo(item.videoId);
+                    } else {
+                      triggerHaptic('selection');
+                      setPortfolioIndex(idx);
+                    }
                   }}
-                  className={`relative border rounded-3xl p-5 sm:p-6 flex flex-col justify-between cursor-pointer transition-all duration-700 active:scale-95 group overflow-hidden ${
-                    isFeatured ? 'col-span-2 h-[220px] sm:h-[260px]' : 'col-span-1 h-[150px] sm:h-[180px]'
-                  } ${isLightTheme ? 'bg-[#4A302B]/[0.02] border-[#4A302B]/10 hover:bg-[#4A302B]/[0.05]' : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06]'}`}
+                  style={{
+                    transform,
+                    zIndex,
+                    opacity,
+                    pointerEvents,
+                  }}
+                  className={`absolute w-[200px] sm:w-[240px] h-[250px] sm:h-[280px] border rounded-[2rem] p-6 flex flex-col justify-between cursor-pointer transition-all duration-[800ms] ease-[cubic-bezier(0.23,1,0.32,1)] group ${isLightTheme ? 'bg-[#FAF7F2]/90 border-[#C48766]/30 shadow-[0_20px_50px_rgba(196,135,102,0.15)] backdrop-blur-xl' : 'bg-[#1a1a1a]/80 border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl'}`}
                 >
-                  {/* Эффект Play поверх карточки при наведении */}
-                  <div className={`absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 ${isLightTheme ? 'bg-[#EFECE8]/60 backdrop-blur-sm' : 'bg-black/40 backdrop-blur-[2px]'}`}>
-                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center backdrop-blur-md border shadow-lg transition-transform group-hover:scale-110 ${isLightTheme ? 'bg-[#C48766]/20 border-[#C48766]/40 text-[#4A302B]' : 'bg-white/20 border-white/30 text-white'}`}>
-                      <Play size={isFeatured ? 24 : 20} className="ml-1" fill="currentColor" />
+                  {/* Эффект Play поверх центральной карточки */}
+                  {isCenter && (
+                    <div className={`absolute inset-0 rounded-[2rem] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 ${isLightTheme ? 'bg-[#EFECE8]/60 backdrop-blur-[2px]' : 'bg-black/40 backdrop-blur-[2px]'}`}>
+                      <div className={`w-14 h-14 rounded-full flex items-center justify-center backdrop-blur-md border shadow-xl transition-transform group-hover:scale-110 ${isLightTheme ? 'bg-[#C48766]/20 border-[#C48766]/40 text-[#4A302B]' : 'bg-white/20 border-white/30 text-white'}`}>
+                        <Play size={24} className="ml-1" fill="currentColor" />
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   <div className={`relative z-0 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/50'}`}>
-                    <item.icon size={isFeatured ? 32 : 24} strokeWidth={1.5} />
+                    <item.icon size={32} strokeWidth={1.5} />
                   </div>
                   <div className="relative z-0">
-                    <h3 className={`font-medium tracking-wide transition-colors duration-700 ${isFeatured ? 'text-xl sm:text-2xl mb-1' : 'text-sm'} ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>{item.title}</h3>
-                    <p className={`font-light transition-colors duration-700 ${isFeatured ? 'text-xs sm:text-sm' : 'text-[10px] sm:text-[11px] mt-1'} ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/40'}`}>{item.desc}</p>
+                    <h3 className={`text-xl font-medium tracking-wide transition-colors duration-700 mb-1 ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>{item.title}</h3>
+                    <p className={`text-xs font-light transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/60' : 'text-white/40'}`}>{item.desc}</p>
                   </div>
                 </div>
               );
             })}
+          </div>
+
+          {/* Индикаторы (точки внизу) */}
+          <div className="flex justify-center gap-2 mt-2">
+            {CONFIG.portfolio.map((_, idx) => (
+              <button 
+                key={idx} 
+                onClick={() => {
+                  triggerHaptic('selection');
+                  setPortfolioIndex(idx);
+                }}
+                className={`h-1.5 rounded-full transition-all duration-500 ${idx === portfolioIndex ? (isLightTheme ? 'bg-[#C48766] w-6' : 'bg-white w-6') : (isLightTheme ? 'bg-[#4A302B]/20 w-1.5 hover:bg-[#4A302B]/40' : 'bg-white/20 w-1.5 hover:bg-white/40')}`}
+              />
+            ))}
           </div>
         </section>
 
@@ -783,46 +835,60 @@ export default function App() {
       {activeVideo && (
         <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-[30px] transition-all duration-700 ${isLightTheme ? 'bg-[#EFECE8]/80' : 'bg-black/80'}`}>
           
-          {/* Кнопка закрытия (вынесена за пределы телефона) */}
+          {/* Кнопка закрытия (вынесена за пределы телефона и адаптируется под Telegram) */}
           <button
             onClick={() => {
               triggerHaptic('impact', 'light');
               setActiveVideo(null);
             }}
-            className={`absolute top-6 right-6 sm:top-8 sm:right-8 z-[110] w-12 h-12 rounded-full flex items-center justify-center border backdrop-blur-md transition-all hover:scale-110 active:scale-95 shadow-xl ${isLightTheme ? 'bg-white/90 border-[#C48766]/30 text-[#4A302B] shadow-[0_10px_30px_rgba(196,135,102,0.2)]' : 'bg-white/10 border-white/20 text-white hover:bg-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)]'}`}
+            className={`absolute ${isTelegram ? 'top-20' : 'top-6 sm:top-8'} right-6 sm:right-8 z-[110] w-12 h-12 rounded-full flex items-center justify-center border backdrop-blur-md transition-all hover:scale-110 active:scale-95 shadow-xl ${isLightTheme ? 'bg-white/90 border-[#C48766]/30 text-[#4A302B] shadow-[0_10px_30px_rgba(196,135,102,0.2)]' : 'bg-white/10 border-white/20 text-white hover:bg-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)]'}`}
           >
             <X size={24} />
           </button>
 
-          {/* Виртуальный iPhone (Apple Vibe) */}
-          <div className={`relative w-[300px] sm:w-[340px] aspect-[9/19.5] max-h-[85vh] rounded-[3rem] sm:rounded-[3.5rem] border-[10px] sm:border-[14px] overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.5)] animate-in zoom-in-95 duration-500 transition-colors ${isLightTheme ? 'bg-black border-[#dcd9d4] shadow-[0_0_50px_rgba(196,135,102,0.3)]' : 'bg-black border-[#1f1f1f] shadow-[0_0_50px_rgba(255,255,255,0.05)]'}`}>
+          {/* Обёртка для позиционирования подсказки относительно телефона */}
+          <div className="relative flex justify-center items-center">
             
-            {/* Dynamic Island (Челка iPhone) */}
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 w-[90px] h-[26px] bg-black rounded-full z-30 shadow-[inset_0_0_2px_rgba(255,255,255,0.15)] flex justify-end items-center px-2">
-              {/* Глазок камеры */}
-              <div className="w-2.5 h-2.5 rounded-full bg-[#0a0a0a] border border-[#222]"></div>
+            {/* Подсказка для качества видео (стрелочка) */}
+            <div className="absolute -top-14 -right-2 sm:-right-8 z-[120] flex flex-col items-end animate-bounce drop-shadow-xl pointer-events-none">
+              <div className={`px-3 py-1.5 rounded-xl backdrop-blur-md border text-[10px] sm:text-[11px] font-medium tracking-wide shadow-lg ${isLightTheme ? 'bg-white/90 border-[#C48766]/30 text-[#4A302B]' : 'bg-black/80 border-white/20 text-white'}`}>
+                Качество видео поменяй здесь
+              </div>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className={`mt-1 mr-8 ${isLightTheme ? 'text-[#C48766]' : 'text-white'}`}>
+                <path d="M19 5L5 19M5 19V10M5 19H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </div>
 
-            {/* Блики на стекле смартфона */}
-            <div className="absolute inset-0 z-20 pointer-events-none rounded-[2.5rem] shadow-[inset_0_0_10px_rgba(255,255,255,0.1)]"></div>
-
-            {activeVideo?.startsWith('demo') ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-[#0a0a0a]">
-                <Play size={48} className="mb-4 opacity-20 text-white" />
-                <p className="text-lg font-medium tracking-wide text-white">Скоро здесь будет новое видео</p>
-                <p className="text-sm mt-2 text-white/50">Добавьте ID видео с RuTube в настройки (CONFIG)</p>
+            {/* Виртуальный iPhone (Apple Vibe) */}
+            <div className={`relative w-[300px] sm:w-[340px] aspect-[9/19.5] max-h-[85vh] rounded-[3rem] sm:rounded-[3.5rem] border-[10px] sm:border-[14px] overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.5)] animate-in zoom-in-95 duration-500 transition-colors ${isLightTheme ? 'bg-black border-[#dcd9d4] shadow-[0_0_50px_rgba(196,135,102,0.3)]' : 'bg-black border-[#1f1f1f] shadow-[0_0_50px_rgba(255,255,255,0.05)]'}`}>
+              
+              {/* Dynamic Island (Челка iPhone) */}
+              <div className="absolute top-2 left-1/2 -translate-x-1/2 w-[90px] h-[26px] bg-black rounded-full z-30 shadow-[inset_0_0_2px_rgba(255,255,255,0.15)] flex justify-end items-center px-2">
+                {/* Глазок камеры */}
+                <div className="w-2.5 h-2.5 rounded-full bg-[#0a0a0a] border border-[#222]"></div>
               </div>
-            ) : (
-              <iframe
-                width="100%"
-                height="100%"
-                src={`https://rutube.ru/play/embed/${activeVideo}`}
-                frameBorder="0"
-                allow="clipboard-write; autoplay"
-                allowFullScreen
-                className="absolute inset-0 w-full h-full z-10 pt-[15px] scale-[1.02] bg-black"
-              ></iframe>
-            )}
+
+              {/* Блики на стекле смартфона */}
+              <div className="absolute inset-0 z-20 pointer-events-none rounded-[2.5rem] shadow-[inset_0_0_10px_rgba(255,255,255,0.1)]"></div>
+
+              {activeVideo?.startsWith('demo') ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-[#0a0a0a]">
+                  <Play size={48} className="mb-4 opacity-20 text-white" />
+                  <p className="text-lg font-medium tracking-wide text-white">Скоро здесь будет новое видео</p>
+                  <p className="text-sm mt-2 text-white/50">Добавьте ID видео с RuTube в настройки (CONFIG)</p>
+                </div>
+              ) : (
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src={`https://rutube.ru/play/embed/${activeVideo}`}
+                  frameBorder="0"
+                  allow="clipboard-write; autoplay"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full z-10 pt-[15px] scale-[1.02] bg-black"
+                ></iframe>
+              )}
+            </div>
           </div>
         </div>
       )}
