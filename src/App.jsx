@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { 
   Send, Fingerprint, Sparkles, Lock, Key, 
-  ArrowRight, Compass, Flame, Brain, Camera, Star, X, Sun, Moon
+  ArrowRight, Compass, Flame, Brain, Camera, Star, X, Sun, Moon, Play
 } from 'lucide-react';
 
 // =========================================================================
@@ -31,11 +31,11 @@ const CONFIG = {
   linkTelegram: "https://t.me/your_telegram", // Вставьте свою ссылку на Telegram
   linkGithub: "https://github.com/alenarejmond-hash", // Вставьте свою ссылку на GitHub
 
-  // 6. Галерея (Мои работы)
+  // 6. Галерея (Мои работы) - ТЕПЕРЬ С ПОДДЕРЖКОЙ ВИДЕО!
   portfolio: [
-    { title: "Турагентство", desc: "Glassmorphism & 3D Карты", icon: Compass },
-    { title: "Психолог", desc: "Минимализм & Типографика", icon: Brain },
-    { title: "Fire Show", desc: "Неоновые частицы & WebGL", icon: Flame },
+    { title: "Шоурил 2024", desc: "Главное видео", icon: Compass, videoId: "611bc8031620c28329867b1943f4d0d9" },
+    { title: "Психолог", desc: "Скоро...", icon: Brain, videoId: "demo1" },
+    { title: "Fire Show", desc: "Скоро...", icon: Flame, videoId: "demo2" },
   ],
 
   // 7. Вайбы (Калькулятор вайбов)
@@ -95,6 +95,9 @@ export default function App() {
   const [isReviewSubmitted, setIsReviewSubmitted] = useState(false);
   const [reviewForm, setReviewForm] = useState({ name: '', text: '', rating: 5 });
 
+  // State for Video Modal (Стеклянный Кинотеатр)
+  const [activeVideo, setActiveVideo] = useState(null);
+
   // Отступ для Hero-блока в зависимости от платформы
   const [heroPadding, setHeroPadding] = useState('pt-28');
 
@@ -143,7 +146,7 @@ export default function App() {
       if (tg) {
         // Динамический отступ: pt-16 для браузера, pt-28 для Telegram
         if (tg.platform === 'unknown' || !tg.platform) {
-          setHeroPadding('pt-12');
+          setHeroPadding('pt-10');
         } else {
           setHeroPadding('pt-28');
         }
@@ -353,6 +356,14 @@ export default function App() {
       {/* Фиксированный Canvas на фоне */}
       <canvas ref={canvasRef} className="fixed inset-0 z-[1] pointer-events-none opacity-80" />
 
+      {/*
+        ========================================================================================
+        👇 НАСТРОЙКА РАССТОЯНИЙ МЕЖДУ БЛОКАМИ 👇
+        В строке ниже класс "gap-24" (в самом конце) задает расстояние между всеми основными секциями!
+        - Если хочешь увеличить расстояние: поменяй gap-24 на gap-32 (или больше)
+        - Если хочешь уменьшить расстояние: поменяй gap-24 на gap-16 или gap-12
+        ========================================================================================
+      */}
       {/* Скроллируемый контент */}
       <div className="relative z-10 w-full max-w-[500px] mx-auto flex flex-col px-6 pt-4 pb-8 gap-24">
         
@@ -388,7 +399,7 @@ export default function App() {
             onPointerMove={handleTiltMove}
             onPointerLeave={resetTilt}
             onPointerCancel={resetTilt}
-            className={`w-full relative touch-none transition-all ease-out ${(tilt.rotateX !== 0 || tilt.rotateY !== 0) ? 'duration-100' : 'duration-700'} ${isHeroRevealed ? 'opacity-10 scale-95' : 'opacity-100 scale-100'}`}
+            className={`w-full relative touch-none transition-all ease-out ${(tilt.rotateX !== 0 || tilt.rotateY !== 0) ? 'duration-100' : 'duration-700'} ${isHeroRevealed ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}
             style={{ 
               transform: `perspective(1000px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
               transformStyle: 'preserve-3d'
@@ -409,7 +420,9 @@ export default function App() {
 
           <div className={`mt-6 w-full flex flex-col items-center justify-center gap-3 transition-opacity duration-500 ${isHeroRevealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
              <div 
-               className="flex flex-col items-center gap-3 cursor-pointer p-4 pointer-events-auto"
+               className="flex flex-col items-center gap-3 cursor-pointer p-4 pointer-events-auto touch-none"
+               style={{ WebkitTouchCallout: 'none' }}
+               onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); }}
                onPointerDown={handleHeroHoldStart}
                onPointerUp={handleHeroHoldEnd}
                onPointerLeave={handleHeroHoldEnd}
@@ -425,9 +438,9 @@ export default function App() {
           </div>
         </section>
 
-        {/* --- 2. THE KILLER FEATURE --- */}
-        <section className="flex flex-col gap-6 -mt-16">
-          <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>The Killer Feature</h2>
+        {/* --- 2. ЦЕННОСТЬ --- */}
+        <section className="flex flex-col gap-6">
+          <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>Ценность</h2>
           
           <div className="grid grid-cols-2 gap-4">
             <div className={`border rounded-2xl p-5 flex flex-col gap-4 opacity-60 grayscale transition-colors duration-700 ${isLightTheme ? 'bg-[#4A302B]/[0.02] border-[#4A302B]/10' : 'bg-white/[0.02] border-white/5'}`}>
@@ -469,11 +482,21 @@ export default function App() {
             {CONFIG.portfolio.map((item, idx) => (
               <div 
                 key={idx}
-                onClick={() => triggerHaptic('impact', 'light')}
-                className={`min-w-[240px] h-[160px] border rounded-3xl p-6 snap-center flex flex-col justify-between cursor-pointer transition-colors duration-700 active:scale-95 ${isLightTheme ? 'bg-[#4A302B]/[0.02] border-[#4A302B]/10 hover:bg-[#4A302B]/[0.05]' : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06]'}`}
+                onClick={() => {
+                  triggerHaptic('impact', 'light');
+                  if (item.videoId) setActiveVideo(item.videoId);
+                }}
+                className={`relative min-w-[240px] h-[160px] border rounded-3xl p-6 snap-center flex flex-col justify-between cursor-pointer transition-all duration-700 active:scale-95 group overflow-hidden ${isLightTheme ? 'bg-[#4A302B]/[0.02] border-[#4A302B]/10 hover:bg-[#4A302B]/[0.05]' : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06]'}`}
               >
-                <div className={`transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/50'}`}><item.icon size={24} /></div>
-                <div>
+                {/* Эффект Play поверх карточки при наведении */}
+                <div className={`absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 ${isLightTheme ? 'bg-[#EFECE8]/60 backdrop-blur-sm' : 'bg-black/40 backdrop-blur-[2px]'}`}>
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md border shadow-lg transition-transform group-hover:scale-110 ${isLightTheme ? 'bg-[#C48766]/20 border-[#C48766]/40 text-[#4A302B]' : 'bg-white/20 border-white/30 text-white'}`}>
+                    <Play size={20} className="ml-1" fill="currentColor" />
+                  </div>
+                </div>
+
+                <div className={`relative z-0 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/50'}`}><item.icon size={24} /></div>
+                <div className="relative z-0">
                   <h3 className={`text-sm font-medium tracking-wide transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>{item.title}</h3>
                   <p className={`text-[11px] mt-1 font-light transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/40'}`}>{item.desc}</p>
                 </div>
@@ -697,6 +720,42 @@ export default function App() {
                   Отправить
                 </button>
               </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* --- 7. VIDEO MODAL (RUTUBE) --- */}
+      {activeVideo && (
+        <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 backdrop-blur-[30px] transition-all duration-700 ${isLightTheme ? 'bg-[#EFECE8]/70' : 'bg-black/70'}`}>
+          <div className={`relative w-full max-w-4xl aspect-video rounded-[2rem] border overflow-hidden shadow-2xl animate-in zoom-in-95 duration-500 transition-colors ${isLightTheme ? 'bg-[#FAF7F2] border-[#C48766]/30 shadow-[0_0_50px_rgba(196,135,102,0.15)]' : 'bg-[#0a0a0a] border-white/20 shadow-[0_0_50px_rgba(255,255,255,0.05)]'}`}>
+
+            <button
+              onClick={() => {
+                triggerHaptic('impact', 'light');
+                setActiveVideo(null);
+              }}
+              className={`absolute top-4 right-4 z-20 w-10 h-10 rounded-full flex items-center justify-center border backdrop-blur-md transition-all hover:scale-110 active:scale-95 ${isLightTheme ? 'bg-[#EFECE8]/80 border-[#4A302B]/20 text-[#4A302B]/60 hover:text-[#4A302B]' : 'bg-black/50 border-white/20 text-white/60 hover:text-white hover:bg-black/80'}`}
+            >
+              <X size={20} />
+            </button>
+
+            {activeVideo === 'demo1' || activeVideo === 'demo2' ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
+                <Play size={48} className={`mb-4 opacity-20 ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`} />
+                <p className={`text-lg font-medium tracking-wide ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>Скоро здесь будет новое видео</p>
+                <p className={`text-sm mt-2 ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/50'}`}>Добавьте ID видео с RuTube в настройки (CONFIG)</p>
+              </div>
+            ) : (
+              <iframe
+                width="100%"
+                height="100%"
+                src={`https://rutube.ru/play/embed/${activeVideo}`}
+                frameBorder="0"
+                allow="clipboard-write; autoplay"
+                allowFullScreen
+                className="absolute inset-0 w-full h-full z-10"
+              ></iframe>
             )}
           </div>
         </div>
