@@ -120,7 +120,6 @@ export default function App() {
 
   // State for Portfolio Carousel (Cover Flow)
   const [portfolioIndex, setPortfolioIndex] = useState(0);
-  const [isDraggingPortfolio, setIsDraggingPortfolio] = useState(false);
   const touchStartX = useRef(0);
   const touchStartY = useRef(0);
   const touchEndX = useRef(0);
@@ -192,17 +191,39 @@ export default function App() {
           setHeroPadding('pt-28');
           setIsTelegram(true);
         }
+
+        if (typeof tg.ready === 'function') tg.ready();
+        if (typeof tg.expand === 'function') tg.expand();
+        if (typeof tg.requestFullscreen === 'function') tg.requestFullscreen();
+        if (typeof tg.disableVerticalSwipes === 'function') tg.disableVerticalSwipes();
+        
+        const enforceFullscreen = () => {
+          if (typeof tg.expand === 'function') tg.expand();
+          if (typeof tg.disableVerticalSwipes === 'function') tg.disableVerticalSwipes();
+        };
+        
+        setTimeout(enforceFullscreen, 100);
+        setTimeout(enforceFullscreen, 500);
+        
+        if (typeof tg.onEvent === 'function') {
+          tg.onEvent('viewportChanged', enforceFullscreen);
+        }
+        if (typeof tg.setHeaderColor === 'function') {
+          tg.setHeaderColor('#050505'); // Оставим темным для нативности
+        }
+        return () => {
+          if (tg && typeof tg.offEvent === 'function') tg.offEvent('viewportChanged', enforceFullscreen);
+        };
       }
     } catch (error) {
       console.error('Telegram API Error:', error);
     }
   }, []);
 
-  // 1.5 Блокировка вертикального скролла ПРИ горизонтальном свайпе карточек + Скролл на ПК
+  // 1.5 Блокировка вертикального скролла ПРИ горизонтальном свайпе карточек
   useEffect(() => {
     const el = portfolioRef.current;
     if (!el) return;
-    
     const handleTouchMove = (e) => {
       if (!touchStartX.current || !touchStartY.current) return;
       const deltaX = Math.abs(e.touches[0].clientX - touchStartX.current);
@@ -212,43 +233,10 @@ export default function App() {
         if (e.cancelable) e.preventDefault();
       }
     };
-
-    let lastWheelTime = 0;
-    const handleWheel = (e) => {
-      // Игнорируем вертикальный скролл (чтобы страница крутилась нормально)
-      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) return;
-      
-      e.preventDefault(); // Блокируем навигацию браузера вперед/назад
-
-      const now = Date.now();
-      if (now - lastWheelTime < 350) return; // Плавность (чтобы не пролетать по 10 карточек)
-
-      if (e.deltaX > 20) {
-        setPortfolioIndex(prev => {
-          const next = Math.min(prev + 1, CONFIG.portfolio.length - 1);
-          if (next !== prev) triggerHaptic('selection');
-          return next;
-        });
-        lastWheelTime = now;
-      } else if (e.deltaX < -20) {
-        setPortfolioIndex(prev => {
-          const next = Math.max(prev - 1, 0);
-          if (next !== prev) triggerHaptic('selection');
-          return next;
-        });
-        lastWheelTime = now;
-      }
-    };
-
     // passive: false обязательно, чтобы работал preventDefault()
     el.addEventListener('touchmove', handleTouchMove, { passive: false });
-    el.addEventListener('wheel', handleWheel, { passive: false });
-    
-    return () => {
-      el.removeEventListener('touchmove', handleTouchMove);
-      el.removeEventListener('wheel', handleWheel);
-    };
-  }, [triggerHaptic]);
+    return () => el.removeEventListener('touchmove', handleTouchMove);
+  }, []);
 
   // 2. Canvas Engine
   useEffect(() => {
@@ -404,7 +392,7 @@ export default function App() {
 
   return (
     <div 
-      className={`relative h-[100dvh] w-full font-sans overflow-x-hidden overflow-y-auto select-none transition-colors duration-700 ${isLightTheme ? 'bg-[#EFECE8] text-[#4A302B] selection:bg-[#D89B93]/30' : 'bg-[#050505] text-white/90 selection:bg-white/20'}`}
+      className={`relative min-h-[100dvh] w-full font-sans overflow-x-clip overflow-y-auto select-none transition-colors duration-700 ${isLightTheme ? 'bg-[#EFECE8] text-[#4A302B] selection:bg-[#D89B93]/30' : 'bg-[#050505] text-white/90 selection:bg-white/20'}`}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onClick={() => triggerHaptic('impact', 'light')}
@@ -521,43 +509,15 @@ export default function App() {
           
           <div 
             ref={portfolioRef}
-            className="relative h-[280px] sm:h-[320px] w-full flex justify-center items-center touch-pan-y cursor-grab active:cursor-grabbing"
+            className="relative h-[280px] sm:h-[320px] w-full flex justify-center items-center touch-pan-y"
             style={{ perspective: '1200px', transformStyle: 'preserve-3d' }}
             onTouchStart={(e) => {
               touchStartX.current = e.touches[0].clientX;
               touchStartY.current = e.touches[0].clientY;
-              touchEndX.current = e.touches[0].clientX;
-              setIsDraggingPortfolio(true);
+              touchEndX.current = e.touches[0].clientX; // сбрасываем, чтобы избежать ложных срабатываний
             }}
-            onTouchMove={(e) => {
-              if (!isDraggingPortfolio) return;
-              touchEndX.current = e.touches[0].clientX;
-            }}
-            onTouchEnd={() => {
-              if (!isDraggingPortfolio) return;
-              setIsDraggingPortfolio(false);
-              handlePortfolioSwipe();
-            }}
-            onMouseDown={(e) => {
-              touchStartX.current = e.clientX;
-              touchStartY.current = e.clientY;
-              touchEndX.current = e.clientX;
-              setIsDraggingPortfolio(true);
-            }}
-            onMouseMove={(e) => {
-              if (!isDraggingPortfolio) return;
-              touchEndX.current = e.clientX;
-            }}
-            onMouseUp={() => {
-              if (!isDraggingPortfolio) return;
-              setIsDraggingPortfolio(false);
-              handlePortfolioSwipe();
-            }}
-            onMouseLeave={() => {
-              if (!isDraggingPortfolio) return;
-              setIsDraggingPortfolio(false);
-              handlePortfolioSwipe();
-            }}
+            onTouchMove={(e) => touchEndX.current = e.touches[0].clientX}
+            onTouchEnd={handlePortfolioSwipe}
           >
             {CONFIG.portfolio.map((item, idx) => {
               const distance = idx - portfolioIndex;
@@ -609,7 +569,7 @@ export default function App() {
                     opacity,
                     pointerEvents,
                   }}
-                  className={`absolute w-[200px] sm:w-[240px] h-[250px] sm:h-[280px] border rounded-[2rem] p-6 flex flex-col justify-between cursor-pointer transition-all duration-500 ease-out group ${isLightTheme ? 'bg-[#FAF7F2]/90 border-[#C48766]/30 shadow-[0_20px_50px_rgba(196,135,102,0.15)] backdrop-blur-xl' : 'bg-[#1a1a1a]/80 border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl'}`}
+                  className={`absolute w-[200px] sm:w-[240px] h-[250px] sm:h-[280px] border rounded-[2rem] p-6 flex flex-col justify-between cursor-pointer transition-all duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)] group ${isLightTheme ? 'bg-[#FAF7F2]/90 border-[#C48766]/30 shadow-[0_20px_50px_rgba(196,135,102,0.15)] backdrop-blur-xl' : 'bg-[#1a1a1a]/80 border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl'}`}
                 >
                   {/* Эффект Play поверх центральной карточки */}
                   {isCenter && (
@@ -949,6 +909,8 @@ export default function App() {
       <style dangerouslySetInnerHTML={{__html: `
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        html, body { overflow-y: auto !important; min-height: 100%; }
+        body { overscroll-behavior-y: none; }
       `}} />
     </div>
   );
