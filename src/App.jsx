@@ -222,7 +222,8 @@ export default function App() {
         if (p.y < -p.radius) p.y = canvas.height + p.radius;
         if (p.y > canvas.height + p.radius) p.y = -p.radius;
 
-        const pColor = themeRef.current ? 'rgba(160, 187, 208, 0.05)' : darkColors[p.colorIndex];
+        // Коралловые частицы для светлой темы
+        const pColor = themeRef.current ? 'rgba(216, 155, 147, 0.05)' : darkColors[p.colorIndex];
         const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius);
         gradient.addColorStop(0, pColor);
         gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
@@ -243,7 +244,8 @@ export default function App() {
           continue;
         }
 
-        const rColorBase = themeRef.current ? `rgba(160, 187, 208, ` : `rgba(255, 255, 255, `;
+        // Медные/Коралловые круги для светлой темы
+        const rColorBase = themeRef.current ? `rgba(196, 135, 102, ` : `rgba(255, 255, 255, `;
         const rGrad = ctx.createRadialGradient(r.x, r.y, Math.max(0, r.radius - 30), r.x, r.y, r.radius);
         rGrad.addColorStop(0, rColorBase + `0)`);
         rGrad.addColorStop(0.8, rColorBase + `${r.alpha * 0.15})`);
@@ -317,14 +319,14 @@ export default function App() {
 
   return (
     <div 
-      className={`relative min-h-[100dvh] font-sans overflow-x-hidden select-none overscroll-none transition-colors duration-700 ${isLightTheme ? 'bg-[#F2F5F8] text-[#2B303A] selection:bg-[#A0BBD0]/30' : 'bg-[#050505] text-white/90 selection:bg-white/20'}`}
+      className={`relative min-h-[100dvh] font-sans overflow-x-hidden select-none overscroll-none transition-colors duration-700 ${isLightTheme ? 'bg-[#EFECE8] text-[#4A302B] selection:bg-[#D89B93]/30' : 'bg-[#050505] text-white/90 selection:bg-white/20'}`}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onClick={() => triggerHaptic('impact', 'light')}
       onContextMenu={(e) => e.preventDefault()}
     >
       {/* --- 0. HERO BACKGROUND PHOTO --- */}
-      <div className={`absolute top-0 left-0 w-full h-screen z-0 pointer-events-none overflow-hidden transition-colors duration-700 ${isLightTheme ? 'bg-[#F2F5F8]' : 'bg-[#050505]'}`}>
+      <div className={`absolute top-0 left-0 w-full h-screen z-0 pointer-events-none overflow-hidden transition-colors duration-700 ${isLightTheme ? 'bg-[#EFECE8]' : 'bg-[#050505]'}`}>
         <img 
           src={CONFIG.heroPhoto} 
           alt={CONFIG.headerName} 
@@ -334,8 +336,8 @@ export default function App() {
               : 'blur-[50px] scale-125 opacity-30 grayscale-[30%]'
           }`}
         />
-        <div className={`absolute inset-0 transition-all duration-700 ${isHeroRevealed ? 'opacity-0' : 'opacity-100'} ${isLightTheme ? 'bg-gradient-to-tr from-[#F2F5F8] via-[#F2F5F8]/80 to-[#A0BBD0]/30 mix-blend-normal' : 'bg-gradient-to-tr from-[#050505] via-[#0A1020]/40 to-[#2A2010]/30 mix-blend-color'}`}></div>
-        <div className={`absolute inset-0 transition-colors duration-700 ${isLightTheme ? 'bg-gradient-to-b from-transparent via-[#F2F5F8]/80 to-[#F2F5F8]' : 'bg-gradient-to-b from-transparent via-[#050505]/40 to-[#050505]'}`}></div>
+        <div className={`absolute inset-0 transition-all duration-700 ${isHeroRevealed ? 'opacity-0' : 'opacity-100'} ${isLightTheme ? 'bg-gradient-to-tr from-[#EFECE8] via-[#EFECE8]/80 to-[#D89B93]/30 mix-blend-normal' : 'bg-gradient-to-tr from-[#050505] via-[#0A1020]/40 to-[#2A2010]/30 mix-blend-color'}`}></div>
+        <div className={`absolute inset-0 transition-colors duration-700 ${isLightTheme ? 'bg-gradient-to-b from-transparent via-[#EFECE8]/80 to-[#EFECE8]' : 'bg-gradient-to-b from-transparent via-[#050505]/40 to-[#050505]'}`}></div>
       </div>
 
       {/* Фиксированный Canvas на фоне */}
@@ -347,7 +349,7 @@ export default function App() {
         {/* --- 1. HERO --- */}
         <section className="relative min-h-[75vh] flex flex-col pt-28">
           <header className={`flex items-center justify-between mb-5 ml-2 transition-opacity duration-500 ${isHeroRevealed ? 'opacity-0' : 'opacity-100'}`}>
-            <div className={`flex items-center gap-2 ${isLightTheme ? 'text-[#2B303A]/60' : 'text-white/50'}`}>
+            <div className={`flex items-center gap-2 ${isLightTheme ? 'text-[#4A302B]/60' : 'text-white/50'}`}>
               <Fingerprint className="w-4 h-4" strokeWidth={1.5} />
               <span className="text-[10px] uppercase tracking-[0.2em] font-medium">{CONFIG.headerName}</span>
             </div>
@@ -358,7 +360,7 @@ export default function App() {
                 triggerHaptic('impact', 'medium');
                 setIsLightTheme(!isLightTheme);
               }}
-              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500 z-50 ${isLightTheme ? 'bg-[#A0BBD0]/10 text-[#A0BBD0] border border-[#A0BBD0]/30 shadow-[0_0_15px_rgba(160,187,208,0.2)]' : 'bg-white/5 text-white/50 border border-white/10 hover:text-white hover:bg-white/10'}`}
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500 z-50 ${isLightTheme ? 'bg-[#C48766]/10 text-[#C48766] border border-[#C48766]/30 shadow-[0_0_15px_rgba(196,135,102,0.2)]' : 'bg-white/5 text-white/50 border border-white/10 hover:text-white hover:bg-white/10'}`}
             >
               {isLightTheme ? <Moon size={14} /> : <Sun size={14} />}
             </button>
@@ -376,14 +378,14 @@ export default function App() {
               transformStyle: 'preserve-3d'
             }}
           >
-            <div className={`backdrop-blur-[20px] rounded-3xl p-8 pointer-events-none transition-all duration-700 ${isLightTheme ? 'bg-[#2B303A]/[0.02] border-[0.5px] border-[#A0BBD0]/40 shadow-[0_20px_50px_rgba(43,48,58,0.05)]' : 'bg-white/[0.03] border-[0.5px] border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]'}`}>
-              <div className={`w-10 h-10 rounded-full border flex items-center justify-center mb-8 shadow-inner transition-colors duration-700 ${isLightTheme ? 'border-[#A0BBD0]/30 bg-[#A0BBD0]/10' : 'border-white/10 bg-white/[0.02]'}`}>
-                <Sparkles className={`w-4 h-4 ${isLightTheme ? 'text-[#A0BBD0]' : 'text-white/70'}`} strokeWidth={1.5} />
+            <div className={`backdrop-blur-[20px] rounded-3xl p-8 pointer-events-none transition-all duration-700 ${isLightTheme ? 'bg-[#4A302B]/[0.02] border-[0.5px] border-[#C48766]/40 shadow-[0_20px_50px_rgba(74,48,43,0.05)]' : 'bg-white/[0.03] border-[0.5px] border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]'}`}>
+              <div className={`w-10 h-10 rounded-full border flex items-center justify-center mb-8 shadow-inner transition-colors duration-700 ${isLightTheme ? 'border-[#C48766]/30 bg-[#C48766]/10' : 'border-white/10 bg-white/[0.02]'}`}>
+                <Sparkles className={`w-4 h-4 ${isLightTheme ? 'text-[#C48766]' : 'text-white/70'}`} strokeWidth={1.5} />
               </div>
-              <h1 className={`text-4xl sm:text-5xl font-light tracking-wide mb-4 leading-tight transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]' : 'text-white'}`} style={{ transform: 'translateZ(30px)' }}>
+              <h1 className={`text-4xl sm:text-5xl font-light tracking-wide mb-4 leading-tight transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`} style={{ transform: 'translateZ(30px)' }}>
                 {CONFIG.heroTitle1}<br/>{CONFIG.heroTitle2}
               </h1>
-              <p className={`text-base font-light leading-relaxed tracking-wide transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/60' : 'text-white/50'}`} style={{ transform: 'translateZ(20px)' }}>
+              <p className={`text-base font-light leading-relaxed tracking-wide transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/60' : 'text-white/50'}`} style={{ transform: 'translateZ(20px)' }}>
                 {CONFIG.heroSubtitle}
               </p>
             </div>
@@ -397,10 +399,10 @@ export default function App() {
                onPointerLeave={handleHeroHoldEnd}
                onPointerCancel={handleHeroHoldEnd}
              >
-               <div className={`w-10 h-10 rounded-full border flex items-center justify-center animate-pulse transition-colors duration-700 ${isLightTheme ? 'border-[#2B303A]/10 bg-[#2B303A]/[0.02] shadow-[0_0_15px_rgba(43,48,58,0.05)]' : 'border-white/10 bg-white/[0.02] shadow-[0_0_15px_rgba(255,255,255,0.05)]'}`}>
-                  <Fingerprint className={`w-5 h-5 ${isLightTheme ? 'text-[#2B303A]/50' : 'text-white/50'}`} strokeWidth={1.5} />
+               <div className={`w-10 h-10 rounded-full border flex items-center justify-center animate-pulse transition-colors duration-700 ${isLightTheme ? 'border-[#4A302B]/10 bg-[#4A302B]/[0.02] shadow-[0_0_15px_rgba(74,48,43,0.05)]' : 'border-white/10 bg-white/[0.02] shadow-[0_0_15px_rgba(255,255,255,0.05)]'}`}>
+                  <Fingerprint className={`w-5 h-5 ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/50'}`} strokeWidth={1.5} />
                </div>
-               <span className={`text-[10px] uppercase tracking-[0.2em] font-medium text-center transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/50' : 'text-white/40'}`}>
+               <span className={`text-[10px] uppercase tracking-[0.2em] font-medium text-center transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/40'}`}>
                  {CONFIG.heroHintLine1}<br/>{CONFIG.heroHintLine2}
                </span>
              </div>
@@ -409,16 +411,16 @@ export default function App() {
 
         {/* --- 2. THE KILLER FEATURE --- */}
         <section className="flex flex-col gap-6">
-          <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/40' : 'text-white/40'}`}>The Killer Feature</h2>
+          <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>The Killer Feature</h2>
           
           <div className="grid grid-cols-2 gap-4">
-            <div className={`border rounded-2xl p-5 flex flex-col gap-4 opacity-60 grayscale transition-colors duration-700 ${isLightTheme ? 'bg-[#2B303A]/[0.02] border-[#2B303A]/10' : 'bg-white/[0.02] border-white/5'}`}>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-700 ${isLightTheme ? 'bg-[#2B303A]/5' : 'bg-white/5'}`}>
-                <Lock size={14} className={isLightTheme ? 'text-[#2B303A]/50' : 'text-white/50'} />
+            <div className={`border rounded-2xl p-5 flex flex-col gap-4 opacity-60 grayscale transition-colors duration-700 ${isLightTheme ? 'bg-[#4A302B]/[0.02] border-[#4A302B]/10' : 'bg-white/[0.02] border-white/5'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-700 ${isLightTheme ? 'bg-[#4A302B]/5' : 'bg-white/5'}`}>
+                <Lock size={14} className={isLightTheme ? 'text-[#4A302B]/50' : 'text-white/50'} />
               </div>
               <div>
-                <h3 className={`text-sm font-medium mb-1 transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/80' : 'text-white/80'}`}>Конструкторы</h3>
-                <ul className={`text-[11px] space-y-1.5 font-light transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/50' : 'text-white/40'}`}>
+                <h3 className={`text-sm font-medium mb-1 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/80' : 'text-white/80'}`}>Конструкторы</h3>
+                <ul className={`text-[11px] space-y-1.5 font-light transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/40'}`}>
                   <li>— Бесконечные подписки</li>
                   <li>— Шаблонный дизайн</li>
                   <li>— Ограничения кода</li>
@@ -426,15 +428,15 @@ export default function App() {
               </div>
             </div>
 
-            <div className={`border rounded-2xl p-5 flex flex-col gap-4 relative overflow-hidden transition-colors duration-700 ${isLightTheme ? 'bg-[#A0BBD0]/5 border-[#A0BBD0]/30 shadow-[0_0_30px_rgba(160,187,208,0.1)]' : 'bg-white/[0.05] border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.05)]'}`}>
-              <div className={`absolute top-0 right-0 w-24 h-24 blur-2xl rounded-full translate-x-1/2 -translate-y-1/2 transition-colors duration-700 ${isLightTheme ? 'bg-[#A0BBD0]/20' : 'bg-white/10'}`}></div>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center border relative z-10 transition-colors duration-700 ${isLightTheme ? 'bg-[#A0BBD0]/10 border-[#A0BBD0]/30' : 'bg-white/10 border-white/20'}`}>
-                <Key size={14} className={isLightTheme ? 'text-[#A0BBD0]' : 'text-white'} />
+            <div className={`border rounded-2xl p-5 flex flex-col gap-4 relative overflow-hidden transition-colors duration-700 ${isLightTheme ? 'bg-[#C48766]/5 border-[#C48766]/30 shadow-[0_0_30px_rgba(196,135,102,0.1)]' : 'bg-white/[0.05] border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.05)]'}`}>
+              <div className={`absolute top-0 right-0 w-24 h-24 blur-2xl rounded-full translate-x-1/2 -translate-y-1/2 transition-colors duration-700 ${isLightTheme ? 'bg-[#D89B93]/20' : 'bg-white/10'}`}></div>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center border relative z-10 transition-colors duration-700 ${isLightTheme ? 'bg-[#C48766]/10 border-[#C48766]/30' : 'bg-white/10 border-white/20'}`}>
+                <Key size={14} className={isLightTheme ? 'text-[#C48766]' : 'text-white'} />
               </div>
               <div className="relative z-10">
-                <h3 className={`text-sm font-medium mb-1 transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]' : 'text-white'}`}>Твоя визитка</h3>
-                <ul className={`text-[11px] space-y-1.5 font-light tracking-wide transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/70' : 'text-white/70'}`}>
-                  <li className={`font-bold transition-colors duration-700 ${isLightTheme ? 'text-[#A0BBD0]' : 'text-white'}`}>— 0₽ в месяц</li>
+                <h3 className={`text-sm font-medium mb-1 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>Твоя визитка</h3>
+                <ul className={`text-[11px] space-y-1.5 font-light tracking-wide transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/70' : 'text-white/70'}`}>
+                  <li className={`font-bold transition-colors duration-700 ${isLightTheme ? 'text-[#C48766]' : 'text-white'}`}>— 0₽ в месяц</li>
                   <li>— Уникальный код</li>
                   <li>— Твоя навсегда</li>
                 </ul>
@@ -445,19 +447,19 @@ export default function App() {
 
         {/* --- 3. MY WORLD --- */}
         <section className="flex flex-col gap-6 w-full -mx-6 px-6 sm:mx-0 sm:px-0">
-          <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/40' : 'text-white/40'}`}>My World</h2>
+          <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>My World</h2>
           
           <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide w-auto -mx-6 px-6 sm:mx-0 sm:px-0">
             {CONFIG.portfolio.map((item, idx) => (
               <div 
                 key={idx}
                 onClick={() => triggerHaptic('impact', 'light')}
-                className={`min-w-[240px] h-[160px] border rounded-3xl p-6 snap-center flex flex-col justify-between cursor-pointer transition-colors duration-700 active:scale-95 ${isLightTheme ? 'bg-[#2B303A]/[0.02] border-[#2B303A]/10 hover:bg-[#2B303A]/[0.05]' : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06]'}`}
+                className={`min-w-[240px] h-[160px] border rounded-3xl p-6 snap-center flex flex-col justify-between cursor-pointer transition-colors duration-700 active:scale-95 ${isLightTheme ? 'bg-[#4A302B]/[0.02] border-[#4A302B]/10 hover:bg-[#4A302B]/[0.05]' : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06]'}`}
               >
-                <div className={`transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/50' : 'text-white/50'}`}><item.icon size={24} /></div>
+                <div className={`transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/50'}`}><item.icon size={24} /></div>
                 <div>
-                  <h3 className={`text-sm font-medium tracking-wide transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]' : 'text-white'}`}>{item.title}</h3>
-                  <p className={`text-[11px] mt-1 font-light transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/50' : 'text-white/40'}`}>{item.desc}</p>
+                  <h3 className={`text-sm font-medium tracking-wide transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>{item.title}</h3>
+                  <p className={`text-[11px] mt-1 font-light transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/40'}`}>{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -467,9 +469,9 @@ export default function App() {
 
         {/* --- 4. РАССЧИТАТЬ ВАЙБ --- */}
         <section className="flex flex-col gap-6">
-          <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/40' : 'text-white/40'}`}>Какой твой вайб?</h2>
+          <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>Какой твой вайб?</h2>
           
-          <div className={`flex gap-2 p-1.5 rounded-2xl border w-fit transition-colors duration-700 ${isLightTheme ? 'bg-[#2B303A]/[0.02] border-[#2B303A]/10' : 'bg-white/[0.03] border-white/10'}`}>
+          <div className={`flex gap-2 p-1.5 rounded-2xl border w-fit transition-colors duration-700 ${isLightTheme ? 'bg-[#4A302B]/[0.02] border-[#4A302B]/10' : 'bg-white/[0.03] border-white/10'}`}>
             {Object.values(CONFIG.niches).map(niche => (
               <button
                 key={niche.id}
@@ -479,8 +481,8 @@ export default function App() {
                 }}
                 className={`px-4 py-2 rounded-xl text-[11px] font-medium tracking-wide transition-all duration-300 flex items-center gap-2 ${
                   activeNiche === niche.id 
-                    ? (isLightTheme ? 'bg-[#2B303A]/10 text-[#2B303A] shadow-sm' : 'bg-white/10 text-white shadow-sm')
-                    : (isLightTheme ? 'text-[#2B303A]/50 hover:text-[#2B303A]/80' : 'text-white/40 hover:text-white/70')
+                    ? (isLightTheme ? 'bg-[#4A302B]/10 text-[#4A302B] shadow-sm' : 'bg-white/10 text-white shadow-sm')
+                    : (isLightTheme ? 'text-[#4A302B]/50 hover:text-[#4A302B]/80' : 'text-white/40 hover:text-white/70')
                 }`}
               >
                 {activeNiche === niche.id && <niche.icon size={16} />}
@@ -491,11 +493,11 @@ export default function App() {
 
           <div className={`transition-all duration-500 bg-gradient-to-br ${activeVibe.bg} border ${activeVibe.border} rounded-3xl p-6 backdrop-blur-md`}>
             <div className="flex items-start justify-between mb-3">
-              <h3 className={`text-sm font-semibold tracking-wide transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]' : activeVibe.text}`}>
+              <h3 className={`text-sm font-semibold tracking-wide transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]' : activeVibe.text}`}>
                 Vibe: {activeVibe.label}
               </h3>
             </div>
-            <p className={`text-[12px] leading-relaxed font-light transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/70' : 'text-white/70'}`}>
+            <p className={`text-[12px] leading-relaxed font-light transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/70' : 'text-white/70'}`}>
               {activeVibe.desc}
             </p>
           </div>
@@ -503,14 +505,14 @@ export default function App() {
 
         {/* --- 4.5. THE MASTERMIND --- */}
         <section className="flex flex-col gap-6">
-          <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/40' : 'text-white/40'}`}>The Mastermind</h2>
+          <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>The Mastermind</h2>
           
-          <div className={`border rounded-3xl p-6 relative overflow-hidden transition-colors duration-700 ${isLightTheme ? 'bg-[#2B303A]/[0.02] border-[#2B303A]/10' : 'bg-white/[0.03] border-white/10'}`}>
-            <div className={`absolute bottom-0 right-0 w-full h-1/2 pointer-events-none transition-colors duration-700 ${isLightTheme ? 'bg-gradient-to-t from-[#F2F5F8] to-transparent' : 'bg-gradient-to-t from-white/5 to-transparent'}`}></div>
-            <div className={`absolute top-0 right-0 w-32 h-32 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2 transition-colors duration-700 ${isLightTheme ? 'bg-[#A0BBD0]/20' : 'bg-purple-500/10'}`}></div>
+          <div className={`border rounded-3xl p-6 relative overflow-hidden transition-colors duration-700 ${isLightTheme ? 'bg-[#4A302B]/[0.02] border-[#4A302B]/10' : 'bg-white/[0.03] border-white/10'}`}>
+            <div className={`absolute bottom-0 right-0 w-full h-1/2 pointer-events-none transition-colors duration-700 ${isLightTheme ? 'bg-gradient-to-t from-[#EFECE8] to-transparent' : 'bg-gradient-to-t from-white/5 to-transparent'}`}></div>
+            <div className={`absolute top-0 right-0 w-32 h-32 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2 transition-colors duration-700 ${isLightTheme ? 'bg-[#D89B93]/20' : 'bg-purple-500/10'}`}></div>
             
-            <h3 className={`text-lg font-medium mb-3 tracking-widest transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]' : 'text-white'}`}>{CONFIG.mastermindName}</h3>
-            <p className={`text-[12px] leading-relaxed font-light tracking-wide transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/60' : 'text-white/50'}`}>
+            <h3 className={`text-lg font-medium mb-3 tracking-widest transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>{CONFIG.mastermindName}</h3>
+            <p className={`text-[12px] leading-relaxed font-light tracking-wide transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/60' : 'text-white/50'}`}>
               {CONFIG.mastermindBio}
             </p>
           </div>
@@ -519,14 +521,14 @@ export default function App() {
         {/* --- 4.6. ОТЗЫВЫ --- */}
         <section className="flex flex-col gap-6 w-full -mx-6 px-6 sm:mx-0 sm:px-0">
           <div className="flex justify-between items-end mb-2">
-            <h2 className={`text-xs uppercase tracking-[0.3em] transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/40' : 'text-white/40'}`}>Отзывы</h2>
+            <h2 className={`text-xs uppercase tracking-[0.3em] transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>Отзывы</h2>
             <button 
               onClick={(e) => {
                 e.stopPropagation();
                 triggerHaptic('impact', 'light');
                 setIsReviewModalOpen(true);
               }}
-              className={`text-[10px] uppercase tracking-widest border-b pb-0.5 transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/50 hover:text-[#2B303A] border-[#2B303A]/20' : 'text-white/50 hover:text-white border-white/20'}`}
+              className={`text-[10px] uppercase tracking-widest border-b pb-0.5 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/50 hover:text-[#4A302B] border-[#4A302B]/20' : 'text-white/50 hover:text-white border-white/20'}`}
             >
               Оставить отзыв
             </button>
@@ -536,24 +538,24 @@ export default function App() {
             {CONFIG.reviews.map((review, idx) => (
               <div 
                 key={idx}
-                className={`min-w-[280px] border rounded-3xl p-6 snap-center flex flex-col gap-4 transition-colors duration-700 ${isLightTheme ? 'bg-[#2B303A]/[0.02] border-[#2B303A]/10 hover:bg-[#2B303A]/[0.05]' : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06]'}`}
+                className={`min-w-[280px] border rounded-3xl p-6 snap-center flex flex-col gap-4 transition-colors duration-700 ${isLightTheme ? 'bg-[#4A302B]/[0.02] border-[#4A302B]/10 hover:bg-[#4A302B]/[0.05]' : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06]'}`}
               >
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className={`text-sm font-medium tracking-wide transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]' : 'text-white'}`}>{review.name}</h3>
-                    <p className={`text-[10px] mt-1 transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/40' : 'text-white/30'}`}>{review.date}</p>
+                    <h3 className={`text-sm font-medium tracking-wide transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>{review.name}</h3>
+                    <p className={`text-[10px] mt-1 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/30'}`}>{review.date}</p>
                   </div>
                   <div className="flex gap-1">
                     {[...Array(5)].map((_, i) => (
                       <Star 
                         key={i} 
                         size={12} 
-                        className={i < review.stars ? "text-[#A0BBD0] fill-[#A0BBD0]" : (isLightTheme ? "text-[#2B303A]/10" : "text-white/20")} 
+                        className={i < review.stars ? "text-[#C48766] fill-[#C48766]" : (isLightTheme ? "text-[#4A302B]/10" : "text-white/20")} 
                       />
                     ))}
                   </div>
                 </div>
-                <p className={`text-[12px] leading-relaxed font-light italic transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/60' : 'text-white/60'}`}>
+                <p className={`text-[12px] leading-relaxed font-light italic transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/60' : 'text-white/60'}`}>
                   "{review.text}"
                 </p>
               </div>
@@ -569,22 +571,22 @@ export default function App() {
               e.stopPropagation();
               triggerHaptic('notification', 'success');
             }}
-            className={`group relative w-full h-16 rounded-2xl backdrop-blur-[20px] border-[0.5px] flex items-center justify-center gap-3 transition-all duration-500 active:scale-[0.98] overflow-hidden mb-8 ${isLightTheme ? 'bg-[#A0BBD0]/10 hover:bg-[#A0BBD0]/20 border-[#A0BBD0]/30 shadow-[0_10px_40px_rgba(160,187,208,0.15)]' : 'bg-white/[0.05] hover:bg-white/[0.1] border-white/20 shadow-[0_10px_40px_rgba(255,255,255,0.03)]'}`}
+            className={`group relative w-full h-16 rounded-2xl backdrop-blur-[20px] border-[0.5px] flex items-center justify-center gap-3 transition-all duration-500 active:scale-[0.98] overflow-hidden mb-8 ${isLightTheme ? 'bg-[#C48766]/10 hover:bg-[#C48766]/20 border-[#C48766]/30 shadow-[0_10px_40px_rgba(196,135,102,0.15)]' : 'bg-white/[0.05] hover:bg-white/[0.1] border-white/20 shadow-[0_10px_40px_rgba(255,255,255,0.03)]'}`}
           >
-            <div className={`absolute inset-0 transition-transform duration-1000 translate-x-[-100%] group-hover:translate-x-[100%] ${isLightTheme ? 'bg-gradient-to-r from-transparent via-[#A0BBD0]/20 to-transparent' : 'bg-gradient-to-r from-transparent via-white/10 to-transparent'}`}></div>
-            <span className={`text-[13px] uppercase tracking-[0.2em] font-medium relative z-10 transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]' : 'text-white/90'}`}>
+            <div className={`absolute inset-0 transition-transform duration-1000 translate-x-[-100%] group-hover:translate-x-[100%] ${isLightTheme ? 'bg-gradient-to-r from-transparent via-[#C48766]/20 to-transparent' : 'bg-gradient-to-r from-transparent via-white/10 to-transparent'}`}></div>
+            <span className={`text-[13px] uppercase tracking-[0.2em] font-medium relative z-10 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]' : 'text-white/90'}`}>
               {CONFIG.ctaText}
             </span>
-            <ArrowRight className={`w-4 h-4 relative z-10 group-hover:translate-x-1 transition-all ${isLightTheme ? 'text-[#2B303A]/70' : 'text-white/70'}`} strokeWidth={1.5} />
+            <ArrowRight className={`w-4 h-4 relative z-10 group-hover:translate-x-1 transition-all ${isLightTheme ? 'text-[#4A302B]/70' : 'text-white/70'}`} strokeWidth={1.5} />
           </button>
 
           <div className="text-center">
-            <p className={`text-[10px] uppercase tracking-[0.3em] font-medium mb-3 transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/40' : 'text-white/30'}`}>
+            <p className={`text-[10px] uppercase tracking-[0.3em] font-medium mb-3 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/30'}`}>
               {CONFIG.footerText}
             </p>
             <div className="flex justify-center gap-6">
-              <a href={CONFIG.linkTelegram} target="_blank" rel="noreferrer" className={`text-[10px] tracking-widest uppercase cursor-pointer transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/60 hover:text-[#2B303A]' : 'text-white/50 hover:text-white'}`}>Telegram</a>
-              <a href={CONFIG.linkGithub} target="_blank" rel="noreferrer" className={`text-[10px] tracking-widest uppercase cursor-pointer transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/60 hover:text-[#2B303A]' : 'text-white/50 hover:text-white'}`}>GitHub</a>
+              <a href={CONFIG.linkTelegram} target="_blank" rel="noreferrer" className={`text-[10px] tracking-widest uppercase cursor-pointer transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/60 hover:text-[#4A302B]' : 'text-white/50 hover:text-white'}`}>Telegram</a>
+              <a href={CONFIG.linkGithub} target="_blank" rel="noreferrer" className={`text-[10px] tracking-widest uppercase cursor-pointer transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/60 hover:text-[#4A302B]' : 'text-white/50 hover:text-white'}`}>GitHub</a>
             </div>
           </div>
         </section>
@@ -593,26 +595,26 @@ export default function App() {
 
       {/* --- 6. REVIEW MODAL --- */}
       {isReviewModalOpen && (
-        <div className={`fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-md transition-all duration-700 ${isLightTheme ? 'bg-[#F2F5F8]/80' : 'bg-black/60'}`}>
-          <div className={`relative w-full max-w-sm border rounded-3xl p-6 shadow-2xl transition-colors duration-700 ${isLightTheme ? 'bg-[#F8FAFC] border-[#2B303A]/10' : 'bg-[#0a0a0a] border-white/10'}`}>
+        <div className={`fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-md transition-all duration-700 ${isLightTheme ? 'bg-[#EFECE8]/80' : 'bg-black/60'}`}>
+          <div className={`relative w-full max-w-sm border rounded-3xl p-6 shadow-2xl transition-colors duration-700 ${isLightTheme ? 'bg-[#FAF7F2] border-[#4A302B]/10' : 'bg-[#0a0a0a] border-white/10'}`}>
             <button
               onClick={() => {
                 triggerHaptic('impact', 'light');
                 setIsReviewModalOpen(false);
                 setTimeout(() => setIsReviewSubmitted(false), 300);
               }}
-              className={`absolute top-4 right-4 transition-colors ${isLightTheme ? 'text-[#2B303A]/40 hover:text-[#2B303A]' : 'text-white/40 hover:text-white'}`}
+              className={`absolute top-4 right-4 transition-colors ${isLightTheme ? 'text-[#4A302B]/40 hover:text-[#4A302B]' : 'text-white/40 hover:text-white'}`}
             >
               <X size={20} />
             </button>
 
             {isReviewSubmitted ? (
               <div className="flex flex-col items-center justify-center py-8 text-center gap-4">
-                <div className={`w-16 h-16 rounded-full border flex items-center justify-center mb-2 transition-colors duration-700 ${isLightTheme ? 'bg-[#A0BBD0]/10 border-[#A0BBD0]/30 shadow-[0_0_30px_rgba(160,187,208,0.1)]' : 'bg-white/5 border-white/10 shadow-[0_0_30px_rgba(255,255,255,0.05)]'}`}>
-                  <Sparkles className={isLightTheme ? 'text-[#A0BBD0]' : 'text-white/80'} size={28} />
+                <div className={`w-16 h-16 rounded-full border flex items-center justify-center mb-2 transition-colors duration-700 ${isLightTheme ? 'bg-[#C48766]/10 border-[#C48766]/30 shadow-[0_0_30px_rgba(196,135,102,0.1)]' : 'bg-white/5 border-white/10 shadow-[0_0_30px_rgba(255,255,255,0.05)]'}`}>
+                  <Sparkles className={isLightTheme ? 'text-[#C48766]' : 'text-white/80'} size={28} />
                 </div>
-                <h3 className={`text-xl font-medium tracking-wide transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]' : 'text-white'}`}>Спасибо!</h3>
-                <p className={`text-sm font-light leading-relaxed transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]/60' : 'text-white/50'}`}>
+                <h3 className={`text-xl font-medium tracking-wide transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>Спасибо!</h3>
+                <p className={`text-sm font-light leading-relaxed transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/60' : 'text-white/50'}`}>
                   Ваш отзыв успешно отправлен.<br/>Скоро он появится здесь.
                 </p>
                 <button
@@ -621,14 +623,14 @@ export default function App() {
                     setIsReviewModalOpen(false);
                     setTimeout(() => setIsReviewSubmitted(false), 300);
                   }}
-                  className={`mt-4 w-full py-3 border rounded-xl text-sm transition-colors ${isLightTheme ? 'bg-[#2B303A]/5 hover:bg-[#2B303A]/10 border-[#2B303A]/10 text-[#2B303A]' : 'bg-white/10 hover:bg-white/20 border-white/5 text-white'}`}
+                  className={`mt-4 w-full py-3 border rounded-xl text-sm transition-colors ${isLightTheme ? 'bg-[#4A302B]/5 hover:bg-[#4A302B]/10 border-[#4A302B]/10 text-[#4A302B]' : 'bg-white/10 hover:bg-white/20 border-white/5 text-white'}`}
                 >
                   Закрыть
                 </button>
               </div>
             ) : (
               <div className="flex flex-col gap-4">
-                <h3 className={`text-lg font-medium tracking-wide mb-2 text-center transition-colors duration-700 ${isLightTheme ? 'text-[#2B303A]' : 'text-white'}`}>Новый отзыв</h3>
+                <h3 className={`text-lg font-medium tracking-wide mb-2 text-center transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>Новый отзыв</h3>
 
                 <div className="flex gap-2 justify-center mb-2">
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -642,7 +644,7 @@ export default function App() {
                     >
                       <Star
                         size={32}
-                        className={star <= reviewForm.rating ? "text-[#A0BBD0] fill-[#A0BBD0] drop-shadow-[0_0_10px_rgba(160,187,208,0.3)]" : (isLightTheme ? "text-[#2B303A]/10" : "text-white/10")}
+                        className={star <= reviewForm.rating ? "text-[#C48766] fill-[#C48766] drop-shadow-[0_0_10px_rgba(196,135,102,0.3)]" : (isLightTheme ? "text-[#4A302B]/10" : "text-white/10")}
                       />
                     </button>
                   ))}
@@ -653,7 +655,7 @@ export default function App() {
                   placeholder="Ваше имя"
                   value={reviewForm.name}
                   onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
-                  className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none transition-colors ${isLightTheme ? 'bg-[#2B303A]/5 border-[#2B303A]/10 text-[#2B303A] placeholder-[#2B303A]/40 focus:border-[#2B303A]/30' : 'bg-white/5 border-white/10 text-white placeholder-white/30 focus:border-white/30'}`}
+                  className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none transition-colors ${isLightTheme ? 'bg-[#4A302B]/5 border-[#4A302B]/10 text-[#4A302B] placeholder-[#4A302B]/40 focus:border-[#4A302B]/30' : 'bg-white/5 border-white/10 text-white placeholder-white/30 focus:border-white/30'}`}
                 />
 
                 <textarea
@@ -661,7 +663,7 @@ export default function App() {
                   value={reviewForm.text}
                   onChange={(e) => setReviewForm({ ...reviewForm, text: e.target.value })}
                   rows={4}
-                  className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none resize-none transition-colors ${isLightTheme ? 'bg-[#2B303A]/5 border-[#2B303A]/10 text-[#2B303A] placeholder-[#2B303A]/40 focus:border-[#2B303A]/30' : 'bg-white/5 border-white/10 text-white placeholder-white/30 focus:border-white/30'}`}
+                  className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none resize-none transition-colors ${isLightTheme ? 'bg-[#4A302B]/5 border-[#4A302B]/10 text-[#4A302B] placeholder-[#4A302B]/40 focus:border-[#4A302B]/30' : 'bg-white/5 border-white/10 text-white placeholder-white/30 focus:border-white/30'}`}
                 />
 
                 <button
@@ -674,7 +676,7 @@ export default function App() {
                     setIsReviewSubmitted(true);
                     setReviewForm({ name: '', text: '', rating: 5 });
                   }}
-                  className={`w-full py-3 font-medium rounded-xl mt-2 transition-colors active:scale-[0.98] ${isLightTheme ? 'bg-[#2B303A] text-white hover:bg-[#2B303A]/90' : 'bg-white text-black hover:bg-white/90'}`}
+                  className={`w-full py-3 font-medium rounded-xl mt-2 transition-colors active:scale-[0.98] ${isLightTheme ? 'bg-[#4A302B] text-white hover:bg-[#4A302B]/90' : 'bg-white text-black hover:bg-white/90'}`}
                 >
                   Отправить
                 </button>
