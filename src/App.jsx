@@ -143,7 +143,7 @@ export default function App() {
       if (tg) {
         // Динамический отступ: pt-16 для браузера, pt-28 для Telegram
         if (tg.platform === 'unknown' || !tg.platform) {
-          setHeroPadding('pt-16');
+          setHeroPadding('pt-12');
         } else {
           setHeroPadding('pt-28');
         }
@@ -291,16 +291,16 @@ export default function App() {
     if (!cardRef.current || isHeroRevealed) return;
     const rect = cardRef.current.getBoundingClientRect();
     
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const clientX = e.clientX;
+    const clientY = e.clientY;
 
     const x = clientX - rect.left;
     const y = clientY - rect.top;
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    const rotateX = ((y - centerY) / centerY) * -15; 
-    const rotateY = ((x - centerX) / centerX) * 15;
+    const rotateX = ((y - centerY) / centerY) * -25; 
+    const rotateY = ((x - centerX) / centerX) * 25;
 
     setTilt({ rotateX, rotateY });
 
@@ -378,10 +378,17 @@ export default function App() {
 
           <div 
             ref={cardRef}
+            onPointerDown={(e) => {
+              e.currentTarget.setPointerCapture(e.pointerId);
+            }}
+            onPointerUp={(e) => {
+              e.currentTarget.releasePointerCapture(e.pointerId);
+              resetTilt();
+            }}
             onPointerMove={handleTiltMove}
             onPointerLeave={resetTilt}
             onPointerCancel={resetTilt}
-            className={`w-full relative touch-none transition-all duration-700 ease-out ${isHeroRevealed ? 'opacity-10 scale-95' : 'opacity-100 scale-100'}`}
+            className={`w-full relative touch-none transition-all ease-out ${(tilt.rotateX !== 0 || tilt.rotateY !== 0) ? 'duration-100' : 'duration-700'} ${isHeroRevealed ? 'opacity-10 scale-95' : 'opacity-100 scale-100'}`}
             style={{ 
               transform: `perspective(1000px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
               transformStyle: 'preserve-3d'
@@ -400,7 +407,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className={`mt-10 w-full flex flex-col items-center justify-center gap-3 transition-opacity duration-500 ${isHeroRevealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+          <div className={`mt-6 w-full flex flex-col items-center justify-center gap-3 transition-opacity duration-500 ${isHeroRevealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
              <div 
                className="flex flex-col items-center gap-3 cursor-pointer p-4 pointer-events-auto"
                onPointerDown={handleHeroHoldStart}
@@ -419,7 +426,7 @@ export default function App() {
         </section>
 
         {/* --- 2. THE KILLER FEATURE --- */}
-        <section className="flex flex-col gap-6">
+        <section className="flex flex-col gap-6 -mt-16">
           <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>The Killer Feature</h2>
           
           <div className="grid grid-cols-2 gap-4">
