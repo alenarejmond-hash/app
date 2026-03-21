@@ -124,18 +124,24 @@ export default function App() {
   const touchStartY = useRef(0);
   const touchEndX = useRef(0);
   const portfolioRef = useRef(null);
+  const isDraggingPortfolio = useRef(false);
 
   const handlePortfolioSwipe = () => {
     const swipeDistance = touchStartX.current - touchEndX.current;
-    // Порог свайпа уменьшен с 40 до 20 для мгновенной реакции
-    if (swipeDistance > 20) { 
+    if (swipeDistance > 40) { // Свайп влево
       triggerHaptic('selection');
       setPortfolioIndex(prev => Math.min(prev + 1, CONFIG.portfolio.length - 1));
-    } else if (swipeDistance < -20) { 
+    } else if (swipeDistance < -40) { // Свайп вправо
       triggerHaptic('selection');
       setPortfolioIndex(prev => Math.max(prev - 1, 0));
     }
   };
+
+  // State for Reviews (Desktop Drag)
+  const reviewsRef = useRef(null);
+  const isDraggingReviews = useRef(false);
+  const startXReviews = useRef(0);
+  const scrollLeftReviews = useRef(0);
 
   // Отступ для Hero-блока в зависимости от платформы
   const [heroPadding, setHeroPadding] = useState('pt-28');
@@ -392,7 +398,7 @@ export default function App() {
 
   return (
     <div 
-      className={`relative min-h-[100dvh] w-full font-sans overflow-x-clip overflow-y-auto select-none transition-colors duration-700 ${isLightTheme ? 'bg-[#EFECE8] text-[#4A302B] selection:bg-[#D89B93]/30' : 'bg-[#050505] text-white/90 selection:bg-white/20'}`}
+      className={`relative min-h-[100dvh] font-sans overflow-x-hidden select-none transition-colors duration-700 ${isLightTheme ? 'bg-[#EFECE8] text-[#4A302B] selection:bg-[#D89B93]/30' : 'bg-[#050505] text-white/90 selection:bg-white/20'}`}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onClick={() => triggerHaptic('impact', 'light')}
@@ -511,13 +517,32 @@ export default function App() {
             ref={portfolioRef}
             className="relative h-[280px] sm:h-[320px] w-full flex justify-center items-center touch-pan-y"
             style={{ perspective: '1200px', transformStyle: 'preserve-3d' }}
-            onTouchStart={(e) => {
-              touchStartX.current = e.touches[0].clientX;
-              touchStartY.current = e.touches[0].clientY;
-              touchEndX.current = e.touches[0].clientX; // сбрасываем, чтобы избежать ложных срабатываний
+            onPointerDown={(e) => {
+              isDraggingPortfolio.current = true;
+              touchStartX.current = e.clientX;
+              touchStartY.current = e.clientY;
+              touchEndX.current = e.clientX;
             }}
-            onTouchMove={(e) => touchEndX.current = e.touches[0].clientX}
-            onTouchEnd={handlePortfolioSwipe}
+            onPointerMove={(e) => {
+              if (isDraggingPortfolio.current) {
+                touchEndX.current = e.clientX;
+              }
+            }}
+            onPointerUp={() => {
+              if (isDraggingPortfolio.current) {
+                isDraggingPortfolio.current = false;
+                handlePortfolioSwipe();
+              }
+            }}
+            onPointerLeave={() => {
+              if (isDraggingPortfolio.current) {
+                isDraggingPortfolio.current = false;
+                handlePortfolioSwipe();
+              }
+            }}
+            onPointerCancel={() => {
+              isDraggingPortfolio.current = false;
+            }}
           >
             {CONFIG.portfolio.map((item, idx) => {
               const distance = idx - portfolioIndex;
@@ -555,6 +580,7 @@ export default function App() {
                 <div 
                   key={idx}
                   onClick={() => {
+                    if (Math.abs(touchStartX.current - touchEndX.current) > 20) return; // Prevent click on drag
                     if (isCenter) {
                       triggerHaptic('impact', 'light');
                       if (item.videoId) setActiveVideo(item.videoId);
@@ -569,7 +595,7 @@ export default function App() {
                     opacity,
                     pointerEvents,
                   }}
-                  className={`absolute w-[200px] sm:w-[240px] h-[250px] sm:h-[280px] border rounded-[2rem] p-6 flex flex-col justify-between cursor-pointer transition-all duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)] group ${isLightTheme ? 'bg-[#FAF7F2]/90 border-[#C48766]/30 shadow-[0_20px_50px_rgba(196,135,102,0.15)] backdrop-blur-xl' : 'bg-[#1a1a1a]/80 border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl'}`}
+                  className={`absolute w-[200px] sm:w-[240px] h-[250px] sm:h-[280px] border rounded-[2rem] p-6 flex flex-col justify-between cursor-pointer transition-all duration-[400ms] ease-out group ${isLightTheme ? 'bg-[#FAF7F2]/90 border-[#C48766]/30 shadow-[0_20px_50px_rgba(196,135,102,0.15)] backdrop-blur-xl' : 'bg-[#1a1a1a]/80 border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl'}`}
                 >
                   {/* Эффект Play поверх центральной карточки */}
                   {isCenter && (
@@ -702,7 +728,26 @@ export default function App() {
             </button>
           </div>
           
-          <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide w-auto -mx-6 px-6 sm:mx-0 sm:px-0">
+          <div 
+            ref={reviewsRef}
+            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide w-auto -mx-6 px-6 sm:mx-0 sm:px-0 cursor-grab active:cursor-grabbing"
+            onPointerDown={(e) => {
+              if (e.pointerType !== 'mouse') return;
+              isDraggingReviews.current = true;
+              startXReviews.current = e.pageX - reviewsRef.current.offsetLeft;
+              scrollLeftReviews.current = reviewsRef.current.scrollLeft;
+            }}
+            onPointerMove={(e) => {
+              if (!isDraggingReviews.current || e.pointerType !== 'mouse') return;
+              e.preventDefault();
+              const x = e.pageX - reviewsRef.current.offsetLeft;
+              const walk = (x - startXReviews.current) * 1.5;
+              reviewsRef.current.scrollLeft = scrollLeftReviews.current - walk;
+            }}
+            onPointerUp={() => { isDraggingReviews.current = false; }}
+            onPointerLeave={() => { isDraggingReviews.current = false; }}
+            onPointerCancel={() => { isDraggingReviews.current = false; }}
+          >
             {CONFIG.reviews.map((review, idx) => (
               <div 
                 key={idx}
@@ -907,10 +952,23 @@ export default function App() {
       )}
 
       <style dangerouslySetInnerHTML={{__html: `
+        html, body { 
+          position: static !important;
+          height: auto !important; 
+          min-height: 100vh !important; 
+          overflow-y: visible !important; 
+          overflow-x: hidden !important; 
+          overscroll-behavior-y: auto !important;
+          touch-action: auto !important;
+        }
+        #root {
+          display: block !important;
+          height: auto !important;
+          min-height: 100vh !important;
+          overflow: visible !important;
+        }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        html, body { overflow-y: auto !important; min-height: 100%; }
-        body { overscroll-behavior-y: none; }
       `}} />
     </div>
   );
