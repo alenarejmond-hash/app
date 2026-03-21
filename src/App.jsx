@@ -121,7 +121,9 @@ export default function App() {
   // State for Portfolio Carousel (Cover Flow)
   const [portfolioIndex, setPortfolioIndex] = useState(0);
   const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
   const touchEndX = useRef(0);
+  const portfolioRef = useRef(null);
 
   const handlePortfolioSwipe = () => {
     const swipeDistance = touchStartX.current - touchEndX.current;
@@ -215,6 +217,24 @@ export default function App() {
     } catch (error) {
       console.error('Telegram API Error:', error);
     }
+  }, []);
+
+  // 1.5 Блокировка вертикального скролла ПРИ горизонтальном свайпе карточек
+  useEffect(() => {
+    const el = portfolioRef.current;
+    if (!el) return;
+    const handleTouchMove = (e) => {
+      if (!touchStartX.current || !touchStartY.current) return;
+      const deltaX = Math.abs(e.touches[0].clientX - touchStartX.current);
+      const deltaY = Math.abs(e.touches[0].clientY - touchStartY.current);
+      // Если движение пальца больше по горизонтали, чем по вертикали — блокируем скролл страницы
+      if (deltaX > deltaY && deltaX > 3) {
+        if (e.cancelable) e.preventDefault();
+      }
+    };
+    // passive: false обязательно, чтобы работал preventDefault()
+    el.addEventListener('touchmove', handleTouchMove, { passive: false });
+    return () => el.removeEventListener('touchmove', handleTouchMove);
   }, []);
 
   // 2. Canvas Engine
@@ -438,7 +458,7 @@ export default function App() {
             onPointerMove={handleTiltMove}
             onPointerLeave={resetTilt}
             onPointerCancel={resetTilt}
-            className={`w-full relative touch-none transition-all ease-out ${(tilt.rotateX !== 0 || tilt.rotateY !== 0) ? 'duration-100' : 'duration-700'} ${isHeroRevealed ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}
+            className={`w-full relative touch-pan-y transition-all ease-out ${(tilt.rotateX !== 0 || tilt.rotateY !== 0) ? 'duration-100' : 'duration-700'} ${isHeroRevealed ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}
             style={{ 
               transform: `perspective(1000px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
               transformStyle: 'preserve-3d'
@@ -459,7 +479,7 @@ export default function App() {
 
           <div className={`mt-6 w-full flex flex-col items-center justify-center gap-3 transition-opacity duration-500 ${isHeroRevealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
              <div 
-               className="flex flex-col items-center gap-3 cursor-pointer p-4 pointer-events-auto touch-none"
+               className="flex flex-col items-center gap-3 cursor-pointer p-4 pointer-events-auto touch-pan-y"
                style={{ WebkitTouchCallout: 'none' }}
                onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); }}
                onPointerDown={handleHeroHoldStart}
@@ -487,10 +507,12 @@ export default function App() {
           </div>
           
           <div 
+            ref={portfolioRef}
             className="relative h-[280px] sm:h-[320px] w-full flex justify-center items-center touch-pan-y"
             style={{ perspective: '1200px', transformStyle: 'preserve-3d' }}
             onTouchStart={(e) => {
               touchStartX.current = e.touches[0].clientX;
+              touchStartY.current = e.touches[0].clientY;
               touchEndX.current = e.touches[0].clientX; // сбрасываем, чтобы избежать ложных срабатываний
             }}
             onTouchMove={(e) => touchEndX.current = e.touches[0].clientX}
@@ -546,7 +568,7 @@ export default function App() {
                     opacity,
                     pointerEvents,
                   }}
-                  className={`absolute w-[200px] sm:w-[240px] h-[250px] sm:h-[280px] border rounded-[2rem] p-6 flex flex-col justify-between cursor-pointer transition-all duration-[800ms] ease-[cubic-bezier(0.23,1,0.32,1)] group ${isLightTheme ? 'bg-[#FAF7F2]/90 border-[#C48766]/30 shadow-[0_20px_50px_rgba(196,135,102,0.15)] backdrop-blur-xl' : 'bg-[#1a1a1a]/80 border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl'}`}
+                  className={`absolute w-[200px] sm:w-[240px] h-[250px] sm:h-[280px] border rounded-[2rem] p-6 flex flex-col justify-between cursor-pointer transition-all duration-1000 ease-[cubic-bezier(0.2,0.8,0.2,1)] group ${isLightTheme ? 'bg-[#FAF7F2]/90 border-[#C48766]/30 shadow-[0_20px_50px_rgba(196,135,102,0.15)] backdrop-blur-xl' : 'bg-[#1a1a1a]/80 border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl'}`}
                 >
                   {/* Эффект Play поверх центральной карточки */}
                   {isCenter && (
@@ -588,7 +610,7 @@ export default function App() {
         <section className="flex flex-col gap-6">
           <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>Инвестиции</h2>
           
-          <div className="relative h-[440px] w-full flex justify-center items-start perspective-1000 touch-none">
+          <div className="relative h-[440px] w-full flex justify-center items-start perspective-1000 touch-pan-y">
             {CONFIG.tariffs.map((tariff) => {
               const isActive = activeTariff === tariff.id;
               const isBase = tariff.id === 'base';
@@ -841,24 +863,14 @@ export default function App() {
               triggerHaptic('impact', 'light');
               setActiveVideo(null);
             }}
-            className={`absolute ${isTelegram ? 'top-20' : 'top-6 sm:top-8'} right-6 sm:right-8 z-[110] w-12 h-12 rounded-full flex items-center justify-center border backdrop-blur-md transition-all hover:scale-110 active:scale-95 shadow-xl ${isLightTheme ? 'bg-white/90 border-[#C48766]/30 text-[#4A302B] shadow-[0_10px_30px_rgba(196,135,102,0.2)]' : 'bg-white/10 border-white/20 text-white hover:bg-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)]'}`}
+            className={`absolute ${isTelegram ? 'top-28' : 'top-6 sm:top-8'} right-6 sm:right-8 z-[110] w-12 h-12 rounded-full flex items-center justify-center border backdrop-blur-md transition-all hover:scale-110 active:scale-95 shadow-xl ${isLightTheme ? 'bg-white/90 border-[#C48766]/30 text-[#4A302B] shadow-[0_10px_30px_rgba(196,135,102,0.2)]' : 'bg-white/10 border-white/20 text-white hover:bg-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)]'}`}
           >
             <X size={24} />
           </button>
 
-          {/* Обёртка для позиционирования подсказки относительно телефона */}
+          {/* Обёртка для позиционирования телефона */}
           <div className="relative flex justify-center items-center">
             
-            {/* Подсказка для качества видео (стрелочка) */}
-            <div className="absolute -top-14 -right-2 sm:-right-8 z-[120] flex flex-col items-end animate-bounce drop-shadow-xl pointer-events-none">
-              <div className={`px-3 py-1.5 rounded-xl backdrop-blur-md border text-[10px] sm:text-[11px] font-medium tracking-wide shadow-lg ${isLightTheme ? 'bg-white/90 border-[#C48766]/30 text-[#4A302B]' : 'bg-black/80 border-white/20 text-white'}`}>
-                Качество видео поменяй здесь
-              </div>
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className={`mt-1 mr-8 ${isLightTheme ? 'text-[#C48766]' : 'text-white'}`}>
-                <path d="M19 5L5 19M5 19V10M5 19H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-
             {/* Виртуальный iPhone (Apple Vibe) */}
             <div className={`relative w-[300px] sm:w-[340px] aspect-[9/19.5] max-h-[85vh] rounded-[3rem] sm:rounded-[3.5rem] border-[10px] sm:border-[14px] overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.5)] animate-in zoom-in-95 duration-500 transition-colors ${isLightTheme ? 'bg-black border-[#dcd9d4] shadow-[0_0_50px_rgba(196,135,102,0.3)]' : 'bg-black border-[#1f1f1f] shadow-[0_0_50px_rgba(255,255,255,0.05)]'}`}>
               
