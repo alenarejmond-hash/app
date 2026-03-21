@@ -347,7 +347,7 @@ export default function App() {
       <div className="relative z-10 w-full max-w-[500px] mx-auto flex flex-col px-6 pt-4 pb-8 gap-24">
         
         {/* --- 1. HERO --- */}
-        <section className="relative min-h-[75vh] flex flex-col pt-28">
+        <section className="relative flex flex-col pt-28">
           <header className={`flex items-center justify-between mb-5 ml-2 transition-opacity duration-500 ${isHeroRevealed ? 'opacity-0' : 'opacity-100'}`}>
             <div className={`flex items-center gap-2 ${isLightTheme ? 'text-[#4A302B]/60' : 'text-white/50'}`}>
               <Fingerprint className="w-4 h-4" strokeWidth={1.5} />
@@ -368,11 +368,10 @@ export default function App() {
 
           <div 
             ref={cardRef}
-            onMouseMove={handleTiltMove}
-            onMouseLeave={resetTilt}
-            onTouchMove={handleTiltMove}
-            onTouchEnd={resetTilt}
-            className={`w-full relative transition-all duration-700 ease-out ${isHeroRevealed ? 'opacity-10 scale-95' : 'opacity-100 scale-100'}`}
+            onPointerMove={handleTiltMove}
+            onPointerLeave={resetTilt}
+            onPointerCancel={resetTilt}
+            className={`w-full relative touch-none transition-all duration-700 ease-out ${isHeroRevealed ? 'opacity-10 scale-95' : 'opacity-100 scale-100'}`}
             style={{ 
               transform: `perspective(1000px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
               transformStyle: 'preserve-3d'
