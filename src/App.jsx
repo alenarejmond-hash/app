@@ -12,7 +12,7 @@ const CONFIG = {
   heroPhoto: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg",
   
   // 2. Имя в самом верху (статус-бар)
-  headerName: "DESIGN & CODE BY ELENA SOTNIKOVA",
+  headerName: "DESIGN & CODE BY ELENA SOTNIKOVA тест",
 
   // 3. Текст на главном экране (Манифест)
   heroTitle1: "Elena",
