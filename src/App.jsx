@@ -184,10 +184,6 @@ export default function App() {
     try {
       const tg = window.Telegram?.WebApp;
       if (tg) {
-        if (typeof tg.ready === 'function') tg.ready();
-        if (typeof tg.expand === 'function') tg.expand();
-        if (typeof tg.disableVerticalSwipes === 'function') tg.disableVerticalSwipes();
-
         // Динамический отступ: pt-16 для браузера, pt-28 для Telegram
         if (tg.platform === 'unknown' || !tg.platform) {
           setHeroPadding('pt-10');
@@ -953,7 +949,6 @@ export default function App() {
       <style dangerouslySetInnerHTML={{__html: `
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        body { overscroll-behavior-y: none; touch-action: pan-x pan-y; }
       `}} />
     </div>
   );
