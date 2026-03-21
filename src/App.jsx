@@ -38,6 +38,15 @@ const CONFIG = {
     { title: "Fire Show", desc: "Неоновые частицы & WebGL", icon: Flame },
   ],
 
+  // 6.5. ФОТО ДЛЯ ЖУРНАЛА ПОРТФОЛИО (КНИГА) 
+  // Вставь сюда ссылки на свои работы. Можно добавлять сколько угодно!
+  portfolioGallery: [
+    "https://images.unsplash.com/photo-1618220179428-22790b46a0eb?q=80&w=1000&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=1000&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?q=80&w=1000&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?q=80&w=1000&auto=format&fit=crop"
+  ],
+
   // 7. Вайбы (Калькулятор вайбов)
   niches: {
     psychologist: { 
@@ -95,6 +104,11 @@ export default function App() {
   const [isReviewSubmitted, setIsReviewSubmitted] = useState(false);
   const [reviewForm, setReviewForm] = useState({ name: '', text: '', rating: 5 });
 
+  // State for Magazine/Portfolio Flipbook
+  const [isMagOpen, setIsMagOpen] = useState(false);
+  const [currentMagPage, setCurrentMagPage] = useState(0);
+  const [magHoverState, setMagHoverState] = useState('none');
+
   // Отступ для Hero-блока в зависимости от платформы
   const [heroPadding, setHeroPadding] = useState('pt-28');
 
@@ -143,7 +157,7 @@ export default function App() {
       if (tg) {
         // Динамический отступ: pt-16 для браузера, pt-28 для Telegram
         if (tg.platform === 'unknown' || !tg.platform) {
-          setHeroPadding('pt-12');
+          setHeroPadding('pt-10');
         } else {
           setHeroPadding('pt-28');
         }
@@ -353,6 +367,15 @@ export default function App() {
       {/* Фиксированный Canvas на фоне */}
       <canvas ref={canvasRef} className="fixed inset-0 z-[1] pointer-events-none opacity-80" />
 
+
+      {/*
+        ========================================================================================
+        👇 НАСТРОЙКА РАССТОЯНИЙ МЕЖДУ БЛОКАМИ 👇
+        В строке ниже класс "gap-24" (в самом конце) задает расстояние между всеми основными секциями!
+        - Если хочешь увеличить расстояние: поменяй gap-24 на gap-32 (или больше)
+        - Если хочешь уменьшить расстояние: поменяй gap-24 на gap-16 или gap-12
+        ========================================================================================
+      */}
       {/* Скроллируемый контент */}
       <div className="relative z-10 w-full max-w-[500px] mx-auto flex flex-col px-6 pt-4 pb-8 gap-24">
         
@@ -425,9 +448,9 @@ export default function App() {
           </div>
         </section>
 
-        {/* --- 2. THE KILLER FEATURE --- */}
+        {/* --- 2. ЦЕННОСТЬ --- */}
         <section className="flex flex-col gap-6 -mt-16">
-          <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>The Killer Feature</h2>
+          <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>Ценность</h2>
           
           <div className="grid grid-cols-2 gap-4">
             <div className={`border rounded-2xl p-5 flex flex-col gap-4 opacity-60 grayscale transition-colors duration-700 ${isLightTheme ? 'bg-[#4A302B]/[0.02] border-[#4A302B]/10' : 'bg-white/[0.02] border-white/5'}`}>
@@ -459,6 +482,19 @@ export default function App() {
               </div>
             </div>
           </div>
+
+          {/* 👇 Кнопка Журнала Портфолио 👇 */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              triggerHaptic('impact', 'medium');
+              setIsMagOpen(true);
+            }}
+            className={`mt-2 w-full h-14 rounded-2xl backdrop-blur-md border-[0.5px] flex items-center justify-center gap-3 transition-all duration-500 active:scale-[0.98] ${isLightTheme ? 'bg-[#C48766]/10 hover:bg-[#C48766]/20 border-[#C48766]/30 shadow-[0_10px_30px_rgba(196,135,102,0.1)] text-[#4A302B]' : 'bg-white/5 hover:bg-white/10 border-white/20 shadow-[0_10px_30px_rgba(255,255,255,0.02)] text-white'}`}
+          >
+            <Camera className={`w-5 h-5 ${isLightTheme ? 'text-[#C48766]' : 'text-white/70'}`} strokeWidth={1.5} />
+            <span className="text-[12px] uppercase tracking-[0.2em] font-medium">Смотреть портфолио</span>
+          </button>
         </section>
 
         {/* --- 3. MY WORLD --- */}
@@ -698,6 +734,161 @@ export default function App() {
                 </button>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* --- 7. ПОРТФОЛИО ЖУРНАЛ (MAGAZINE MODAL) --- */}
+      {isMagOpen && (
+        <div className={`fixed inset-0 z-[200] flex flex-col transition-colors duration-700 ${isLightTheme ? 'bg-[#EFECE8]' : 'bg-[#050505]'}`}>
+          <div className="flex justify-between items-center p-6 pb-2 relative z-10">
+            <span className={`text-[10px] uppercase tracking-[0.3em] font-medium ${isLightTheme ? 'text-[#4A302B]/60' : 'text-white/50'}`}>
+              Страница {currentMagPage + 1} / {CONFIG.portfolioGallery.length}
+            </span>
+            <button
+              onClick={() => {
+                triggerHaptic('impact', 'light');
+                setIsMagOpen(false);
+                setTimeout(() => {
+                  setCurrentMagPage(0);
+                  setMagHoverState('none');
+                }, 500); 
+              }}
+              className={`w-10 h-10 flex items-center justify-center rounded-full backdrop-blur-md border transition-colors ${isLightTheme ? 'bg-[#4A302B]/5 border-[#4A302B]/10 text-[#4A302B]' : 'bg-white/5 border-white/10 text-white'}`}
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          <div 
+            className="flex-1 relative flex items-center justify-center p-6 overflow-hidden" 
+            style={{ perspective: '2000px' }}
+          >
+            <div className="relative w-full max-w-sm aspect-[3/4]" style={{ transformStyle: 'preserve-3d' }}>
+              {CONFIG.portfolioGallery.map((img, i) => {
+                const isPast = i < currentMagPage;
+                const isCurrent = i === currentMagPage;
+                const isNext = i === currentMagPage + 1;
+                
+                // Высчитываем премиальную 3D трансформацию
+                let pageTransform = 'rotateY(0deg) scale(0.95) translateZ(-40px)'; 
+                let pageOpacity = 0;
+
+                if (isPast) {
+                  pageTransform = 'rotateY(-150deg) scale(0.95) translateZ(20px)';
+                  pageOpacity = 0; 
+                } else if (isCurrent) {
+                  if (magHoverState === 'right') {
+                    pageTransform = 'rotateY(-15deg) scale(1) translateZ(10px) rotateX(2deg)';
+                  } else if (magHoverState === 'left' && i > 0) {
+                    pageTransform = 'rotateY(8deg) scale(1) translateZ(10px) rotateX(-2deg)';
+                  } else {
+                    pageTransform = 'rotateY(0deg) scale(1) translateZ(0px)';
+                  }
+                  pageOpacity = 1;
+                } else if (isNext) {
+                  pageTransform = 'rotateY(0deg) scale(0.98) translateZ(-20px)';
+                  pageOpacity = 1;
+                }
+
+                return (
+                  <div
+                    key={i}
+                    className={`absolute inset-0 rounded-r-3xl rounded-l-md shadow-2xl overflow-hidden border transition-all ease-out border-white/10
+                      ${isPast ? 'pointer-events-none duration-[1200ms]' : ''}
+                      ${isCurrent ? 'pointer-events-auto duration-700' : 'pointer-events-none duration-1000'}
+                    `}
+                    style={{
+                      transformOrigin: 'left center',
+                      transform: pageTransform,
+                      opacity: pageOpacity,
+                      zIndex: CONFIG.portfolioGallery.length - i,
+                    }}
+                  >
+                    <img src={img} alt={`Portfolio ${i + 1}`} className="w-full h-full object-cover" />
+                    
+                    {/* Тень у корешка книги (слева) */}
+                    <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-black/80 via-black/20 to-transparent pointer-events-none"></div>
+                    
+                    {/* Динамический блик глянца (пробегает при наведении) */}
+                    <div 
+                      className={`absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent pointer-events-none transition-transform duration-700
+                        ${isCurrent && magHoverState === 'right' ? 'translate-x-1/2 opacity-100' : 'translate-x-[-100%] opacity-0'}`}
+                    ></div>
+
+                    {/* Тень перелистывания (сгущается при повороте) */}
+                    <div 
+                      className="absolute inset-0 bg-gradient-to-l from-black/60 to-transparent pointer-events-none transition-opacity duration-[1200ms]"
+                      style={{ opacity: isPast ? 1 : 0 }}
+                    ></div>
+
+                    {/* ПРЕМИАЛЬНЫЙ ЗАГИБ УГЛА (появляется при наведении) */}
+                    {isCurrent && (
+                      <div 
+                        className={`absolute bottom-0 right-0 w-24 h-24 pointer-events-none transition-all duration-700 transform origin-bottom-right
+                          ${magHoverState === 'right' ? 'opacity-100 scale-100 translate-x-0 translate-y-0' : 'opacity-0 scale-50 translate-x-4 translate-y-4'}`}
+                      >
+                        {/* Имитация отвернутой назад глянцевой бумаги */}
+                        <div className="absolute bottom-0 right-0 w-full h-full bg-gradient-to-tl from-white/40 via-white/10 to-transparent backdrop-blur-md rounded-tl-[80px] shadow-[-10px_-10px_20px_rgba(0,0,0,0.5)] border-t border-l border-white/30"></div>
+                        {/* Внутренняя тень самого загиба */}
+                        <div className="absolute bottom-0 right-0 w-full h-full bg-gradient-to-br from-black/40 to-transparent rounded-tl-[80px] mix-blend-overlay"></div>
+                      </div>
+                    )}
+                    
+                    {/* Зоны клика и наведения для листания */}
+                    {isCurrent && (
+                      <>
+                        <div 
+                          className="absolute inset-y-0 left-0 w-1/3 z-10 flex items-center pl-4 cursor-pointer"
+                          onMouseEnter={() => setMagHoverState('left')}
+                          onMouseLeave={() => setMagHoverState('none')}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (i > 0) {
+                              triggerHaptic('selection');
+                              setMagHoverState('none');
+                              setCurrentMagPage(p => p - 1);
+                            }
+                          }}
+                        >
+                           {i > 0 && (
+                             <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${magHoverState === 'left' ? 'bg-white/20 text-white scale-110 backdrop-blur-md' : 'bg-black/20 text-white/50 backdrop-blur-sm'}`}>
+                               <ArrowRight className="rotate-180" size={16}/>
+                             </div>
+                           )}
+                        </div>
+                        
+                        <div 
+                          className="absolute inset-y-0 right-0 w-2/3 z-10 flex items-center justify-end pr-4 cursor-pointer"
+                          onMouseEnter={() => setMagHoverState('right')}
+                          onMouseLeave={() => setMagHoverState('none')}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (i < CONFIG.portfolioGallery.length - 1) {
+                              triggerHaptic('selection');
+                              setMagHoverState('none');
+                              setCurrentMagPage(p => p + 1);
+                            }
+                          }}
+                        >
+                          {i < CONFIG.portfolioGallery.length - 1 && (
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${magHoverState === 'right' ? 'bg-white/20 text-white scale-110 backdrop-blur-md' : 'bg-black/20 text-white/50 backdrop-blur-sm'}`}>
+                              <ArrowRight size={16}/>
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          
+          <div className="p-6 text-center relative z-10">
+            <p className={`text-[11px] uppercase tracking-[0.2em] font-medium opacity-50 ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>
+              Нажимай на края страниц, чтобы листать
+            </p>
           </div>
         </div>
       )}
