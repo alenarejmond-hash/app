@@ -32,6 +32,13 @@ const CONFIG = {
   linkGithub: "https://github.com/alenarejmond-hash", // Вставьте свою ссылку на GitHub
 
   // 6. Галерея (Мои работы) - ТЕПЕРЬ С ПОДДЕРЖКОЙ ВИДЕО!
+  // 👇 ПОДСКАЗКА ОТ ИИ:
+  // title - Название проекта на карточке (например: "Шоурил 2024")
+  // desc - Короткое описание под названием (например: "Главное видео")
+  // icon - Иконка проекта (Можно писать: Compass, Heart, Flame, Star, Camera, Sparkles)
+  // videoId - ID видео на RuTube. Это набор букв и цифр из ссылки!
+  //           Например, в ссылке rutube.ru/video/611bc8031620c28329867b1943f4d0d9/ --> ID это 611bc8031620c28329867b1943f4d0d9
+  // Если видео пока нет, оставьте "demo1", "demo2" и т.д., чтобы была красивая заглушка.
   portfolio: [
     { title: "Шоурил 2024", desc: "Главное видео", icon: Compass, videoId: "611bc8031620c28329867b1943f4d0d9" },
     { title: "Психолог", desc: "Скоро...", icon: Heart, videoId: "demo1" },
@@ -42,9 +49,15 @@ const CONFIG = {
   ],
 
   // 7. Инвестиции (Тарифы) в стиле Apple Wallet
+  // 👇 ПОДСКАЗКА ОТ ИИ:
+  // id - НЕ ТРОГАТЬ! (отвечает за магию анимаций)
+  // title - Крупное название тарифа
+  // subtitle - Мелкий текст над названием
+  // price - Строка с ценой
+  // features - Список того, что входит в тариф. Каждая фраза пишется в одинарных кавычках '...' через запятую!
   tariffs: [
     {
-      id: 'base',
+      id: 'base', 
       title: 'Signature Base',
       subtitle: 'Авторская архитектура',
       price: 'от 50 000 ₽',
@@ -482,34 +495,40 @@ export default function App() {
         </section>
 
         {/* --- 3. ПОРТФОЛИО --- */}
-        <section className="flex flex-col gap-6 w-full -mx-6 px-6 sm:mx-0 sm:px-0">
+        <section className="flex flex-col gap-6 w-full">
           <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>Портфолио</h2>
           
-          <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide w-auto -mx-6 px-6 sm:mx-0 sm:px-0">
-            {CONFIG.portfolio.map((item, idx) => (
-              <div 
-                key={idx}
-                onClick={() => {
-                  triggerHaptic('impact', 'light');
-                  if (item.videoId) setActiveVideo(item.videoId);
-                }}
-                className={`relative min-w-[240px] h-[160px] border rounded-3xl p-6 snap-center flex flex-col justify-between cursor-pointer transition-all duration-700 active:scale-95 group overflow-hidden ${isLightTheme ? 'bg-[#4A302B]/[0.02] border-[#4A302B]/10 hover:bg-[#4A302B]/[0.05]' : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06]'}`}
-              >
-                {/* Эффект Play поверх карточки при наведении */}
-                <div className={`absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 ${isLightTheme ? 'bg-[#EFECE8]/60 backdrop-blur-sm' : 'bg-black/40 backdrop-blur-[2px]'}`}>
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md border shadow-lg transition-transform group-hover:scale-110 ${isLightTheme ? 'bg-[#C48766]/20 border-[#C48766]/40 text-[#4A302B]' : 'bg-white/20 border-white/30 text-white'}`}>
-                    <Play size={20} className="ml-1" fill="currentColor" />
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full">
+            {CONFIG.portfolio.map((item, idx) => {
+              const isFeatured = idx === 0;
+              return (
+                <div 
+                  key={idx}
+                  onClick={() => {
+                    triggerHaptic('impact', 'light');
+                    if (item.videoId) setActiveVideo(item.videoId);
+                  }}
+                  className={`relative border rounded-3xl p-5 sm:p-6 flex flex-col justify-between cursor-pointer transition-all duration-700 active:scale-95 group overflow-hidden ${
+                    isFeatured ? 'col-span-2 h-[220px] sm:h-[260px]' : 'col-span-1 h-[150px] sm:h-[180px]'
+                  } ${isLightTheme ? 'bg-[#4A302B]/[0.02] border-[#4A302B]/10 hover:bg-[#4A302B]/[0.05]' : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06]'}`}
+                >
+                  {/* Эффект Play поверх карточки при наведении */}
+                  <div className={`absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 ${isLightTheme ? 'bg-[#EFECE8]/60 backdrop-blur-sm' : 'bg-black/40 backdrop-blur-[2px]'}`}>
+                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center backdrop-blur-md border shadow-lg transition-transform group-hover:scale-110 ${isLightTheme ? 'bg-[#C48766]/20 border-[#C48766]/40 text-[#4A302B]' : 'bg-white/20 border-white/30 text-white'}`}>
+                      <Play size={isFeatured ? 24 : 20} className="ml-1" fill="currentColor" />
+                    </div>
+                  </div>
+
+                  <div className={`relative z-0 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/50'}`}>
+                    <item.icon size={isFeatured ? 32 : 24} strokeWidth={1.5} />
+                  </div>
+                  <div className="relative z-0">
+                    <h3 className={`font-medium tracking-wide transition-colors duration-700 ${isFeatured ? 'text-xl sm:text-2xl mb-1' : 'text-sm'} ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>{item.title}</h3>
+                    <p className={`font-light transition-colors duration-700 ${isFeatured ? 'text-xs sm:text-sm' : 'text-[10px] sm:text-[11px] mt-1'} ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/40'}`}>{item.desc}</p>
                   </div>
                 </div>
-
-                <div className={`relative z-0 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/50'}`}><item.icon size={24} /></div>
-                <div className="relative z-0">
-                  <h3 className={`text-sm font-medium tracking-wide transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>{item.title}</h3>
-                  <p className={`text-[11px] mt-1 font-light transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/40'}`}>{item.desc}</p>
-                </div>
-              </div>
-            ))}
-            <div className="min-w-[20px] h-1"></div>
+              );
+            })}
           </div>
         </section>
 
@@ -762,24 +781,36 @@ export default function App() {
 
       {/* --- 7. VIDEO MODAL (RUTUBE) --- */}
       {activeVideo && (
-        <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 backdrop-blur-[30px] transition-all duration-700 ${isLightTheme ? 'bg-[#EFECE8]/70' : 'bg-black/70'}`}>
-          <div className={`relative h-[80vh] sm:h-[85vh] max-h-[850px] aspect-[9/16] max-w-[calc(100vw-2rem)] rounded-[2rem] sm:rounded-[2.5rem] border overflow-hidden shadow-2xl animate-in zoom-in-95 duration-500 transition-colors ${isLightTheme ? 'bg-[#FAF7F2] border-[#C48766]/30 shadow-[0_0_50px_rgba(196,135,102,0.15)]' : 'bg-[#0a0a0a] border-white/20 shadow-[0_0_50px_rgba(255,255,255,0.05)]'}`}>
+        <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-[30px] transition-all duration-700 ${isLightTheme ? 'bg-[#EFECE8]/80' : 'bg-black/80'}`}>
+          
+          {/* Кнопка закрытия (вынесена за пределы телефона) */}
+          <button
+            onClick={() => {
+              triggerHaptic('impact', 'light');
+              setActiveVideo(null);
+            }}
+            className={`absolute top-6 right-6 sm:top-8 sm:right-8 z-[110] w-12 h-12 rounded-full flex items-center justify-center border backdrop-blur-md transition-all hover:scale-110 active:scale-95 shadow-xl ${isLightTheme ? 'bg-white/90 border-[#C48766]/30 text-[#4A302B] shadow-[0_10px_30px_rgba(196,135,102,0.2)]' : 'bg-white/10 border-white/20 text-white hover:bg-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)]'}`}
+          >
+            <X size={24} />
+          </button>
 
-            <button
-              onClick={() => {
-                triggerHaptic('impact', 'light');
-                setActiveVideo(null);
-              }}
-              className={`absolute top-4 right-4 z-20 w-10 h-10 rounded-full flex items-center justify-center border backdrop-blur-md transition-all hover:scale-110 active:scale-95 ${isLightTheme ? 'bg-[#EFECE8]/80 border-[#4A302B]/20 text-[#4A302B]/60 hover:text-[#4A302B]' : 'bg-black/50 border-white/20 text-white/60 hover:text-white hover:bg-black/80'}`}
-            >
-              <X size={20} />
-            </button>
+          {/* Виртуальный iPhone (Apple Vibe) */}
+          <div className={`relative w-[300px] sm:w-[340px] aspect-[9/19.5] max-h-[85vh] rounded-[3rem] sm:rounded-[3.5rem] border-[10px] sm:border-[14px] overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.5)] animate-in zoom-in-95 duration-500 transition-colors ${isLightTheme ? 'bg-black border-[#dcd9d4] shadow-[0_0_50px_rgba(196,135,102,0.3)]' : 'bg-black border-[#1f1f1f] shadow-[0_0_50px_rgba(255,255,255,0.05)]'}`}>
+            
+            {/* Dynamic Island (Челка iPhone) */}
+            <div className="absolute top-2 left-1/2 -translate-x-1/2 w-[90px] h-[26px] bg-black rounded-full z-30 shadow-[inset_0_0_2px_rgba(255,255,255,0.15)] flex justify-end items-center px-2">
+              {/* Глазок камеры */}
+              <div className="w-2.5 h-2.5 rounded-full bg-[#0a0a0a] border border-[#222]"></div>
+            </div>
+
+            {/* Блики на стекле смартфона */}
+            <div className="absolute inset-0 z-20 pointer-events-none rounded-[2.5rem] shadow-[inset_0_0_10px_rgba(255,255,255,0.1)]"></div>
 
             {activeVideo?.startsWith('demo') ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
-                <Play size={48} className={`mb-4 opacity-20 ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`} />
-                <p className={`text-lg font-medium tracking-wide ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>Скоро здесь будет новое видео</p>
-                <p className={`text-sm mt-2 ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/50'}`}>Добавьте ID видео с RuTube в настройки (CONFIG)</p>
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-[#0a0a0a]">
+                <Play size={48} className="mb-4 opacity-20 text-white" />
+                <p className="text-lg font-medium tracking-wide text-white">Скоро здесь будет новое видео</p>
+                <p className="text-sm mt-2 text-white/50">Добавьте ID видео с RuTube в настройки (CONFIG)</p>
               </div>
             ) : (
               <iframe
@@ -789,7 +820,7 @@ export default function App() {
                 frameBorder="0"
                 allow="clipboard-write; autoplay"
                 allowFullScreen
-                className="absolute inset-0 w-full h-full z-10"
+                className="absolute inset-0 w-full h-full z-10 pt-[15px] scale-[1.02] bg-black"
               ></iframe>
             )}
           </div>
