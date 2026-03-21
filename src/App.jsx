@@ -95,6 +95,9 @@ export default function App() {
   const [isReviewSubmitted, setIsReviewSubmitted] = useState(false);
   const [reviewForm, setReviewForm] = useState({ name: '', text: '', rating: 5 });
 
+  // Отступ для Hero-блока в зависимости от платформы
+  const [heroPadding, setHeroPadding] = useState('pt-28');
+
   // 0.0 Блокировка Pinch-to-Zoom
   useEffect(() => {
     const preventZoom = (e) => {
@@ -138,6 +141,13 @@ export default function App() {
     try {
       const tg = window.Telegram?.WebApp;
       if (tg) {
+        // Динамический отступ: pt-16 для браузера, pt-28 для Telegram
+        if (tg.platform === 'unknown' || !tg.platform) {
+          setHeroPadding('pt-16');
+        } else {
+          setHeroPadding('pt-28');
+        }
+
         if (typeof tg.ready === 'function') tg.ready();
         if (typeof tg.expand === 'function') tg.expand();
         if (typeof tg.requestFullscreen === 'function') tg.requestFullscreen();
@@ -347,7 +357,7 @@ export default function App() {
       <div className="relative z-10 w-full max-w-[500px] mx-auto flex flex-col px-6 pt-4 pb-8 gap-24">
         
         {/* --- 1. HERO --- */}
-        <section className="relative flex flex-col pt-28">
+        <section className={`relative flex flex-col ${heroPadding}`}>
           <header className={`flex items-center justify-between mb-5 ml-2 transition-opacity duration-500 ${isHeroRevealed ? 'opacity-0' : 'opacity-100'}`}>
             <div className={`flex items-center gap-2 ${isLightTheme ? 'text-[#4A302B]/60' : 'text-white/50'}`}>
               <Fingerprint className="w-4 h-4" strokeWidth={1.5} />
