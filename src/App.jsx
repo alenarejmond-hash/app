@@ -127,10 +127,11 @@ export default function App() {
 
   const handlePortfolioSwipe = () => {
     const swipeDistance = touchStartX.current - touchEndX.current;
-    if (swipeDistance > 40) { // Свайп влево
+    // Порог свайпа уменьшен с 40 до 20 для мгновенной реакции
+    if (swipeDistance > 20) { 
       triggerHaptic('selection');
       setPortfolioIndex(prev => Math.min(prev + 1, CONFIG.portfolio.length - 1));
-    } else if (swipeDistance < -40) { // Свайп вправо
+    } else if (swipeDistance < -20) { 
       triggerHaptic('selection');
       setPortfolioIndex(prev => Math.max(prev - 1, 0));
     }
@@ -391,7 +392,7 @@ export default function App() {
 
   return (
     <div 
-      className={`relative min-h-[100dvh] font-sans overflow-x-hidden select-none overscroll-none transition-colors duration-700 ${isLightTheme ? 'bg-[#EFECE8] text-[#4A302B] selection:bg-[#D89B93]/30' : 'bg-[#050505] text-white/90 selection:bg-white/20'}`}
+      className={`relative min-h-[100dvh] w-full font-sans overflow-x-clip overflow-y-auto select-none transition-colors duration-700 ${isLightTheme ? 'bg-[#EFECE8] text-[#4A302B] selection:bg-[#D89B93]/30' : 'bg-[#050505] text-white/90 selection:bg-white/20'}`}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onClick={() => triggerHaptic('impact', 'light')}
@@ -568,7 +569,7 @@ export default function App() {
                     opacity,
                     pointerEvents,
                   }}
-                  className={`absolute w-[200px] sm:w-[240px] h-[250px] sm:h-[280px] border rounded-[2rem] p-6 flex flex-col justify-between cursor-pointer transition-all duration-1000 ease-[cubic-bezier(0.2,0.8,0.2,1)] group ${isLightTheme ? 'bg-[#FAF7F2]/90 border-[#C48766]/30 shadow-[0_20px_50px_rgba(196,135,102,0.15)] backdrop-blur-xl' : 'bg-[#1a1a1a]/80 border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl'}`}
+                  className={`absolute w-[200px] sm:w-[240px] h-[250px] sm:h-[280px] border rounded-[2rem] p-6 flex flex-col justify-between cursor-pointer transition-all duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)] group ${isLightTheme ? 'bg-[#FAF7F2]/90 border-[#C48766]/30 shadow-[0_20px_50px_rgba(196,135,102,0.15)] backdrop-blur-xl' : 'bg-[#1a1a1a]/80 border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl'}`}
                 >
                   {/* Эффект Play поверх центральной карточки */}
                   {isCenter && (
@@ -908,7 +909,8 @@ export default function App() {
       <style dangerouslySetInnerHTML={{__html: `
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        body { overscroll-behavior-y: none; touch-action: pan-y; }
+        html, body { overflow-y: auto !important; min-height: 100%; }
+        body { overscroll-behavior-y: none; }
       `}} />
     </div>
   );
