@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { 
   Send, Fingerprint, Sparkles, Lock, Key, 
-  ArrowRight, Compass, Flame, Brain, Camera, Star, X, Sun, Moon, Play, Heart
+  ArrowRight, Compass, Flame, Brain, Camera, Star, X, Sun, Moon, Play, Heart, Check
 } from 'lucide-react';
 
 // =========================================================================
@@ -41,24 +41,23 @@ const CONFIG = {
     { title: "Проект 6", desc: "В разработке", icon: Sparkles, videoId: "demo5" },
   ],
 
-  // 7. Вайбы (Калькулятор вайбов)
-  niches: {
-    psychologist: { 
-      id: 'psychologist', label: 'Психолог', icon: Heart,
-      bg: 'bg-purple-500/10', border: 'border-purple-500/30', text: 'text-purple-300',
-      desc: 'Спокойствие, доверие, глубокие тона. Плавные анимации и акцент на текст. Клиент должен чувствовать безопасность с первой секунды.'
+  // 7. Инвестиции (Тарифы) в стиле Apple Wallet
+  tariffs: [
+    {
+      id: 'base',
+      title: 'Signature Base',
+      subtitle: 'Авторская архитектура',
+      price: 'от 50 000 ₽',
+      features: ['Premium-шаблон из моей базы', 'Адаптация под ваш бренд', 'Запуск за 3-5 дней', 'Базовые Haptic-эффекты'],
     },
-    blogger: { 
-      id: 'blogger', label: 'Блогер', icon: Camera,
-      bg: 'bg-pink-500/10', border: 'border-pink-500/30', text: 'text-pink-300',
-      desc: 'Яркость, динамика, тренды. Крупные медиа-блоки, дерзкие шрифты и максимальная конверсия в подписку.'
-    },
-    tarot: { 
-      id: 'tarot', label: 'Таролог', icon: Compass,
-      bg: 'bg-amber-500/10', border: 'border-amber-500/30', text: 'text-amber-300',
-      desc: 'Мистика, золото, загадка. Темное стекло, магические свечения и сложные градиенты. Продаем состояние.'
+    {
+      id: 'custom',
+      title: 'Full Custom',
+      subtitle: 'Haute Couture в коде',
+      price: 'от 150 000 ₽',
+      features: ['Дизайн с чистого листа', 'Сложные 3D и WebGL эффекты', 'Нестандартные анимации', 'Эксклюзивные механики'],
     }
-  },
+  ],
 
   // 8. Отзывы (Reviews)
   reviews: [
@@ -90,8 +89,12 @@ export default function App() {
   
   const [isHeroRevealed, setIsHeroRevealed] = useState(false);
 
-  // State for Vibe Calculator
-  const [activeNiche, setActiveNiche] = useState('psychologist');
+  // State for Tariffs (Apple Wallet Vibe)
+  const [activeTariff, setActiveTariff] = useState('base');
+  const activeTariffRef = useRef('base');
+  useEffect(() => {
+    activeTariffRef.current = activeTariff;
+  }, [activeTariff]);
 
   // State for Review Modal
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
@@ -238,8 +241,11 @@ export default function App() {
         if (p.y < -p.radius) p.y = canvas.height + p.radius;
         if (p.y > canvas.height + p.radius) p.y = -p.radius;
 
-        // Коралловые частицы для светлой темы
-        const pColor = themeRef.current ? 'rgba(216, 155, 147, 0.05)' : darkColors[p.colorIndex];
+        // Коралловые частицы для светлой темы + Золотые для VIP тарифа
+        const isCustom = activeTariffRef.current === 'custom';
+        const customColor = themeRef.current ? 'rgba(196, 135, 102, 0.08)' : 'rgba(212, 175, 55, 0.05)';
+        const pColor = isCustom ? customColor : (themeRef.current ? 'rgba(216, 155, 147, 0.05)' : darkColors[p.colorIndex]);
+        
         const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius);
         gradient.addColorStop(0, pColor);
         gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
@@ -330,8 +336,6 @@ export default function App() {
     triggerHaptic('impact', 'medium');
   };
   const handleHeroHoldEnd = () => setIsHeroRevealed(false);
-
-  const activeVibe = CONFIG.niches[activeNiche];
 
   return (
     <div 
@@ -509,39 +513,67 @@ export default function App() {
           </div>
         </section>
 
-        {/* --- 4. РАССЧИТАТЬ ВАЙБ --- */}
+        {/* --- 4. ИНВЕСТИЦИИ (APPLE WALLET VIBE) --- */}
         <section className="flex flex-col gap-6">
-          <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>Какой твой вайб?</h2>
+          <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>Инвестиции</h2>
           
-          <div className={`flex gap-2 p-1.5 rounded-2xl border w-fit transition-colors duration-700 ${isLightTheme ? 'bg-[#4A302B]/[0.02] border-[#4A302B]/10' : 'bg-white/[0.03] border-white/10'}`}>
-            {Object.values(CONFIG.niches).map(niche => (
-              <button
-                key={niche.id}
-                onClick={() => {
-                  setActiveNiche(niche.id);
-                  triggerHaptic('selection');
-                }}
-                className={`px-4 py-2 rounded-xl text-[11px] font-medium tracking-wide transition-all duration-300 flex items-center gap-2 ${
-                  activeNiche === niche.id 
-                    ? (isLightTheme ? 'bg-[#4A302B]/10 text-[#4A302B] shadow-sm' : 'bg-white/10 text-white shadow-sm')
-                    : (isLightTheme ? 'text-[#4A302B]/50 hover:text-[#4A302B]/80' : 'text-white/40 hover:text-white/70')
-                }`}
-              >
-                {activeNiche === niche.id && <niche.icon size={16} />}
-                {niche.label}
-              </button>
-            ))}
-          </div>
+          <div className="relative h-[440px] w-full flex justify-center items-start perspective-1000 touch-none">
+            {CONFIG.tariffs.map((tariff) => {
+              const isActive = activeTariff === tariff.id;
+              const isBase = tariff.id === 'base';
+              
+              return (
+                <div
+                  key={tariff.id}
+                  onClick={() => {
+                    if (!isActive) {
+                      triggerHaptic('impact', 'medium');
+                      setActiveTariff(tariff.id);
+                    }
+                  }}
+                  className={`absolute w-full max-w-[320px] rounded-[2.5rem] p-7 transition-all duration-[800ms] ease-[cubic-bezier(0.23,1,0.32,1)] cursor-pointer backdrop-blur-2xl border flex flex-col justify-between ${
+                    isActive 
+                      ? 'z-20 translate-y-0 scale-100 opacity-100 shadow-[0_30px_60px_rgba(0,0,0,0.2)]' 
+                      : 'z-10 translate-y-16 scale-90 opacity-60 hover:opacity-80 shadow-lg'
+                  } ${
+                    isBase
+                      ? (isLightTheme ? 'bg-[#FAF7F2]/90 border-[#C48766]/30' : 'bg-white/10 border-white/20')
+                      : (isLightTheme ? 'bg-[#2A2010]/95 border-[#C48766]/50' : 'bg-[#050505]/95 border-[#D4AF37]/30')
+                  }`}
+                  style={{ height: '380px' }}
+                >
+                  {/* Верх карты */}
+                  <div>
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <p className={`text-[10px] uppercase tracking-widest mb-1 ${!isBase || !isLightTheme ? 'text-white/50' : 'text-[#4A302B]/50'}`}>{tariff.subtitle}</p>
+                        <h3 className={`text-2xl font-light tracking-wide ${!isBase || !isLightTheme ? 'text-white' : 'text-[#4A302B]'}`}>{tariff.title}</h3>
+                      </div>
+                      {isActive && (
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center animate-in zoom-in duration-500 ${!isBase || !isLightTheme ? 'bg-white/10 text-white' : 'bg-[#C48766]/10 text-[#C48766]'}`}>
+                          <Check size={14} />
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-3 mt-6">
+                      {tariff.features.map((feat, i) => (
+                        <div key={i} className="flex items-center gap-3">
+                          <div className={`w-1.5 h-1.5 rounded-full ${!isBase || !isLightTheme ? 'bg-white/30' : 'bg-[#4A302B]/30'}`}></div>
+                          <p className={`text-xs font-light tracking-wide ${!isBase || !isLightTheme ? 'text-white/80' : 'text-[#4A302B]/80'}`}>{feat}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
-          <div className={`transition-all duration-500 bg-gradient-to-br ${activeVibe.bg} border ${activeVibe.border} rounded-3xl p-6 backdrop-blur-md`}>
-            <div className="flex items-start justify-between mb-3">
-              <h3 className={`text-sm font-semibold tracking-wide transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]' : activeVibe.text}`}>
-                Vibe: {activeVibe.label}
-              </h3>
-            </div>
-            <p className={`text-[12px] leading-relaxed font-light transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/70' : 'text-white/70'}`}>
-              {activeVibe.desc}
-            </p>
+                  {/* Низ карты (Цена) */}
+                  <div className={`pt-6 border-t ${!isBase || !isLightTheme ? 'border-white/10' : 'border-[#4A302B]/10'}`}>
+                    <p className={`text-[10px] uppercase tracking-widest mb-1 ${!isBase || !isLightTheme ? 'text-white/40' : 'text-[#4A302B]/40'}`}>Инвестиция</p>
+                    <p className={`text-xl font-medium tracking-wide ${!isBase || !isLightTheme ? 'text-white' : 'text-[#4A302B]'}`}>{tariff.price}</p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
 
