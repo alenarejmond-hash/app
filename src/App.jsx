@@ -345,7 +345,7 @@ export default function App() {
       <div className="relative z-10 w-full max-w-[500px] mx-auto flex flex-col px-6 pt-4 pb-8 gap-24">
         
         {/* --- 1. HERO --- */}
-        <section className="relative min-h-[85vh] flex flex-col pt-28">
+        <section className="relative min-h-[75vh] flex flex-col pt-28">
           <header className={`flex items-center justify-between mb-5 ml-2 transition-opacity duration-500 ${isHeroRevealed ? 'opacity-0' : 'opacity-100'}`}>
             <div className={`flex items-center gap-2 ${isLightTheme ? 'text-[#2B303A]/60' : 'text-white/50'}`}>
               <Fingerprint className="w-4 h-4" strokeWidth={1.5} />
@@ -389,7 +389,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className={`absolute bottom-4 left-0 w-full flex flex-col items-center justify-center gap-3 transition-opacity duration-500 ${isHeroRevealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+          <div className={`mt-10 w-full flex flex-col items-center justify-center gap-3 transition-opacity duration-500 ${isHeroRevealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
              <div 
                className="flex flex-col items-center gap-3 cursor-pointer p-4 pointer-events-auto"
                onPointerDown={handleHeroHoldStart}
