@@ -103,6 +103,24 @@ export default function App() {
   const [isHeroRevealed, setIsHeroRevealed] = useState(false);
   const [isTelegram, setIsTelegram] = useState(false);
 
+  // 0. Безопасная функция для вибрации (ПЕРЕНЕСЕНО ВВЕРХ ДЛЯ ИСПРАВЛЕНИЯ ОШИБКИ)
+  const triggerHaptic = useCallback((type = 'impact', style = 'light') => {
+    try {
+      const tg = window.Telegram?.WebApp;
+      if (!tg || !tg.HapticFeedback) return;
+      
+      if (type === 'impact' && typeof tg.HapticFeedback.impactOccurred === 'function') {
+        tg.HapticFeedback.impactOccurred(style);
+      } else if (type === 'selection' && typeof tg.HapticFeedback.selectionChanged === 'function') {
+        tg.HapticFeedback.selectionChanged();
+      } else if (type === 'notification' && typeof tg.HapticFeedback.notificationOccurred === 'function') {
+        tg.HapticFeedback.notificationOccurred(style);
+      }
+    } catch (e) {
+      console.error('Haptic error:', e);
+    }
+  }, []);
+
   // State for Tariffs (Apple Wallet Vibe)
   const [activeTariff, setActiveTariff] = useState('base');
   const activeTariffRef = useRef('base');
@@ -125,6 +143,7 @@ export default function App() {
   const touchEndX = useRef(0);
   const portfolioRef = useRef(null);
   const isDraggingPortfolio = useRef(false);
+  const wheelTimeoutRef = useRef(null);
 
   const handlePortfolioSwipe = () => {
     const swipeDistance = touchStartX.current - touchEndX.current;
@@ -136,6 +155,45 @@ export default function App() {
       setPortfolioIndex(prev => Math.max(prev - 1, 0));
     }
   };
+
+  useEffect(() => {
+    const el = portfolioRef.current;
+    if (!el) return;
+
+    const handleWheel = (e) => {
+      const isVerticalScroll = Math.abs(e.deltaY) > Math.abs(e.deltaX);
+      const isScrollingDown = e.deltaY > 0;
+      const isScrollingUp = e.deltaY < 0;
+
+      // Если дошли до края карусели, отпускаем скролл, чтобы можно было листать страницу дальше
+      if (isVerticalScroll) {
+        if (isScrollingUp && portfolioIndex === 0) return;
+        if (isScrollingDown && portfolioIndex === CONFIG.portfolio.length - 1) return;
+      }
+
+      // Внутри карусели перехватываем прокрутку страницы на себя
+      e.preventDefault();
+
+      if (wheelTimeoutRef.current) return;
+
+      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+
+      // Порог срабатывания скролла
+      if (delta > 15) {
+        triggerHaptic('selection');
+        setPortfolioIndex(prev => Math.min(prev + 1, CONFIG.portfolio.length - 1));
+        wheelTimeoutRef.current = setTimeout(() => wheelTimeoutRef.current = null, 350); // Задержка для плавности одного перелистывания
+      } else if (delta < -15) {
+        triggerHaptic('selection');
+        setPortfolioIndex(prev => Math.max(prev - 1, 0));
+        wheelTimeoutRef.current = setTimeout(() => wheelTimeoutRef.current = null, 350);
+      }
+    };
+
+    // passive: false обязателен для работы e.preventDefault()
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, [portfolioIndex, triggerHaptic]);
 
   // State for Reviews (Desktop Drag)
   const reviewsRef = useRef(null);
@@ -164,24 +222,6 @@ export default function App() {
     meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
 
     return () => document.removeEventListener('touchmove', preventZoom);
-  }, []);
-
-  // 0. Безопасная функция для вибрации
-  const triggerHaptic = useCallback((type = 'impact', style = 'light') => {
-    try {
-      const tg = window.Telegram?.WebApp;
-      if (!tg || !tg.HapticFeedback) return;
-      
-      if (type === 'impact' && typeof tg.HapticFeedback.impactOccurred === 'function') {
-        tg.HapticFeedback.impactOccurred(style);
-      } else if (type === 'selection' && typeof tg.HapticFeedback.selectionChanged === 'function') {
-        tg.HapticFeedback.selectionChanged();
-      } else if (type === 'notification' && typeof tg.HapticFeedback.notificationOccurred === 'function') {
-        tg.HapticFeedback.notificationOccurred(style);
-      }
-    } catch (e) {
-      console.error('Haptic error:', e);
-    }
   }, []);
 
   // 1. Инициализация Telegram
@@ -422,14 +462,6 @@ export default function App() {
       {/* Фиксированный Canvas на фоне */}
       <canvas ref={canvasRef} className="fixed inset-0 z-[1] pointer-events-none opacity-80" />
 
-      {/*
-        ========================================================================================
-        👇 НАСТРОЙКА РАССТОЯНИЙ МЕЖДУ БЛОКАМИ 👇
-        В строке ниже класс "gap-24" (в самом конце) задает расстояние между всеми основными секциями!
-        - Если хочешь увеличить расстояние: поменяй gap-24 на gap-32 (или больше)
-        - Если хочешь уменьшить расстояние: поменяй gap-24 на gap-16 или gap-12
-        ========================================================================================
-      */}
       {/* Скроллируемый контент */}
       <div className="relative z-10 w-full max-w-[500px] mx-auto flex flex-col px-6 pt-4 pb-8 gap-24">
         
