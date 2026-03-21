@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { 
   Send, Fingerprint, Sparkles, Lock, Key, 
-  ArrowRight, Compass, Flame, Brain, Camera, Star, X, Sun, Moon, Play
+  ArrowRight, Compass, Flame, Brain, Camera, Star, X, Sun, Moon, Play, Heart
 } from 'lucide-react';
 
 // =========================================================================
@@ -34,14 +34,17 @@ const CONFIG = {
   // 6. Галерея (Мои работы) - ТЕПЕРЬ С ПОДДЕРЖКОЙ ВИДЕО!
   portfolio: [
     { title: "Шоурил 2024", desc: "Главное видео", icon: Compass, videoId: "611bc8031620c28329867b1943f4d0d9" },
-    { title: "Психолог", desc: "Скоро...", icon: Brain, videoId: "demo1" },
+    { title: "Психолог", desc: "Скоро...", icon: Heart, videoId: "demo1" },
     { title: "Fire Show", desc: "Скоро...", icon: Flame, videoId: "demo2" },
+    { title: "Проект 4", desc: "В разработке", icon: Star, videoId: "demo3" },
+    { title: "Проект 5", desc: "В разработке", icon: Camera, videoId: "demo4" },
+    { title: "Проект 6", desc: "В разработке", icon: Sparkles, videoId: "demo5" },
   ],
 
   // 7. Вайбы (Калькулятор вайбов)
   niches: {
     psychologist: { 
-      id: 'psychologist', label: 'Психолог', icon: Brain,
+      id: 'psychologist', label: 'Психолог', icon: Heart,
       bg: 'bg-purple-500/10', border: 'border-purple-500/30', text: 'text-purple-300',
       desc: 'Спокойствие, доверие, глубокие тона. Плавные анимации и акцент на текст. Клиент должен чувствовать безопасность с первой секунды.'
     },
@@ -474,9 +477,9 @@ export default function App() {
           </div>
         </section>
 
-        {/* --- 3. MY WORLD --- */}
+        {/* --- 3. ПОРТФОЛИО --- */}
         <section className="flex flex-col gap-6 w-full -mx-6 px-6 sm:mx-0 sm:px-0">
-          <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>My World</h2>
+          <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>Портфолио</h2>
           
           <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide w-auto -mx-6 px-6 sm:mx-0 sm:px-0">
             {CONFIG.portfolio.map((item, idx) => (
@@ -740,7 +743,7 @@ export default function App() {
               <X size={20} />
             </button>
 
-            {activeVideo === 'demo1' || activeVideo === 'demo2' ? (
+            {activeVideo?.startsWith('demo') ? (
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
                 <Play size={48} className={`mb-4 opacity-20 ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`} />
                 <p className={`text-lg font-medium tracking-wide ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>Скоро здесь будет новое видео</p>
