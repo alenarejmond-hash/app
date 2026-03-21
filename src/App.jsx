@@ -120,28 +120,23 @@ export default function App() {
 
   // State for Portfolio Carousel (Cover Flow)
   const [portfolioIndex, setPortfolioIndex] = useState(0);
+  const [isDraggingPortfolio, setIsDraggingPortfolio] = useState(false);
   const touchStartX = useRef(0);
   const touchStartY = useRef(0);
   const touchEndX = useRef(0);
   const portfolioRef = useRef(null);
-  const isDraggingPortfolio = useRef(false);
 
   const handlePortfolioSwipe = () => {
     const swipeDistance = touchStartX.current - touchEndX.current;
-    if (swipeDistance > 40) { // Свайп влево
+    // Порог свайпа уменьшен с 40 до 20 для мгновенной реакции
+    if (swipeDistance > 20) { 
       triggerHaptic('selection');
       setPortfolioIndex(prev => Math.min(prev + 1, CONFIG.portfolio.length - 1));
-    } else if (swipeDistance < -40) { // Свайп вправо
+    } else if (swipeDistance < -20) { 
       triggerHaptic('selection');
       setPortfolioIndex(prev => Math.max(prev - 1, 0));
     }
   };
-
-  // State for Reviews (Desktop Drag)
-  const reviewsRef = useRef(null);
-  const isDraggingReviews = useRef(false);
-  const startXReviews = useRef(0);
-  const scrollLeftReviews = useRef(0);
 
   // Отступ для Hero-блока в зависимости от платформы
   const [heroPadding, setHeroPadding] = useState('pt-28');
@@ -197,39 +192,17 @@ export default function App() {
           setHeroPadding('pt-28');
           setIsTelegram(true);
         }
-
-        if (typeof tg.ready === 'function') tg.ready();
-        if (typeof tg.expand === 'function') tg.expand();
-        if (typeof tg.requestFullscreen === 'function') tg.requestFullscreen();
-        if (typeof tg.disableVerticalSwipes === 'function') tg.disableVerticalSwipes();
-        
-        const enforceFullscreen = () => {
-          if (typeof tg.expand === 'function') tg.expand();
-          if (typeof tg.disableVerticalSwipes === 'function') tg.disableVerticalSwipes();
-        };
-        
-        setTimeout(enforceFullscreen, 100);
-        setTimeout(enforceFullscreen, 500);
-        
-        if (typeof tg.onEvent === 'function') {
-          tg.onEvent('viewportChanged', enforceFullscreen);
-        }
-        if (typeof tg.setHeaderColor === 'function') {
-          tg.setHeaderColor('#050505'); // Оставим темным для нативности
-        }
-        return () => {
-          if (tg && typeof tg.offEvent === 'function') tg.offEvent('viewportChanged', enforceFullscreen);
-        };
       }
     } catch (error) {
       console.error('Telegram API Error:', error);
     }
   }, []);
 
-  // 1.5 Блокировка вертикального скролла ПРИ горизонтальном свайпе карточек
+  // 1.5 Блокировка вертикального скролла ПРИ горизонтальном свайпе карточек + Скролл на ПК
   useEffect(() => {
     const el = portfolioRef.current;
     if (!el) return;
+    
     const handleTouchMove = (e) => {
       if (!touchStartX.current || !touchStartY.current) return;
       const deltaX = Math.abs(e.touches[0].clientX - touchStartX.current);
@@ -239,10 +212,43 @@ export default function App() {
         if (e.cancelable) e.preventDefault();
       }
     };
+
+    let lastWheelTime = 0;
+    const handleWheel = (e) => {
+      // Игнорируем вертикальный скролл (чтобы страница крутилась нормально)
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) return;
+      
+      e.preventDefault(); // Блокируем навигацию браузера вперед/назад
+
+      const now = Date.now();
+      if (now - lastWheelTime < 350) return; // Плавность (чтобы не пролетать по 10 карточек)
+
+      if (e.deltaX > 20) {
+        setPortfolioIndex(prev => {
+          const next = Math.min(prev + 1, CONFIG.portfolio.length - 1);
+          if (next !== prev) triggerHaptic('selection');
+          return next;
+        });
+        lastWheelTime = now;
+      } else if (e.deltaX < -20) {
+        setPortfolioIndex(prev => {
+          const next = Math.max(prev - 1, 0);
+          if (next !== prev) triggerHaptic('selection');
+          return next;
+        });
+        lastWheelTime = now;
+      }
+    };
+
     // passive: false обязательно, чтобы работал preventDefault()
     el.addEventListener('touchmove', handleTouchMove, { passive: false });
-    return () => el.removeEventListener('touchmove', handleTouchMove);
-  }, []);
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    
+    return () => {
+      el.removeEventListener('touchmove', handleTouchMove);
+      el.removeEventListener('wheel', handleWheel);
+    };
+  }, [triggerHaptic]);
 
   // 2. Canvas Engine
   useEffect(() => {
@@ -398,7 +404,7 @@ export default function App() {
 
   return (
     <div 
-      className={`relative min-h-[100dvh] font-sans overflow-x-hidden select-none transition-colors duration-700 ${isLightTheme ? 'bg-[#EFECE8] text-[#4A302B] selection:bg-[#D89B93]/30' : 'bg-[#050505] text-white/90 selection:bg-white/20'}`}
+      className={`relative h-[100dvh] w-full font-sans overflow-x-hidden overflow-y-auto select-none transition-colors duration-700 ${isLightTheme ? 'bg-[#EFECE8] text-[#4A302B] selection:bg-[#D89B93]/30' : 'bg-[#050505] text-white/90 selection:bg-white/20'}`}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onClick={() => triggerHaptic('impact', 'light')}
@@ -515,33 +521,42 @@ export default function App() {
           
           <div 
             ref={portfolioRef}
-            className="relative h-[280px] sm:h-[320px] w-full flex justify-center items-center touch-pan-y"
+            className="relative h-[280px] sm:h-[320px] w-full flex justify-center items-center touch-pan-y cursor-grab active:cursor-grabbing"
             style={{ perspective: '1200px', transformStyle: 'preserve-3d' }}
-            onPointerDown={(e) => {
-              isDraggingPortfolio.current = true;
+            onTouchStart={(e) => {
+              touchStartX.current = e.touches[0].clientX;
+              touchStartY.current = e.touches[0].clientY;
+              touchEndX.current = e.touches[0].clientX;
+              setIsDraggingPortfolio(true);
+            }}
+            onTouchMove={(e) => {
+              if (!isDraggingPortfolio) return;
+              touchEndX.current = e.touches[0].clientX;
+            }}
+            onTouchEnd={() => {
+              if (!isDraggingPortfolio) return;
+              setIsDraggingPortfolio(false);
+              handlePortfolioSwipe();
+            }}
+            onMouseDown={(e) => {
               touchStartX.current = e.clientX;
               touchStartY.current = e.clientY;
               touchEndX.current = e.clientX;
+              setIsDraggingPortfolio(true);
             }}
-            onPointerMove={(e) => {
-              if (isDraggingPortfolio.current) {
-                touchEndX.current = e.clientX;
-              }
+            onMouseMove={(e) => {
+              if (!isDraggingPortfolio) return;
+              touchEndX.current = e.clientX;
             }}
-            onPointerUp={() => {
-              if (isDraggingPortfolio.current) {
-                isDraggingPortfolio.current = false;
-                handlePortfolioSwipe();
-              }
+            onMouseUp={() => {
+              if (!isDraggingPortfolio) return;
+              setIsDraggingPortfolio(false);
+              handlePortfolioSwipe();
             }}
-            onPointerLeave={() => {
-              if (isDraggingPortfolio.current) {
-                isDraggingPortfolio.current = false;
-                handlePortfolioSwipe();
-              }
-            }}
-            onPointerCancel={() => {
-              isDraggingPortfolio.current = false;
+            onMouseLeave={() => {
+              if (!isDraggingPortfolio) return;
+              setIsDraggingPortfolio(false);
+              handlePortfolioSwipe();
             }}
           >
             {CONFIG.portfolio.map((item, idx) => {
@@ -580,7 +595,6 @@ export default function App() {
                 <div 
                   key={idx}
                   onClick={() => {
-                    if (Math.abs(touchStartX.current - touchEndX.current) > 20) return; // Prevent click on drag
                     if (isCenter) {
                       triggerHaptic('impact', 'light');
                       if (item.videoId) setActiveVideo(item.videoId);
@@ -595,7 +609,7 @@ export default function App() {
                     opacity,
                     pointerEvents,
                   }}
-                  className={`absolute w-[200px] sm:w-[240px] h-[250px] sm:h-[280px] border rounded-[2rem] p-6 flex flex-col justify-between cursor-pointer transition-all duration-[400ms] ease-out group ${isLightTheme ? 'bg-[#FAF7F2]/90 border-[#C48766]/30 shadow-[0_20px_50px_rgba(196,135,102,0.15)] backdrop-blur-xl' : 'bg-[#1a1a1a]/80 border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl'}`}
+                  className={`absolute w-[200px] sm:w-[240px] h-[250px] sm:h-[280px] border rounded-[2rem] p-6 flex flex-col justify-between cursor-pointer transition-all duration-500 ease-out group ${isLightTheme ? 'bg-[#FAF7F2]/90 border-[#C48766]/30 shadow-[0_20px_50px_rgba(196,135,102,0.15)] backdrop-blur-xl' : 'bg-[#1a1a1a]/80 border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl'}`}
                 >
                   {/* Эффект Play поверх центральной карточки */}
                   {isCenter && (
@@ -728,26 +742,7 @@ export default function App() {
             </button>
           </div>
           
-          <div 
-            ref={reviewsRef}
-            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide w-auto -mx-6 px-6 sm:mx-0 sm:px-0 cursor-grab active:cursor-grabbing"
-            onPointerDown={(e) => {
-              if (e.pointerType !== 'mouse') return;
-              isDraggingReviews.current = true;
-              startXReviews.current = e.pageX - reviewsRef.current.offsetLeft;
-              scrollLeftReviews.current = reviewsRef.current.scrollLeft;
-            }}
-            onPointerMove={(e) => {
-              if (!isDraggingReviews.current || e.pointerType !== 'mouse') return;
-              e.preventDefault();
-              const x = e.pageX - reviewsRef.current.offsetLeft;
-              const walk = (x - startXReviews.current) * 1.5;
-              reviewsRef.current.scrollLeft = scrollLeftReviews.current - walk;
-            }}
-            onPointerUp={() => { isDraggingReviews.current = false; }}
-            onPointerLeave={() => { isDraggingReviews.current = false; }}
-            onPointerCancel={() => { isDraggingReviews.current = false; }}
-          >
+          <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide w-auto -mx-6 px-6 sm:mx-0 sm:px-0">
             {CONFIG.reviews.map((review, idx) => (
               <div 
                 key={idx}
@@ -952,21 +947,6 @@ export default function App() {
       )}
 
       <style dangerouslySetInnerHTML={{__html: `
-        html, body { 
-          position: static !important;
-          height: auto !important; 
-          min-height: 100vh !important; 
-          overflow-y: visible !important; 
-          overflow-x: hidden !important; 
-          overscroll-behavior-y: auto !important;
-          touch-action: auto !important;
-        }
-        #root {
-          display: block !important;
-          height: auto !important;
-          min-height: 100vh !important;
-          overflow: visible !important;
-        }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
       `}} />
