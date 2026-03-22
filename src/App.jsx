@@ -446,11 +446,19 @@ export default function App() {
     isMaxTiltRef.current = false;
   };
 
-  const handleHeroHoldStart = () => {
+  const handleHeroHoldStart = (e) => {
+    if (e?.currentTarget?.setPointerCapture) {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
     setIsHeroRevealed(true);
     triggerHaptic('impact', 'medium');
   };
-  const handleHeroHoldEnd = () => setIsHeroRevealed(false);
+  const handleHeroHoldEnd = (e) => {
+    if (e?.currentTarget?.releasePointerCapture && e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+    setIsHeroRevealed(false);
+  };
 
   return (
     <div 
@@ -467,7 +475,7 @@ export default function App() {
           alt={CONFIG.headerName} 
           className={`w-full h-full object-cover transition-all duration-700 ease-out origin-top ${
             isHeroRevealed 
-              ? 'blur-0 scale-100 opacity-90 grayscale-0' 
+              ? 'blur-[3px] scale-100 opacity-90 grayscale-0' 
               : 'blur-[50px] scale-125 opacity-30 grayscale-[30%]'
           }`}
         />
@@ -536,7 +544,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className={`mt-6 w-full flex flex-col items-center justify-center gap-3 transition-opacity duration-500 ${isHeroRevealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+          <div className={`mt-6 w-full flex flex-col items-center justify-center gap-3 transition-opacity duration-500 ${isHeroRevealed ? 'opacity-0' : 'opacity-100'}`}>
              <div 
                className="flex flex-col items-center gap-3 cursor-pointer p-4 pointer-events-auto touch-pan-y"
                style={{ WebkitTouchCallout: 'none' }}
