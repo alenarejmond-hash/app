@@ -28,8 +28,8 @@ const CONFIG = {
   // 5. Кнопка связи и подвал (Футер)
   ctaText: "Заказать свой Digital-мир",
   footerText: "Design & Code by Elena Sotnikova",
-  linkTelegram: "https://t.me/your_telegram", // Вставьте свою ссылку на Telegram
-  linkGithub: "https://github.com/alenarejmond-hash", // Вставьте свою ссылку на GitHub
+  linkTelegram: "https://t.me/your_telegram", // 👈 ВСТАВЬТЕ СЮДА СВОЮ ССЫЛКУ НА TELEGRAM (между кавычек)
+  linkVK: "https://vk.com/your_vk", // 👈 ВСТАВЬТЕ СЮДА СВОЮ ССЫЛКУ НА ВКОНТАКТЕ (между кавычек)
 
   // 6. Галерея (Мои работы) - ТЕПЕРЬ С ПОДДЕРЖКОЙ ВИДЕО!
   // 👇 ПОДСКАЗКА ОТ ИИ:
@@ -54,21 +54,24 @@ const CONFIG = {
   // title - Крупное название тарифа
   // subtitle - Мелкий текст над названием
   // price - Строка с ценой
+  // oldPrice - Старая перечеркнутая цена
   // features - Список того, что входит в тариф. Каждая фраза пишется в одинарных кавычках '...' через запятую!
   tariffs: [
     {
       id: 'base', 
-      title: 'Signature Base',
+      title: 'Pro',
       subtitle: 'Авторская архитектура',
-      price: 'от 50 000 ₽',
-      features: ['Premium-шаблон из моей базы', 'Адаптация под ваш бренд', 'Запуск за 3-5 дней', 'Базовые Haptic-эффекты'],
+      price: '7 000 ₽',
+      oldPrice: '15 000 ₽',
+      features: ['Premium-шаблон из моей базы', 'Адаптация под ваш контент и цвета', 'Мини-апп в ТГ/ВК + веб-версия (PWA)', 'Поддомен имя.nice-app.ru навсегда', 'Бот + пост + запуск «под ключ»', 'Запуск за 3-5 дней', 'Один платеж. Никаких подписок'],
     },
     {
       id: 'custom',
-      title: 'Full Custom',
+      title: 'Ultra',
       subtitle: 'Haute Couture в коде',
-      price: 'от 150 000 ₽',
-      features: ['Дизайн с чистого листа', 'Сложные 3D и WebGL эффекты', 'Нестандартные анимации', 'Эксклюзивные механики'],
+      price: 'от 7 000 ₽',
+      oldPrice: 'от 15 000 ₽',
+      features: ['Уникальный дизайн и логика «с нуля»', 'Сложные 3D и WebGL эффекты', 'Мини-апп в ТГ/ВК + веб-версия (PWA)', 'Поддомен имя.nice-app.ru навсегда', 'Подключение вашего личного домена (помощь с покупкой и настройкой)', 'Бот + пост + запуск «под ключ»', 'Без аренды: Ваш личный цифровой актив навсегда'],
     }
   ],
 
@@ -714,8 +717,10 @@ export default function App() {
                     
                     <div className="space-y-3 mt-6">
                       {tariff.features.map((feat, i) => (
-                        <div key={i} className="flex items-center gap-3">
-                          <div className={`w-1.5 h-1.5 rounded-full ${!isBase || !isLightTheme ? 'bg-white/30' : 'bg-[#4A302B]/30'}`}></div>
+                        <div key={i} className="flex items-start gap-3">
+                          <div className="flex items-center h-4 shrink-0">
+                            <div className={`w-1.5 h-1.5 rounded-full ${!isBase || !isLightTheme ? 'bg-white/30' : 'bg-[#4A302B]/30'}`}></div>
+                          </div>
                           <p className={`text-xs font-light tracking-wide ${!isBase || !isLightTheme ? 'text-white/80' : 'text-[#4A302B]/80'}`}>{feat}</p>
                         </div>
                       ))}
@@ -725,7 +730,12 @@ export default function App() {
                   {/* Низ карты (Цена) */}
                   <div className={`pt-6 border-t ${!isBase || !isLightTheme ? 'border-white/10' : 'border-[#4A302B]/10'}`}>
                     <p className={`text-[10px] uppercase tracking-widest mb-1 ${!isBase || !isLightTheme ? 'text-white/40' : 'text-[#4A302B]/40'}`}>Инвестиция</p>
-                    <p className={`text-xl font-medium tracking-wide ${!isBase || !isLightTheme ? 'text-white' : 'text-[#4A302B]'}`}>{tariff.price}</p>
+                    <div className="flex items-baseline gap-2">
+                      <p className={`text-xl font-medium tracking-wide ${!isBase || !isLightTheme ? 'text-white' : 'text-[#4A302B]'}`}>{tariff.price}</p>
+                      {tariff.oldPrice && (
+                        <p className={`text-xs line-through tracking-wide ${!isBase || !isLightTheme ? 'text-white/30' : 'text-[#4A302B]/30'}`}>{tariff.oldPrice}</p>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
@@ -835,7 +845,7 @@ export default function App() {
             </p>
             <div className="flex justify-center gap-6">
               <a href={CONFIG.linkTelegram} target="_blank" rel="noreferrer" className={`text-[10px] tracking-widest uppercase cursor-pointer transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/60 hover:text-[#4A302B]' : 'text-white/50 hover:text-white'}`}>Telegram</a>
-              <a href={CONFIG.linkGithub} target="_blank" rel="noreferrer" className={`text-[10px] tracking-widest uppercase cursor-pointer transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/60 hover:text-[#4A302B]' : 'text-white/50 hover:text-white'}`}>Вконтакте</a>
+              <a href={CONFIG.linkVK} target="_blank" rel="noreferrer" className={`text-[10px] tracking-widest uppercase cursor-pointer transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/60 hover:text-[#4A302B]' : 'text-white/50 hover:text-white'}`}>Вконтакте</a>
             </div>
           </div>
         </section>
