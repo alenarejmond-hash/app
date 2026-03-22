@@ -31,6 +31,10 @@ const CONFIG = {
   linkTelegram: "https://t.me/your_telegram", // 👈 ВСТАВЬТЕ СЮДА СВОЮ ССЫЛКУ НА TELEGRAM (между кавычек)
   linkVK: "https://vk.com/your_vk", // 👈 ВСТАВЬТЕ СЮДА СВОЮ ССЫЛКУ НА ВКОНТАКТЕ (между кавычек)
 
+  // 💥 ИНТЕГРАЦИЯ С GOOGLE SHEETS (ОТЗЫВЫ) 💥
+  // 👈 ВСТАВЬТЕ СЮДА ССЫЛКУ НА РАЗВЕРНУТЫЙ WEB APP GOOGLE SCRIPT
+  googleScriptUrl: "ТВОЯ_ССЫЛКА_НА_GOOGLE_SCRIPT",
+
   // 6. Галерея (Мои работы) - ТЕПЕРЬ С ПОДДЕРЖКОЙ ВИДЕО!
   // 👇 ПОДСКАЗКА ОТ ИИ:
   // title - Название проекта на карточке (например: "Шоурил 2024")
@@ -148,6 +152,19 @@ export default function App() {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [isReviewSubmitted, setIsReviewSubmitted] = useState(false);
   const [reviewForm, setReviewForm] = useState({ name: '', text: '', rating: 5 });
+  const [reviewsList, setReviewsList] = useState(CONFIG.reviews);
+
+  // Загрузка отзывов из Google Sheets
+  useEffect(() => {
+    if (CONFIG.googleScriptUrl && !CONFIG.googleScriptUrl.includes("ТВОЯ_ССЫЛКА")) {
+      fetch(CONFIG.googleScriptUrl + "?action=getReviews")
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.length > 0) setReviewsList(data);
+        })
+        .catch(err => console.error("Ошибка загрузки отзывов:", err));
+    }
+  }, []);
 
   // State for Video Modal (Стеклянный Кинотеатр)
   const [activeVideo, setActiveVideo] = useState(null);
@@ -815,7 +832,7 @@ export default function App() {
             onPointerLeave={() => { isDraggingReviews.current = false; }}
             onPointerCancel={() => { isDraggingReviews.current = false; }}
           >
-            {CONFIG.reviews.map((review, idx) => (
+            {reviewsList.map((review, idx) => (
               <div 
                 key={idx}
                 className={`min-w-[280px] border rounded-3xl p-6 snap-center flex flex-col gap-4 transition-colors duration-700 ${isLightTheme ? 'bg-[#4A302B]/[0.02] border-[#4A302B]/10 hover:bg-[#4A302B]/[0.05]' : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06]'}`}
@@ -954,6 +971,25 @@ export default function App() {
                       return;
                     }
                     triggerHaptic('notification', 'success');
+
+                    // Отправка в Google Sheets
+                    if (CONFIG.googleScriptUrl && !CONFIG.googleScriptUrl.includes("ТВОЯ_ССЫЛКА")) {
+                      fetch(CONFIG.googleScriptUrl, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                          'Content-Type': 'text/plain;charset=utf-8',
+                        },
+                        body: JSON.stringify({
+                          action: 'addReview',
+                          name: reviewForm.name,
+                          text: reviewForm.text,
+                          stars: reviewForm.rating,
+                          date: new Date().toLocaleDateString('ru-RU')
+                        })
+                      }).catch(err => console.error("Ошибка отправки:", err));
+                    }
+
                     setIsReviewSubmitted(true);
                     setReviewForm({ name: '', text: '', rating: 5 });
                   }}
