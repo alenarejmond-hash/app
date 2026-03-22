@@ -38,7 +38,7 @@ const CONFIG = {
   googleSheetUrl: "https://docs.google.com/spreadsheets/d/1_Cez-q6TBrcAWRXJtIH9Rtt8ZkYZrbcX7fCd74E9zLY/edit?gid=0#gid=0",
   
   // 👈 2. ВСТАВЬТЕ СЮДА ССЫЛКУ НА РАЗВЕРНУТЫЙ WEB APP GOOGLE SCRIPT (для отправки новых)
-  googleScriptUrl: "https://script.google.com/macros/s/AKfycbwS-cnvpM2vXpwsG-WZhVVYp1szjTQkLA3LC9CRWFaStCxsOL5aRjvAe8ClpHEpXBHbcg/exec",
+  googleScriptUrl: "https://script.google.com/macros/s/AKfycbxsMW1eKwlNEO-sqD1UdSrVTQp3cMMOKLDDMTjWkdI7RZt8hd8dOBfc8XDmec2tyLujrw/exec",
 
   // 💥 ИНТЕГРАЦИЯ С GOOGLE SHEETS (ЗАКАЗЫ) 💥
   // 👈 ВСТАВЬТЕ СЮДА ССЫЛКУ НА СКРИПТ ДЛЯ ЗАКАЗОВ (куда будут падать заявки)
