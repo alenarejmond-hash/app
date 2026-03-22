@@ -38,11 +38,11 @@ const CONFIG = {
   googleSheetUrl: "https://docs.google.com/spreadsheets/d/1_Cez-q6TBrcAWRXJtIH9Rtt8ZkYZrbcX7fCd74E9zLY/edit?gid=0#gid=0",
   
   // 👈 2. ВСТАВЬТЕ СЮДА ССЫЛКУ НА РАЗВЕРНУТЫЙ WEB APP GOOGLE SCRIPT (для отправки новых)
-  googleScriptUrl: "https://script.google.com/macros/s/AKfycbxD0egYBNTde1_OohQatSnl9yCt7EavjOXc-BsXgKsr8746irf7B6rNPMAqY2Mq9oub4w/exec",
+  googleScriptUrl: "https://script.google.com/macros/s/AKfycbwS-cnvpM2vXpwsG-WZhVVYp1szjTQkLA3LC9CRWFaStCxsOL5aRjvAe8ClpHEpXBHbcg/exec",
 
   // 💥 ИНТЕГРАЦИЯ С GOOGLE SHEETS (ЗАКАЗЫ) 💥
   // 👈 ВСТАВЬТЕ СЮДА ССЫЛКУ НА СКРИПТ ДЛЯ ЗАКАЗОВ (куда будут падать заявки)
-  googleOrderScriptUrl: "https://script.google.com/macros/s/AKfycbxmQw_NSBJ4hDx1ourPgw7PFl9qTfptEmpfw7ffw4iRiSYsc-QaApUe3TQ93eE8nY2SIQ/exec",
+  googleOrderScriptUrl: "https://script.google.com/macros/s/AKfycbyHNc08of2Xf7ETl92MY833NTSNE20aK5xncdsrt2CFw9BqGwtfK8VusHA4RNPMV1M/exec",
 
   // 6. Галерея (Мои работы) - ТЕПЕРЬ С ПОДДЕРЖКОЙ ВИДЕО!
   // 👇 ПОДСКАЗКА ОТ ИИ:
