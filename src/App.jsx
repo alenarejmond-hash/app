@@ -389,12 +389,28 @@ export default function App() {
               const data = JSON.parse(jsonStr);
               
               if (data.table && data.table.rows) {
-                const fetchedReviews = data.table.rows.map(row => ({
-                  name: row.c[0]?.v || '',
-                  date: row.c[1]?.v || '',
-                  text: row.c[2]?.v || '',
-                  stars: row.c[3]?.v || 5
-                }));
+                const fetchedReviews = data.table.rows.map(row => {
+                  // Пытаемся взять готовый формат (f) или сырой (v)
+                  let dateStr = row.c[1]?.f || row.c[1]?.v || '';
+                  
+                  // Если пришел формат Date(2024,2,15), вытаскиваем из него цифры
+                  if (typeof dateStr === 'string' && dateStr.includes('Date(')) {
+                    const match = dateStr.match(/Date\((\d+),\s*(\d+),\s*(\d+)/);
+                    if (match) {
+                      const y = match[1];
+                      const m = String(parseInt(match[2]) + 1).padStart(2, '0'); // В Гугле месяцы с 0
+                      const d = String(match[3]).padStart(2, '0');
+                      dateStr = `${d}.${m}.${y}`;
+                    }
+                  }
+                  
+                  return {
+                    name: row.c[0]?.v || '',
+                    date: dateStr,
+                    text: row.c[2]?.v || '',
+                    stars: row.c[3]?.v || 5
+                  };
+                });
                 if (fetchedReviews.length > 0) setReviewsList(fetchedReviews.reverse());
               }
             })
