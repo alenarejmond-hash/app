@@ -693,7 +693,7 @@ export default function App() {
                   className={`absolute w-full max-w-[320px] rounded-[2.5rem] p-7 transition-all duration-[800ms] ease-[cubic-bezier(0.23,1,0.32,1)] cursor-pointer backdrop-blur-2xl border flex flex-col justify-between ${
                     isActive 
                       ? 'z-20 translate-y-0 scale-100 opacity-100 shadow-[0_30px_60px_rgba(0,0,0,0.2)]' 
-                      : 'z-10 translate-y-[120px] scale-[0.92] opacity-95 hover:opacity-100 shadow-[0_20px_40px_rgba(0,0,0,0.3)]'
+                      : 'z-10 translate-y-[100px] scale-[0.92] opacity-95 hover:opacity-100 shadow-[0_20px_40px_rgba(0,0,0,0.3)]'
                   } ${
                     isBase
                       ? (isLightTheme ? 'bg-[#FAF7F2]/90 border-[#C48766]/30' : 'bg-white/10 border-white/20')
