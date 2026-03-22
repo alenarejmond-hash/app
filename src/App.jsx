@@ -95,6 +95,19 @@ export default function App() {
 
   useEffect(() => {
     themeRef.current = isLightTheme;
+    
+    // Красим верхние и нижние полосы браузера под текущую тему
+    const bgColor = isLightTheme ? '#EFECE8' : '#050505';
+    document.documentElement.style.backgroundColor = bgColor;
+    document.body.style.backgroundColor = bgColor;
+    
+    let metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (!metaTheme) {
+      metaTheme = document.createElement('meta');
+      metaTheme.name = 'theme-color';
+      document.head.appendChild(metaTheme);
+    }
+    metaTheme.content = bgColor;
   }, [isLightTheme]);
   
   // State for Magnetic Tilt & Hero Photo Reveal
