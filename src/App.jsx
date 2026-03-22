@@ -637,9 +637,9 @@ export default function App() {
                   className={`absolute w-[200px] sm:w-[240px] h-[250px] sm:h-[280px] border rounded-[2rem] p-6 flex flex-col justify-between cursor-pointer transition-all duration-[400ms] ease-out group ${isLightTheme ? 'bg-[#FAF7F2]/90 border-[#C48766]/30 shadow-[0_20px_50px_rgba(196,135,102,0.15)] backdrop-blur-xl' : 'bg-[#1a1a1a]/80 border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl'}`}
                 >
                   {/* Эффект Play поверх центральной карточки */}
-                  {isCenter && (
-                    <div className={`absolute inset-0 rounded-[2rem] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 ${isLightTheme ? 'bg-[#EFECE8]/60 backdrop-blur-[2px]' : 'bg-black/40 backdrop-blur-[2px]'}`}>
-                      <div className={`w-14 h-14 rounded-full flex items-center justify-center backdrop-blur-md border shadow-xl transition-transform group-hover:scale-110 ${isLightTheme ? 'bg-[#C48766]/20 border-[#C48766]/40 text-[#4A302B]' : 'bg-white/20 border-white/30 text-white'}`}>
+                  {isCenter && item.videoId && (
+                    <div className={`absolute inset-0 rounded-[2rem] flex items-center justify-center opacity-100 transition-opacity duration-300 z-10 ${isLightTheme ? 'bg-[#EFECE8]/20 backdrop-blur-[1px]' : 'bg-black/20 backdrop-blur-[1px]'}`}>
+                      <div className={`w-14 h-14 rounded-full flex items-center justify-center backdrop-blur-md border shadow-xl transition-transform animate-pulse group-hover:scale-110 ${isLightTheme ? 'bg-[#C48766]/30 border-[#C48766]/50 text-[#4A302B]' : 'bg-white/30 border-white/40 text-white'}`}>
                         <Play size={24} className="ml-1" fill="currentColor" />
                       </div>
                     </div>
@@ -693,11 +693,11 @@ export default function App() {
                   className={`absolute w-full max-w-[320px] rounded-[2.5rem] p-7 transition-all duration-[800ms] ease-[cubic-bezier(0.23,1,0.32,1)] cursor-pointer backdrop-blur-2xl border flex flex-col justify-between ${
                     isActive 
                       ? 'z-20 translate-y-0 scale-100 opacity-100 shadow-[0_30px_60px_rgba(0,0,0,0.2)]' 
-                      : 'z-10 translate-y-16 scale-90 opacity-60 hover:opacity-80 shadow-lg'
+                      : 'z-10 translate-y-[120px] scale-[0.92] opacity-95 hover:opacity-100 shadow-[0_20px_40px_rgba(0,0,0,0.3)]'
                   } ${
                     isBase
                       ? (isLightTheme ? 'bg-[#FAF7F2]/90 border-[#C48766]/30' : 'bg-white/10 border-white/20')
-                      : (isLightTheme ? 'bg-[#2A2010]/95 border-[#C48766]/50' : 'bg-[#050505]/95 border-[#D4AF37]/30')
+                      : (isLightTheme ? 'bg-[#2A2010]/95 border-[#C48766]/50 shadow-[0_0_30px_rgba(196,135,102,0.2)]' : 'bg-[#050505]/95 border-[#D4AF37]/50 shadow-[0_0_30px_rgba(212,175,55,0.15)]')
                   }`}
                   style={{ height: 'auto', minHeight: '460px' }}
                 >
