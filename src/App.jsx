@@ -759,7 +759,7 @@ export default function App() {
         </section>
 
         {/* --- 4.6. ОТЗЫВЫ --- */}
-        <section className="flex flex-col gap-6 w-full -mx-6 px-6 sm:mx-0 sm:px-0">
+        <section className="flex flex-col gap-6 w-full">
           <div className="flex justify-between items-end mb-2">
             <h2 className={`text-xs uppercase tracking-[0.3em] transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>Отзывы</h2>
             <button 
@@ -776,7 +776,7 @@ export default function App() {
           
           <div 
             ref={reviewsRef}
-            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide w-auto -mx-6 pl-6 pr-0 sm:mx-0 sm:pl-0 sm:pr-0 cursor-grab active:cursor-grabbing"
+            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide w-[calc(100%+48px)] -ml-6 pl-6 pr-0 sm:w-full sm:ml-0 sm:pl-0 cursor-grab active:cursor-grabbing"
             onPointerDown={(e) => {
               if (e.pointerType !== 'mouse') return;
               isDraggingReviews.current = true;
@@ -824,7 +824,7 @@ export default function App() {
         </section>
 
         {/* --- 5. CTA --- */}
-        <section className="flex flex-col items-center mt-10 pb-10">
+        <section className="flex flex-col items-center pb-10">
           <button 
             onClick={(e) => {
               e.stopPropagation();
