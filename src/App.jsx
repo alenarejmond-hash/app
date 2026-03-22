@@ -357,9 +357,9 @@ export default function App() {
               if (data.table && data.table.rows) {
                 const fetchedReviews = data.table.rows.map(row => ({
                   name: row.c[0]?.v || '',
-                  text: row.c[1]?.v || '',
+                  date: row.c[1]?.v || '',
                   stars: row.c[2]?.v || 5,
-                  date: row.c[3]?.v || ''
+                  text: row.c[3]?.v || ''
                 }));
                 if (fetchedReviews.length > 0) setReviewsList(fetchedReviews.reverse());
               }
