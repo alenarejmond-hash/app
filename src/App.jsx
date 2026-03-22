@@ -776,7 +776,7 @@ export default function App() {
           
           <div 
             ref={reviewsRef}
-            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide w-auto -mx-6 px-6 sm:mx-0 sm:px-0 cursor-grab active:cursor-grabbing"
+            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide w-auto -mx-6 pl-6 pr-0 sm:mx-0 sm:pl-0 sm:pr-0 cursor-grab active:cursor-grabbing"
             onPointerDown={(e) => {
               if (e.pointerType !== 'mouse') return;
               isDraggingReviews.current = true;
@@ -819,7 +819,7 @@ export default function App() {
                 </p>
               </div>
             ))}
-            <div className="min-w-[20px] h-1"></div>
+            <div className="min-w-[24px] shrink-0 h-1"></div>
           </div>
         </section>
 
