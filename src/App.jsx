@@ -42,7 +42,7 @@ const CONFIG = {
 
   // 💥 ИНТЕГРАЦИЯ С GOOGLE SHEETS (ЗАКАЗЫ) 💥
   // 👈 ВСТАВЬТЕ СЮДА ССЫЛКУ НА СКРИПТ ДЛЯ ЗАКАЗОВ (куда будут падать заявки)
-  googleOrderScriptUrl: "https://script.google.com/macros/s/AKfycbwrrSjq6GQWsJ5Vah4MQlY6inYUfXtxb2moa9joTvfgXrwQ0c5n4ad9XkpbqXeVK9UxKg/exec",
+  googleOrderScriptUrl: "https://script.google.com/macros/s/AKfycbxmQw_NSBJ4hDx1ourPgw7PFl9qTfptEmpfw7ffw4iRiSYsc-QaApUe3TQ93eE8nY2SIQ/exec",
 
   // 6. Галерея (Мои работы) - ТЕПЕРЬ С ПОДДЕРЖКОЙ ВИДЕО!
   // 👇 ПОДСКАЗКА ОТ ИИ:
@@ -118,16 +118,39 @@ const OrderForm = ({ onClose, isLightTheme, triggerHaptic }) => {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     try {
-      if (CONFIG.googleOrderScriptUrl && !CONFIG.googleOrderScriptUrl.includes("ТВОЯ_ССЫЛКА")) {
+      // 1. Формируем JSON строго по твоему ТЗ
+      const payload = {
+        action: 'newOrder',
+        name: data.name,
+        contact: data.contact, // 👈 Наш новый контакт
+        tariff: data.tariff,
+        domain: data.domain,
+        date: new Date().toLocaleDateString('ru-RU')
+      };
+
+      // 2. 👈 ВСТАВЬ СЮДА СВОЮ ССЫЛКУ НА GOOGLE SCRIPT ЗАМЕСТО ЗАГЛУШКИ
+      const scriptUrl = "<YOUR_GOOGLE_SCRIPT_URL>";
+
+      if (scriptUrl !== "<YOUR_GOOGLE_SCRIPT_URL>") {
+        await fetch(scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+      } else if (CONFIG.googleOrderScriptUrl && !CONFIG.googleOrderScriptUrl.includes("ТВОЯ_ССЫЛКА")) {
+        // Оставила fallback на случай, если ссылка прописана вверху в CONFIG
         await fetch(CONFIG.googleOrderScriptUrl, {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'newOrder', ...data, date: new Date().toLocaleDateString('ru-RU') })
+          body: JSON.stringify(payload)
         });
       }
+      
       setIsSuccess(true);
       triggerHaptic('notification', 'success');
+      
       setTimeout(() => {
         const tg = window.Telegram?.WebApp;
         if (tg && typeof tg.close === 'function') {
@@ -157,6 +180,7 @@ const OrderForm = ({ onClose, isLightTheme, triggerHaptic }) => {
       variants={overlayVars} initial="hidden" animate="visible" exit="hidden"
       className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md"
     >
+      {/* Тот самый встроенный салют без багов внешних библиотек */}
       {isSuccess && (
         <div className="fixed inset-0 pointer-events-none z-[300] overflow-hidden">
           {[...Array(60)].map((_, i) => (
@@ -214,7 +238,7 @@ const OrderForm = ({ onClose, isLightTheme, triggerHaptic }) => {
               <input 
                 {...register('contact', { required: true })}
                 type="text" 
-                placeholder="@username Tg / ВК или номер телефона" 
+                placeholder="@username или номер телефона" 
                 className={`w-full border rounded-2xl px-5 py-4 text-sm focus:outline-none transition-all duration-300 ${isLightTheme ? 'bg-[#4A302B]/5 border-[#4A302B]/10 text-[#4A302B] placeholder-[#4A302B]/40 focus:border-[#C48766] focus:bg-white focus:shadow-[0_0_20px_rgba(196,135,102,0.15)]' : 'bg-white/5 border-white/10 text-white placeholder-white/30 focus:border-white/40 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(255,255,255,0.1)]'}`}
               />
               {errors.contact && <span className="text-red-500 text-xs mt-1 ml-2 font-medium">Контакт обязателен</span>}
