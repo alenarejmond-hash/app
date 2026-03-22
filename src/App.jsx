@@ -676,7 +676,7 @@ export default function App() {
         <section className="flex flex-col gap-6">
           <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/40' : 'text-white/40'}`}>Тариф</h2>
           
-          <div className="relative h-[440px] w-full flex justify-center items-start perspective-1000 touch-pan-y">
+          <div className="relative h-[600px] sm:h-[540px] w-full flex justify-center items-start perspective-1000 touch-pan-y">
             {CONFIG.tariffs.map((tariff) => {
               const isActive = activeTariff === tariff.id;
               const isBase = tariff.id === 'base';
@@ -699,7 +699,7 @@ export default function App() {
                       ? (isLightTheme ? 'bg-[#FAF7F2]/90 border-[#C48766]/30' : 'bg-white/10 border-white/20')
                       : (isLightTheme ? 'bg-[#2A2010]/95 border-[#C48766]/50' : 'bg-[#050505]/95 border-[#D4AF37]/30')
                   }`}
-                  style={{ height: '380px' }}
+                  style={{ height: 'auto', minHeight: '460px' }}
                 >
                   {/* Верх карты */}
                   <div>
