@@ -38,7 +38,7 @@ const CONFIG = {
   googleSheetUrl: "https://docs.google.com/spreadsheets/d/1_Cez-q6TBrcAWRXJtIH9Rtt8ZkYZrbcX7fCd74E9zLY/edit?gid=0#gid=0",
   
   // 👈 2. ВСТАВЬТЕ СЮДА ССЫЛКУ НА РАЗВЕРНУТЫЙ WEB APP GOOGLE SCRIPT (для отправки новых)
-  googleScriptUrl: "https://script.google.com/macros/s/AKfycbwl9umrgXt5lUkTnU5Aak-nU2VMA32RrzcaBlfIROqFy0Q0il_qG4TAfPK2XWDJtEiWyQ/exec",
+  googleScriptUrl: "https://script.google.com/macros/s/AKfycbxD0egYBNTde1_OohQatSnl9yCt7EavjOXc-BsXgKsr8746irf7B6rNPMAqY2Mq9oub4w/exec",
 
   // 💥 ИНТЕГРАЦИЯ С GOOGLE SHEETS (ЗАКАЗЫ) 💥
   // 👈 ВСТАВЬТЕ СЮДА ССЫЛКУ НА СКРИПТ ДЛЯ ЗАКАЗОВ (куда будут падать заявки)
@@ -210,6 +210,16 @@ const OrderForm = ({ onClose, isLightTheme, triggerHaptic }) => {
               {errors.name && <span className="text-red-500 text-xs mt-1 ml-2 font-medium">Имя обязательно</span>}
             </motion.div>
 
+            <motion.div variants={itemVars}>
+              <input 
+                {...register('contact', { required: true })}
+                type="text" 
+                placeholder="@username Tg / ВК или номер телефона" 
+                className={`w-full border rounded-2xl px-5 py-4 text-sm focus:outline-none transition-all duration-300 ${isLightTheme ? 'bg-[#4A302B]/5 border-[#4A302B]/10 text-[#4A302B] placeholder-[#4A302B]/40 focus:border-[#C48766] focus:bg-white focus:shadow-[0_0_20px_rgba(196,135,102,0.15)]' : 'bg-white/5 border-white/10 text-white placeholder-white/30 focus:border-white/40 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(255,255,255,0.1)]'}`}
+              />
+              {errors.contact && <span className="text-red-500 text-xs mt-1 ml-2 font-medium">Контакт обязателен</span>}
+            </motion.div>
+
             <motion.div variants={itemVars} className="flex flex-col gap-3">
               <p className={`text-[10px] uppercase tracking-widest pl-2 ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/40'}`}>Выбор тарифа</p>
               <div className="grid grid-cols-2 gap-3">
@@ -358,8 +368,8 @@ export default function App() {
                 const fetchedReviews = data.table.rows.map(row => ({
                   name: row.c[0]?.v || '',
                   date: row.c[1]?.v || '',
-                  stars: row.c[2]?.v || 5,
-                  text: row.c[3]?.v || ''
+                  text: row.c[2]?.v || '',
+                  stars: row.c[3]?.v || 5
                 }));
                 if (fetchedReviews.length > 0) setReviewsList(fetchedReviews.reverse());
               }
