@@ -50,7 +50,7 @@ const CONFIG = {
 
   // 7. Инвестиции (Тарифы) в стиле Apple Wallet
   // 👇 ПОДСКАЗКА ОТ ИИ:
-  // id - НЕ ТРОГАТЬ! (отвечает за магию анимаций)
+  // id - НЕ ТРОГАТЬ! (отвечает за магия анимаций)
   // title - Крупное название тарифа
   // subtitle - Мелкий текст над названием
   // price - Строка с ценой
@@ -103,7 +103,7 @@ export default function App() {
   const [isHeroRevealed, setIsHeroRevealed] = useState(false);
   const [isTelegram, setIsTelegram] = useState(false);
 
-  // 0. Безопасная функция для вибрации (ПЕРЕНЕСЕНО ВВЕРХ ДЛЯ ИСПРАВЛЕНИЯ ОШИБКИ)
+  // 0. Безопасная функция для вибрации
   const triggerHaptic = useCallback((type = 'impact', style = 'light') => {
     try {
       const tg = window.Telegram?.WebApp;
@@ -399,7 +399,7 @@ export default function App() {
 
   // 3. Magnetic Tilt Logic
   const handleTiltMove = useCallback((e) => {
-    if (!cardRef.current || isHeroRevealed) return;
+    if (!cardRef.current || isHeroRevealed || e.pointerType === 'touch') return;
     const rect = cardRef.current.getBoundingClientRect();
     
     const clientX = e.clientX;
@@ -488,10 +488,14 @@ export default function App() {
           <div 
             ref={cardRef}
             onPointerDown={(e) => {
-              e.currentTarget.setPointerCapture(e.pointerId);
+              if (e.pointerType === 'mouse') {
+                e.currentTarget.setPointerCapture(e.pointerId);
+              }
             }}
             onPointerUp={(e) => {
-              e.currentTarget.releasePointerCapture(e.pointerId);
+              if (e.pointerType === 'mouse' && e.currentTarget.hasPointerCapture(e.pointerId)) {
+                e.currentTarget.releasePointerCapture(e.pointerId);
+              }
               resetTilt();
             }}
             onPointerMove={handleTiltMove}
@@ -868,9 +872,10 @@ export default function App() {
                     setIsReviewModalOpen(false);
                     setTimeout(() => setIsReviewSubmitted(false), 300);
                   }}
-                  className={`mt-4 w-full py-3 border rounded-xl text-sm transition-colors ${isLightTheme ? 'bg-[#4A302B]/5 hover:bg-[#4A302B]/10 border-[#4A302B]/10 text-[#4A302B]' : 'bg-white/10 hover:bg-white/20 border-white/5 text-white'}`}
+                  className={`group relative w-full mt-6 py-4 font-medium rounded-2xl transition-all duration-300 active:scale-[0.98] overflow-hidden ${isLightTheme ? 'bg-[#4A302B] text-white shadow-[0_10px_30px_rgba(74,48,43,0.2)] hover:shadow-[0_10px_40px_rgba(74,48,43,0.3)]' : 'bg-white text-black shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:shadow-[0_10px_40px_rgba(255,255,255,0.2)]'}`}
                 >
-                  Закрыть
+                  <span className="relative z-10 tracking-widest uppercase text-xs">Закрыть</span>
+                  <div className={`absolute inset-0 transition-transform duration-1000 translate-x-[-100%] group-hover:translate-x-[100%] ${isLightTheme ? 'bg-gradient-to-r from-transparent via-white/20 to-transparent' : 'bg-gradient-to-r from-transparent via-black/10 to-transparent'}`}></div>
                 </button>
               </div>
             ) : (
@@ -921,9 +926,10 @@ export default function App() {
                     setIsReviewSubmitted(true);
                     setReviewForm({ name: '', text: '', rating: 5 });
                   }}
-                  className={`w-full py-3 font-medium rounded-xl mt-2 transition-colors active:scale-[0.98] ${isLightTheme ? 'bg-[#4A302B] text-white hover:bg-[#4A302B]/90' : 'bg-white text-black hover:bg-white/90'}`}
+                  className={`group relative w-full py-4 font-medium rounded-2xl mt-4 transition-all duration-300 active:scale-[0.98] overflow-hidden ${isLightTheme ? 'bg-[#4A302B] text-white shadow-[0_10px_30px_rgba(74,48,43,0.2)] hover:shadow-[0_10px_40px_rgba(74,48,43,0.3)]' : 'bg-white text-black shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:shadow-[0_10px_40px_rgba(255,255,255,0.2)]'}`}
                 >
-                  Отправить
+                  <span className="relative z-10 tracking-widest uppercase text-xs">Отправить отзыв</span>
+                  <div className={`absolute inset-0 transition-transform duration-1000 translate-x-[-100%] group-hover:translate-x-[100%] ${isLightTheme ? 'bg-gradient-to-r from-transparent via-white/20 to-transparent' : 'bg-gradient-to-r from-transparent via-black/10 to-transparent'}`}></div>
                 </button>
               </div>
             )}
