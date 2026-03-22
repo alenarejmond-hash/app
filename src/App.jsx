@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { 
   Send, Fingerprint, Sparkles, Lock, Key, 
-  ArrowRight, Compass, Flame, Brain, Camera, Star, X, Sun, Moon, Play, Heart, Check
+  ArrowRight, Compass, Flame, Brain, Camera, Star, X, Sun, Moon, Play, Heart, Check, Loader2
 } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // =========================================================================
 // 🛠 ЗОНА НАСТРОЕК: МЕНЯЙТЕ СВОИ ДАННЫЕ, ФОТО И ТЕКСТЫ ЗДЕСЬ
@@ -32,8 +34,15 @@ const CONFIG = {
   linkVK: "https://vk.com/your_vk", // 👈 ВСТАВЬТЕ СЮДА СВОЮ ССЫЛКУ НА ВКОНТАКТЕ (между кавычек)
 
   // 💥 ИНТЕГРАЦИЯ С GOOGLE SHEETS (ОТЗЫВЫ) 💥
-  // 👈 ВСТАВЬТЕ СЮДА ССЫЛКУ НА РАЗВЕРНУТЫЙ WEB APP GOOGLE SCRIPT
-  googleScriptUrl: "ТВОЯ_ССЫЛКА_НА_GOOGLE_SCRIPT",
+  // 👈 1. ВСТАВЬТЕ СЮДА ССЫЛКУ НА САМУ ГУГЛ ТАБЛИЦУ (для чтения отзывов без ошибок)
+  googleSheetUrl: "https://docs.google.com/spreadsheets/d/1_Cez-q6TBrcAWRXJtIH9Rtt8ZkYZrbcX7fCd74E9zLY/edit?gid=0#gid=0",
+  
+  // 👈 2. ВСТАВЬТЕ СЮДА ССЫЛКУ НА РАЗВЕРНУТЫЙ WEB APP GOOGLE SCRIPT (для отправки новых)
+  googleScriptUrl: "https://script.google.com/macros/s/AKfycbwl9umrgXt5lUkTnU5Aak-nU2VMA32RrzcaBlfIROqFy0Q0il_qG4TAfPK2XWDJtEiWyQ/exec",
+
+  // 💥 ИНТЕГРАЦИЯ С GOOGLE SHEETS (ЗАКАЗЫ) 💥
+  // 👈 ВСТАВЬТЕ СЮДА ССЫЛКУ НА СКРИПТ ДЛЯ ЗАКАЗОВ (куда будут падать заявки)
+  googleOrderScriptUrl: "https://script.google.com/macros/s/AKfycbwrrSjq6GQWsJ5Vah4MQlY6inYUfXtxb2moa9joTvfgXrwQ0c5n4ad9XkpbqXeVK9UxKg/exec",
 
   // 6. Галерея (Мои работы) - ТЕПЕРЬ С ПОДДЕРЖКОЙ ВИДЕО!
   // 👇 ПОДСКАЗКА ОТ ИИ:
@@ -87,6 +96,170 @@ const CONFIG = {
   ]
 };
 // =========================================================================
+
+const OrderForm = ({ onClose, isLightTheme, triggerHaptic }) => {
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm({
+    defaultValues: { tariff: 'Pro', domain: false }
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
+
+  useEffect(() => {
+    const handleResize = () => setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    window.addEventListener('resize', handleResize);
+    triggerHaptic('impact', 'light');
+    return () => window.removeEventListener('resize', handleResize);
+  }, [triggerHaptic]);
+
+  const watchTariff = watch('tariff');
+  const watchDomain = watch('domain');
+
+  const onSubmit = async (data) => {
+    setIsSubmitting(true);
+    try {
+      if (CONFIG.googleOrderScriptUrl && !CONFIG.googleOrderScriptUrl.includes("ТВОЯ_ССЫЛКА")) {
+        await fetch(CONFIG.googleOrderScriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'newOrder', ...data, date: new Date().toLocaleDateString('ru-RU') })
+        });
+      }
+      setIsSuccess(true);
+      triggerHaptic('notification', 'success');
+      setTimeout(() => {
+        const tg = window.Telegram?.WebApp;
+        if (tg && typeof tg.close === 'function') {
+          tg.close();
+        } else {
+          onClose();
+        }
+      }, 3000);
+    } catch (error) {
+      console.error("Ошибка отправки:", error);
+      triggerHaptic('notification', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const overlayVars = { hidden: { opacity: 0 }, visible: { opacity: 1 } };
+  const modalVars = { 
+    hidden: { y: 100, opacity: 0 }, 
+    visible: { y: 0, opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
+    exit: { y: 100, opacity: 0, transition: { duration: 0.3 } }
+  };
+  const itemVars = { hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } };
+
+  return (
+    <motion.div 
+      variants={overlayVars} initial="hidden" animate="visible" exit="hidden"
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md"
+    >
+      {isSuccess && (
+        <div className="fixed inset-0 pointer-events-none z-[300] overflow-hidden">
+          {[...Array(60)].map((_, i) => (
+            <motion.div
+              key={i}
+              initial={{ x: '50vw', y: '100vh', scale: Math.random() + 0.5 }}
+              animate={{ 
+                x: `${Math.random() * 100}vw`, 
+                y: `${Math.random() * 100}vh`, 
+                rotate: Math.random() * 720,
+                opacity: [1, 1, 0]
+              }}
+              transition={{ duration: 2.5 + Math.random(), ease: "easeOut" }}
+              className="absolute w-3 h-3 rounded-sm"
+              style={{ backgroundColor: isLightTheme ? ['#C48766', '#4A302B', '#EFECE8'][i % 3] : ['#D4AF37', '#ffffff', '#8C64FF'][i % 3] }}
+            />
+          ))}
+        </div>
+      )}
+      
+      <motion.div 
+        variants={modalVars} initial="hidden" animate="visible" exit="exit"
+        className={`relative w-full max-w-md p-8 sm:p-10 rounded-[2.5rem] border shadow-2xl overflow-hidden ${isLightTheme ? 'bg-[#FAF7F2]/90 border-[#C48766]/30 shadow-[0_30px_60px_rgba(196,135,102,0.15)]' : 'bg-[#0a0a0a]/90 border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.6)]'}`}
+      >
+        <button onClick={() => { triggerHaptic('impact', 'light'); onClose(); }} className={`absolute top-6 right-6 transition-colors hover:scale-110 active:scale-95 ${isLightTheme ? 'text-[#4A302B]/40 hover:text-[#4A302B]' : 'text-white/40 hover:text-white'}`}>
+          <X size={20} />
+        </button>
+
+        {isSuccess ? (
+          <motion.div variants={itemVars} className="flex flex-col items-center justify-center py-8 text-center gap-4">
+            <div className={`w-16 h-16 rounded-full border flex items-center justify-center mb-2 ${isLightTheme ? 'bg-[#C48766]/10 border-[#C48766]/30 shadow-[0_0_30px_rgba(196,135,102,0.2)]' : 'bg-white/5 border-white/10 shadow-[0_0_30px_rgba(255,255,255,0.05)]'}`}>
+              <Sparkles className={isLightTheme ? 'text-[#C48766]' : 'text-white/80'} size={28} />
+            </div>
+            <h3 className={`text-2xl font-light tracking-wide ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>Бриф зафиксирован ✨</h3>
+            <p className={`text-sm font-light leading-relaxed ${isLightTheme ? 'text-[#4A302B]/60' : 'text-white/50'}`}>Скоро я свяжусь с вами для обсуждения деталей.</p>
+          </motion.div>
+        ) : (
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+            <motion.div variants={itemVars}>
+              <h3 className={`text-2xl font-light tracking-wide mb-1 ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>Ваш Digital-мир</h3>
+              <p className={`text-xs font-light tracking-wide uppercase ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/40'}`}>Заполните детали проекта</p>
+            </motion.div>
+
+            <motion.div variants={itemVars}>
+              <input 
+                {...register('name', { required: true })}
+                type="text" 
+                placeholder="Ваше Имя" 
+                className={`w-full border rounded-2xl px-5 py-4 text-sm focus:outline-none transition-all duration-300 ${isLightTheme ? 'bg-[#4A302B]/5 border-[#4A302B]/10 text-[#4A302B] placeholder-[#4A302B]/40 focus:border-[#C48766] focus:bg-white focus:shadow-[0_0_20px_rgba(196,135,102,0.15)]' : 'bg-white/5 border-white/10 text-white placeholder-white/30 focus:border-white/40 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(255,255,255,0.1)]'}`}
+              />
+              {errors.name && <span className="text-red-500 text-xs mt-1 ml-2 font-medium">Имя обязательно</span>}
+            </motion.div>
+
+            <motion.div variants={itemVars} className="flex flex-col gap-3">
+              <p className={`text-[10px] uppercase tracking-widest pl-2 ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/40'}`}>Выбор тарифа</p>
+              <div className="grid grid-cols-2 gap-3">
+                {['Pro', 'Ultra'].map((t) => (
+                  <div 
+                    key={t}
+                    onClick={() => { triggerHaptic('medium'); setValue('tariff', t); }}
+                    className={`cursor-pointer rounded-2xl p-4 border transition-all duration-300 flex flex-col items-center justify-center gap-2 active:scale-95 ${watchTariff === t ? (isLightTheme ? 'bg-[#C48766]/10 border-[#C48766] shadow-[0_0_15px_rgba(196,135,102,0.2)] text-[#4A302B]' : 'bg-white/10 border-white/40 shadow-[0_0_15px_rgba(255,255,255,0.1)] text-white') : (isLightTheme ? 'bg-transparent border-[#4A302B]/10 opacity-60 text-[#4A302B]/60' : 'bg-transparent border-white/10 opacity-50 text-white/50')}`}
+                  >
+                    <span className="text-lg font-medium tracking-wide">{t}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div variants={itemVars} 
+              onClick={() => { triggerHaptic('medium'); setValue('domain', !watchDomain); }}
+              className={`cursor-pointer flex justify-between items-center p-5 border rounded-2xl transition-all duration-300 active:scale-95 ${isLightTheme ? 'bg-[#4A302B]/5 border-[#4A302B]/10' : 'bg-white/5 border-white/10'}`}
+            >
+              <span className={`text-sm tracking-wide font-light ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>Нужен домен?</span>
+              <div className={`w-12 h-6 rounded-full flex items-center px-1 transition-colors duration-300 ${watchDomain ? (isLightTheme ? 'bg-[#C48766]' : 'bg-white') : (isLightTheme ? 'bg-[#4A302B]/20' : 'bg-white/10')}`}>
+                <motion.div 
+                  layout
+                  className={`w-4 h-4 rounded-full shadow-md ${isLightTheme ? (watchDomain ? 'bg-white' : 'bg-[#EFECE8]') : (watchDomain ? 'bg-black' : 'bg-white/50')}`}
+                  style={{ originX: watchDomain ? 1 : 0 }}
+                  animate={{ x: watchDomain ? 24 : 0 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              </div>
+            </motion.div>
+
+            <motion.button 
+              variants={itemVars}
+              disabled={isSubmitting}
+              type="submit"
+              className={`group relative w-full py-4 font-medium rounded-2xl mt-2 transition-all duration-300 active:scale-[0.98] overflow-hidden flex items-center justify-center ${isLightTheme ? 'bg-[#4A302B] text-white shadow-[0_10px_30px_rgba(74,48,43,0.2)] hover:shadow-[0_10px_40px_rgba(74,48,43,0.3)]' : 'bg-white text-black shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:shadow-[0_10px_40px_rgba(255,255,255,0.2)]'}`}
+            >
+              {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : (
+                <>
+                  <span className="relative z-10 tracking-widest uppercase text-xs">Отправить бриф</span>
+                  <div className={`absolute inset-0 transition-transform duration-1000 translate-x-[-100%] group-hover:translate-x-[100%] ${isLightTheme ? 'bg-gradient-to-r from-transparent via-white/20 to-transparent' : 'bg-gradient-to-r from-transparent via-black/10 to-transparent'}`}></div>
+                </>
+              )}
+            </motion.button>
+          </form>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+};
 
 export default function App() {
   const canvasRef = useRef(null);
@@ -154,15 +327,51 @@ export default function App() {
   const [reviewForm, setReviewForm] = useState({ name: '', text: '', rating: 5 });
   const [reviewsList, setReviewsList] = useState(CONFIG.reviews);
 
-  // Загрузка отзывов из Google Sheets
+  // State for Order Modal
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+
+  // Загрузка отзывов напрямую из Google Sheets (без ошибки CORS)
   useEffect(() => {
-    if (CONFIG.googleScriptUrl && !CONFIG.googleScriptUrl.includes("ТВОЯ_ССЫЛКА")) {
-      fetch(CONFIG.googleScriptUrl + "?action=getReviews")
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.length > 0) setReviewsList(data);
-        })
-        .catch(err => console.error("Ошибка загрузки отзывов:", err));
+    if (CONFIG.googleSheetUrl && !CONFIG.googleSheetUrl.includes("ТВОЯ_ССЫЛКА")) {
+      try {
+        // Вытаскиваем ID таблицы из твоей ссылки
+        const sheetIdMatch = CONFIG.googleSheetUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+        if (sheetIdMatch && sheetIdMatch[1]) {
+          const sheetId = sheetIdMatch[1];
+          // Кодируем русские буквы и пробелы, чтобы браузер не выдавал ошибку "Failed to fetch"
+          const sheetName = encodeURIComponent('Опубликованные отзывы');
+          // Нативный Google API для безопасного чтения таблиц
+          const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
+          
+          fetch(url)
+            .then(res => {
+              // Если Гугл не отдает данные (нет публичного доступа), выбрасываем понятную ошибку
+              if (!res.ok) throw new Error("Нет доступа к таблице. Убедитесь, что в настройках Google Таблицы включен доступ 'Все, у кого есть ссылка -> Читатель'");
+              return res.text();
+            })
+            .then(text => {
+              // Очищаем ответ от технической оболочки Google
+              const jsonStr = text.substring(47).slice(0, -2);
+              const data = JSON.parse(jsonStr);
+              
+              if (data.table && data.table.rows) {
+                const fetchedReviews = data.table.rows.map(row => ({
+                  name: row.c[0]?.v || '',
+                  text: row.c[1]?.v || '',
+                  stars: row.c[2]?.v || 5,
+                  date: row.c[3]?.v || ''
+                }));
+                if (fetchedReviews.length > 0) setReviewsList(fetchedReviews.reverse());
+              }
+            })
+            .catch(err => {
+              // Более понятный вывод ошибки в консоль
+              console.error("⚠️ Ошибка загрузки отзывов. Проверьте настройки приватности в Google Таблице:", err);
+            });
+        }
+      } catch (e) {
+        console.error("Ошибка обработки ссылки на таблицу:", e);
+      }
     }
   }, []);
 
@@ -866,7 +1075,8 @@ export default function App() {
           <button 
             onClick={(e) => {
               e.stopPropagation();
-              triggerHaptic('notification', 'success');
+              triggerHaptic('impact', 'medium');
+              setIsOrderModalOpen(true);
             }}
             className={`group relative w-full h-16 rounded-2xl backdrop-blur-[20px] border-[0.5px] flex items-center justify-center gap-3 transition-all duration-500 active:scale-[0.98] overflow-hidden mb-8 ${isLightTheme ? 'bg-[#C48766]/10 hover:bg-[#C48766]/20 border-[#C48766]/30 shadow-[0_10px_40px_rgba(196,135,102,0.15)]' : 'bg-white/[0.05] hover:bg-white/[0.1] border-white/20 shadow-[0_10px_40px_rgba(255,255,255,0.03)]'}`}
           >
@@ -1055,6 +1265,17 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* --- 8. ORDER MODAL --- */}
+      <AnimatePresence>
+        {isOrderModalOpen && (
+          <OrderForm 
+            onClose={() => setIsOrderModalOpen(false)} 
+            isLightTheme={isLightTheme} 
+            triggerHaptic={triggerHaptic} 
+          />
+        )}
+      </AnimatePresence>
 
       <style dangerouslySetInnerHTML={{__html: `
         html, body { 
