@@ -659,17 +659,17 @@ export default function App() {
                 >
                   {/* Эффект Play поверх центральной карточки */}
                   {isCenter && item.videoId && (
-                    <div className={`absolute inset-0 rounded-[2rem] flex items-center justify-center opacity-100 transition-opacity duration-300 z-10 ${isLightTheme ? 'bg-[#EFECE8]/20 backdrop-blur-[1px]' : 'bg-black/20 backdrop-blur-[1px]'}`}>
-                      <div className={`w-14 h-14 rounded-full flex items-center justify-center backdrop-blur-md border shadow-xl transition-transform animate-pulse group-hover:scale-110 ${isLightTheme ? 'bg-[#C48766]/30 border-[#C48766]/50 text-[#4A302B]' : 'bg-white/30 border-white/40 text-white'}`}>
+                    <div className={`absolute inset-0 rounded-[2rem] flex items-center justify-center opacity-100 transition-opacity duration-300 z-10 ${isLightTheme ? 'bg-[#EFECE8]/10 backdrop-blur-[1px]' : 'bg-black/10 backdrop-blur-[1px]'}`}>
+                      <div className={`w-14 h-14 rounded-full flex items-center justify-center backdrop-blur-md border shadow-md transition-transform animate-pulse group-hover:scale-110 ${isLightTheme ? 'bg-[#C48766]/10 border-[#C48766]/20 text-[#4A302B]/60' : 'bg-white/10 border-white/10 text-white/60'}`}>
                         <Play size={24} className="ml-1" fill="currentColor" />
                       </div>
                     </div>
                   )}
 
-                  <div className={`relative z-0 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/50'}`}>
+                  <div className={`relative z-20 transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/50' : 'text-white/50'}`}>
                     <item.icon size={32} strokeWidth={1.5} />
                   </div>
-                  <div className="relative z-0">
+                  <div className="relative z-20">
                     <h3 className={`text-xl font-medium tracking-wide transition-colors duration-700 mb-1 ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>{item.title}</h3>
                     <p className={`text-xs font-light transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/60' : 'text-white/40'}`}>{item.desc}</p>
                   </div>
