@@ -33,6 +33,9 @@ const CONFIG = {
   linkTelegram: "https://t.me/elenlime", // 👈 ВСТАВЬТЕ СЮДА СВОЮ ССЫЛКУ НА TELEGRAM (между кавычек)
   linkVK: "https://vk.com/elenlime", // 👈 ВСТАВЬТЕ СЮДА ССЫЛКУ НА ВКОНТАКТЕ (между кавычек)
 
+  // 👈 ВСТАВЬТЕ СЮДА ССЫЛКУ ДЛЯ КНОПКИ "ПОДЕЛИТЬСЯ" (например, прямую ссылку на вашего бота или сайт)
+  shareLink: "https://t.me/твой_бот/app", //"https://t.me/твой_бот/app" (если на бота то так выглядит ссылка)
+
   // 💥 ИНТЕГРАЦИЯ С GOOGLE SHEETS (ОТЗЫВЫ) 💥
   // 👈 1. ВСТАВЬТЕ СЮДА ССЫЛКУ НА САМУ ГУГЛ ТАБЛИЦУ (для чтения отзывов без ошибок)
   googleSheetUrl: "https://docs.google.com/spreadsheets/d/1_Cez-q6TBrcAWRXJtIH9Rtt8ZkYZrbcX7fCd74E9zLY/edit?gid=0#gid=0",
@@ -260,7 +263,8 @@ const ShareModal = ({ onClose, isLightTheme, triggerHaptic }) => {
   };
 
   const handleCopy = async () => {
-    const link = window.location.href;
+    // Берем чистую ссылку из настроек, чтобы не было "простыни" с техническими параметрами
+    const link = CONFIG.shareLink && CONFIG.shareLink !== "" ? CONFIG.shareLink : window.location.origin;
     try {
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(link);
