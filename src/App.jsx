@@ -53,12 +53,12 @@ const CONFIG = {
   //           Например, в ссылке rutube.ru/video/611bc8031620c28329867b1943f4d0d9/ --> ID это 611bc8031620c28329867b1943f4d0d9
   // Если видео пока нет, оставьте "demo1", "demo2" и т.д., чтобы была красивая заглушка.
   portfolio: [
-    { title: "Шоурил 2024", desc: "Главное видео", icon: Compass, videoId: "611bc8031620c28329867b1943f4d0d9" },
-    { title: "Психолог", desc: "Скоро...", icon: Heart, videoId: "demo1" },
-    { title: "Fire Show", desc: "Скоро...", icon: Flame, videoId: "demo2" },
-    { title: "Проект 4", desc: "В разработке", icon: Star, videoId: "demo3" },
-    { title: "Проект 5", desc: "В разработке", icon: Camera, videoId: "demo4" },
-    { title: "Проект 6", desc: "В разработке", icon: Sparkles, videoId: "demo5" },
+    { title: "ШОУРИЛ 2026", desc: "Лучшие моменты", icon: Compass, videoId: "611bc8031620c28329867b1943f4d0d9" },
+    { title: "БЛОГЕР", desc: "Для личного бренда", icon: Heart, videoId: "demo1" },
+    { title: "ТУРАГЕНТ", desc: "Экспертный подбор", icon: Flame, videoId: "demo2" },
+    { title: "АВТОРСКИЕ ТУРЫ", desc: "Эмоции, маршруты, атмосфера", icon: Star, videoId: "demo3" },
+    { title: "ПСИХОЛОГ", desc: "Запись на сессии, доверие", icon: Camera, videoId: "demo4" },
+    { title: "ЭЗОРЕТИК", desc: "Расклады, консультации, эстетика", icon: Sparkles, videoId: "demo5" },
   ],
 
   // 7. Инвестиции (Тарифы) в стиле Apple Wallet
