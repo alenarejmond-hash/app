@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { 
   Send, Fingerprint, Sparkles, Lock, Key, 
-  ArrowRight, Compass, Flame, Brain, Camera, Star, X, Sun, Moon, Play, Heart, Check, Loader2, Diamond
+  ArrowRight, Compass, Flame, Brain, Camera, Star, X, Sun, Moon, Play, Heart, Check, Loader2, Diamond, Mail
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -239,6 +239,125 @@ const TermsModal = ({ onClose, isLightTheme, triggerHaptic }) => {
             className={`group relative w-full py-4 font-medium rounded-2xl transition-all duration-300 active:scale-[0.98] overflow-hidden flex items-center justify-center ${isLightTheme ? 'bg-[#D8A0A6] text-[#150508] shadow-[0_10px_30px_rgba(216,160,166,0.2)] hover:shadow-[0_10px_40px_rgba(216,160,166,0.3)]' : 'bg-white text-black shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:shadow-[0_10px_40px_rgba(255,255,255,0.2)]'}`}
           >
             <span className="relative z-10 tracking-widest uppercase text-xs">Принимаю</span>
+            <div className={`absolute inset-0 transition-transform duration-1000 translate-x-[-100%] group-hover:translate-x-[100%] ${isLightTheme ? 'bg-gradient-to-r from-transparent via-white/20 to-transparent' : 'bg-gradient-to-r from-transparent via-black/10 to-transparent'}`}></div>
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+const ShareModal = ({ onClose, isLightTheme, triggerHaptic }) => {
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (triggerHaptic) triggerHaptic('impact', 'medium');
+  }, [triggerHaptic]);
+
+  const handleClose = () => {
+    if (triggerHaptic) triggerHaptic('impact', 'light');
+    onClose();
+  };
+
+  const handleCopy = async () => {
+    const link = window.location.href;
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(link);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = link;
+        textArea.style.position = "absolute";
+        textArea.style.left = "-999999px";
+        document.body.prepend(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        textArea.remove();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    setCopied(true);
+    if (triggerHaptic) triggerHaptic('notification', 'success');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const overlayVars = { hidden: { opacity: 0 }, visible: { opacity: 1 } };
+  const cardVars = {
+    hidden: { y: 100, rotateX: 20, opacity: 0 },
+    visible: { y: 0, rotateX: 0, opacity: 1, transition: { type: "spring", damping: 20, stiffness: 100 } },
+    exit: { y: 50, rotateX: -20, opacity: 0, transition: { duration: 0.3 } }
+  };
+
+  return (
+    <motion.div
+      variants={overlayVars} initial="hidden" animate="visible" exit="hidden"
+      onClick={handleClose}
+      className="fixed inset-0 z-[300] flex items-center justify-center p-6 bg-black/60 backdrop-blur-xl"
+      style={{ perspective: 1000 }}
+    >
+      {/* Плавающие искры на фоне */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        {[...Array(15)].map((_, i) => (
+          <motion.div
+            key={i}
+            initial={{ x: '50vw', y: '50vh', scale: 0 }}
+            animate={{
+              x: `${Math.random() * 100}vw`,
+              y: `${Math.random() * 100}vh`,
+              scale: Math.random() * 1.5 + 0.5,
+              opacity: [0, Math.random() * 0.8 + 0.2, 0]
+            }}
+            transition={{ duration: 3 + Math.random() * 3, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute w-1 h-1 rounded-full"
+            style={{ backgroundColor: isLightTheme ? '#D8A0A6' : '#D4AF37', boxShadow: isLightTheme ? '0 0 10px #D8A0A6' : '0 0 10px #D4AF37' }}
+          />
+        ))}
+      </div>
+
+      <motion.div
+        variants={cardVars} initial="hidden" animate="visible" exit="exit"
+        onClick={(e) => e.stopPropagation()}
+        className={`relative w-full max-w-sm aspect-[3/4.5] rounded-[2.5rem] border p-8 flex flex-col items-center justify-between shadow-2xl overflow-hidden ${isLightTheme ? 'bg-[#1A080C]/90 border-[#D8A0A6]/30 shadow-[0_30px_60px_rgba(216,160,166,0.2)]' : 'bg-[#0a0a0a]/90 border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.6)]'}`}
+      >
+        {/* Размытый фон внутри карточки */}
+        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
+          <img src={CONFIG.heroPhoto} alt="bg" className="w-full h-full object-cover grayscale blur-sm" />
+          <div className={`absolute inset-0 ${isLightTheme ? 'bg-gradient-to-t from-[#1A080C] via-[#1A080C]/80 to-transparent' : 'bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent'}`}></div>
+        </div>
+
+        <button onClick={handleClose} className={`absolute top-6 right-6 z-20 transition-colors hover:scale-110 active:scale-95 ${isLightTheme ? 'text-[#F5ECEE]/60 hover:text-[#F5ECEE]' : 'text-white/60 hover:text-white'}`}>
+          <X size={20} />
+        </button>
+
+        <div className="relative z-10 flex flex-col items-center mt-6 w-full">
+          <div className={`w-28 h-28 rounded-full border-[2px] p-1.5 mb-6 shadow-2xl ${isLightTheme ? 'border-[#D8A0A6]/50 shadow-[0_0_30px_rgba(216,160,166,0.2)]' : 'border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.1)]'}`}>
+            <img src={CONFIG.heroPhoto} alt={CONFIG.mastermindName} className="w-full h-full object-cover rounded-full" />
+          </div>
+          <h3 className={`text-2xl font-light tracking-widest text-center uppercase mb-2 ${isLightTheme ? 'text-[#F5ECEE]' : 'text-white'}`}>
+            {CONFIG.heroTitle1} {CONFIG.heroTitle2}
+          </h3>
+          <p className={`text-[10px] font-medium tracking-[0.3em] uppercase text-center ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white/40'}`}>
+            Digital Asset
+          </p>
+        </div>
+
+        <div className="relative z-10 w-full mb-2">
+          <div className={`p-4 rounded-3xl border text-center mb-6 backdrop-blur-md ${isLightTheme ? 'bg-[#150508]/50 border-[#D8A0A6]/20' : 'bg-white/5 border-white/10'}`}>
+            <p className={`text-[10px] uppercase tracking-[0.2em] mb-3 ${isLightTheme ? 'text-[#F5ECEE]/60' : 'text-white/50'}`}>Закрытое приглашение</p>
+            <div className="flex justify-center">
+              <Mail size={24} strokeWidth={1} className={isLightTheme ? 'text-[#D8A0A6]' : 'text-white/70'} />
+            </div>
+          </div>
+
+          <button
+            onClick={handleCopy}
+            className={`group relative w-full py-4 font-medium rounded-2xl transition-all duration-300 active:scale-[0.98] overflow-hidden flex items-center justify-center gap-3 ${isLightTheme ? 'bg-[#D8A0A6] text-[#150508] shadow-[0_10px_30px_rgba(216,160,166,0.2)]' : 'bg-white text-black shadow-[0_10px_30px_rgba(255,255,255,0.1)]'}`}
+          >
+            {copied ? <Check size={16} /> : <Mail size={16} />}
+            <span className="relative z-10 tracking-widest uppercase text-[11px]">
+              {copied ? 'Ссылка скопирована' : 'Поделиться визиткой'}
+            </span>
             <div className={`absolute inset-0 transition-transform duration-1000 translate-x-[-100%] group-hover:translate-x-[100%] ${isLightTheme ? 'bg-gradient-to-r from-transparent via-white/20 to-transparent' : 'bg-gradient-to-r from-transparent via-black/10 to-transparent'}`}></div>
           </button>
         </div>
@@ -528,6 +647,9 @@ export default function App() {
 
   // State for Terms Modal
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
+
+  // State for Share Modal
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Загрузка отзывов напрямую из Google Sheets (без ошибки CORS)
   useEffect(() => {
@@ -951,16 +1073,28 @@ export default function App() {
               <span className="text-[10px] uppercase tracking-[0.2em] font-medium">{CONFIG.headerName}</span>
             </div>
             
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                triggerHaptic('impact', 'medium');
-                setIsLightTheme(!isLightTheme);
-              }}
-              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500 z-50 ${isLightTheme ? 'bg-[#D8A0A6]/10 text-[#D8A0A6] border border-[#D8A0A6]/30 shadow-[0_0_15px_rgba(216,160,166,0.2)]' : 'bg-white/5 text-white/50 border border-white/10 hover:text-white hover:bg-white/10'}`}
-            >
-              {isLightTheme ? <Diamond size={14} /> : <Moon size={14} />}
-            </button>
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  triggerHaptic('impact', 'medium');
+                  setIsShareModalOpen(true);
+                }}
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500 z-50 ${isLightTheme ? 'bg-[#D8A0A6]/10 text-[#D8A0A6] border border-[#D8A0A6]/30 shadow-[0_0_15px_rgba(216,160,166,0.2)] hover:bg-[#D8A0A6]/20' : 'bg-white/5 text-white/50 border border-white/10 hover:text-white hover:bg-white/10'}`}
+              >
+                <Mail size={14} />
+              </button>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  triggerHaptic('impact', 'medium');
+                  setIsLightTheme(!isLightTheme);
+                }}
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500 z-50 ${isLightTheme ? 'bg-[#D8A0A6]/10 text-[#D8A0A6] border border-[#D8A0A6]/30 shadow-[0_0_15px_rgba(216,160,166,0.2)] hover:bg-[#D8A0A6]/20' : 'bg-white/5 text-white/50 border border-white/10 hover:text-white hover:bg-white/10'}`}
+              >
+                {isLightTheme ? <Diamond size={14} /> : <Moon size={14} />}
+              </button>
+            </div>
           </header>
 
           <div 
@@ -1540,6 +1674,17 @@ export default function App() {
         {isTermsModalOpen && (
           <TermsModal 
             onClose={() => setIsTermsModalOpen(false)} 
+            isLightTheme={isLightTheme} 
+            triggerHaptic={triggerHaptic} 
+          />
+        )}
+      </AnimatePresence>
+
+      {/* --- 11. SHARE MODAL --- */}
+      <AnimatePresence>
+        {isShareModalOpen && (
+          <ShareModal 
+            onClose={() => setIsShareModalOpen(false)} 
             isLightTheme={isLightTheme} 
             triggerHaptic={triggerHaptic} 
           />
