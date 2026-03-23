@@ -31,7 +31,7 @@ const CONFIG = {
   ctaText: "Заказать свой Digital-мир",
   footerText: "Design & Code by Elena Sotnikova",
   linkTelegram: "https://t.me/elenlime", // 👈 ВСТАВЬТЕ СЮДА СВОЮ ССЫЛКУ НА TELEGRAM (между кавычек)
-  linkVK: "https://vk.com/elenlime", // 👈 ВСТАВЬТЕ СЮДА СВОЮ ССЫЛКУ НА ВКОНТАКТЕ (между кавычек)
+  linkVK: "https://vk.com/elenlime", // 👈 ВСТАВЬТЕ СЮДА ССЫЛКУ НА ВКОНТАКТЕ (между кавычек)
 
   // 💥 ИНТЕГРАЦИЯ С GOOGLE SHEETS (ОТЗЫВЫ) 💥
   // 👈 1. ВСТАВЬТЕ СЮДА ССЫЛКУ НА САМУ ГУГЛ ТАБЛИЦУ (для чтения отзывов без ошибок)
@@ -810,16 +810,12 @@ export default function App() {
   };
 
   const handleHeroHoldStart = (e) => {
-    if (e?.currentTarget?.setPointerCapture) {
-      e.currentTarget.setPointerCapture(e.pointerId);
-    }
+    e.stopPropagation();
     setIsHeroRevealed(true);
     triggerHaptic('impact', 'medium');
   };
   const handleHeroHoldEnd = (e) => {
-    if (e?.currentTarget?.releasePointerCapture && e.currentTarget.hasPointerCapture(e.pointerId)) {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    }
+    e.stopPropagation();
     setIsHeroRevealed(false);
   };
 
@@ -927,7 +923,7 @@ export default function App() {
           <div className={`mt-6 w-full flex flex-col items-center justify-center gap-3 transition-opacity duration-500 ${isHeroRevealed ? 'opacity-0' : 'opacity-100'}`}>
              <div 
                className="flex flex-col items-center gap-3 cursor-pointer p-4 pointer-events-auto touch-none select-none"
-               style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
+               style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none', touchAction: 'none', WebkitTapHighlightColor: 'transparent' }}
                onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); return false; }}
                onPointerDown={handleHeroHoldStart}
                onPointerUp={handleHeroHoldEnd}
