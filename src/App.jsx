@@ -97,6 +97,81 @@ const CONFIG = {
 };
 // =========================================================================
 
+const PrivacyModal = ({ onClose, isLightTheme, triggerHaptic }) => {
+  useEffect(() => {
+    if (triggerHaptic) triggerHaptic('impact', 'light');
+  }, [triggerHaptic]);
+
+  const handleClose = () => {
+    if (triggerHaptic) triggerHaptic('impact', 'light');
+    onClose();
+  };
+
+  const overlayVars = { hidden: { opacity: 0 }, visible: { opacity: 1 } };
+  const modalVars = { 
+    hidden: { y: 50, opacity: 0 }, 
+    visible: { y: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
+    exit: { y: 50, opacity: 0, transition: { duration: 0.3 } }
+  };
+
+  return (
+    <motion.div 
+      variants={overlayVars} initial="hidden" animate="visible" exit="hidden"
+      onClick={handleClose}
+      className="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md"
+    >
+      <motion.div 
+        variants={modalVars} initial="hidden" animate="visible" exit="exit"
+        onClick={(e) => e.stopPropagation()}
+        className={`relative w-full max-w-md p-8 sm:p-10 rounded-[2.5rem] border shadow-2xl overflow-hidden ${isLightTheme ? 'bg-[#FAF7F2]/95 border-[#C48766]/30 shadow-[0_30px_60px_rgba(196,135,102,0.15)] text-[#4A302B]' : 'bg-[#0a0a0a]/95 border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.6)] text-gray-300'}`}
+      >
+        <button onClick={handleClose} className={`absolute top-6 right-6 transition-colors hover:scale-110 active:scale-95 ${isLightTheme ? 'text-[#4A302B]/40 hover:text-[#4A302B]' : 'text-white/40 hover:text-white'}`}>
+          <X size={20} />
+        </button>
+
+        <div className="flex flex-col gap-6">
+          <div>
+            <h3 className={`text-2xl font-light tracking-wide mb-2 ${isLightTheme ? 'text-[#4A302B]' : 'text-white'}`}>Ваша цифровая приватность</h3>
+          </div>
+
+          <div className="space-y-4 overflow-y-auto max-h-[50vh] pr-2 scrollbar-hide">
+            <div>
+              <h4 className={`text-sm font-bold tracking-widest mb-1 ${isLightTheme ? 'text-[#4A302B]/80' : 'text-white/80'}`}>Только суть</h4>
+              <p className="text-xs font-light leading-relaxed">Мы ценим ваше личное пространство. Собираем только то, что необходимо для создания вашего проекта: имя и контакт (Telegram или номер телефона).</p>
+            </div>
+            <div>
+              <h4 className={`text-sm font-bold tracking-widest mb-1 ${isLightTheme ? 'text-[#4A302B]/80' : 'text-white/80'}`}>Никакого спама</h4>
+              <p className="text-xs font-light leading-relaxed">Ваши данные используются исключительно для того, чтобы связаться с вами и обсудить детали заказа. Никаких рассылок и прогревов.</p>
+            </div>
+            <div>
+              <h4 className={`text-sm font-bold tracking-widest mb-1 ${isLightTheme ? 'text-[#4A302B]/80' : 'text-white/80'}`}>Полная защита</h4>
+              <p className="text-xs font-light leading-relaxed">Информация передается по защищенным каналам и хранится в закрытой экосистеме. Мы никогда не передаем ваши данные третьим лицам.</p>
+            </div>
+            <div>
+              <h4 className={`text-sm font-bold tracking-widest mb-1 ${isLightTheme ? 'text-[#4A302B]/80' : 'text-white/80'}`}>Ваше право</h4>
+              <p className="text-xs font-light leading-relaxed">Если вы хотите, чтобы мы удалили ваш бриф из системы после завершения работы — просто сообщите об этом в личной переписке.</p>
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-current/10">
+            <p className={`text-[10px] italic font-light tracking-wide text-center ${isLightTheme ? 'text-[#4A302B]/60' : 'text-white/50'}`}>
+              Ваше доверие — фундамент нашего digital-мира.<br/>Design & Code by Elena Sotnikova.
+            </p>
+          </div>
+
+          <button 
+            onClick={handleClose}
+            className={`group relative w-full py-4 font-medium rounded-2xl transition-all duration-300 active:scale-[0.98] overflow-hidden flex items-center justify-center ${isLightTheme ? 'bg-[#4A302B] text-white shadow-[0_10px_30px_rgba(74,48,43,0.2)] hover:shadow-[0_10px_40px_rgba(74,48,43,0.3)]' : 'bg-white text-black shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:shadow-[0_10px_40px_rgba(255,255,255,0.2)]'}`}
+          >
+            <span className="relative z-10 tracking-widest uppercase text-xs">Понятно</span>
+            <div className={`absolute inset-0 transition-transform duration-1000 translate-x-[-100%] group-hover:translate-x-[100%] ${isLightTheme ? 'bg-gradient-to-r from-transparent via-white/20 to-transparent' : 'bg-gradient-to-r from-transparent via-black/10 to-transparent'}`}></div>
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
 const OrderForm = ({ onClose, isLightTheme, triggerHaptic }) => {
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm({
     defaultValues: { tariff: 'Pro', domain: false }
@@ -363,6 +438,9 @@ export default function App() {
 
   // State for Order Modal
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+
+  // State for Privacy Modal
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
 
   // Загрузка отзывов напрямую из Google Sheets (без ошибки CORS)
   useEffect(() => {
@@ -1145,6 +1223,17 @@ export default function App() {
               <a href={CONFIG.linkTelegram} target="_blank" rel="noreferrer" className={`text-[10px] tracking-widest uppercase cursor-pointer transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/60 hover:text-[#4A302B]' : 'text-white/50 hover:text-white'}`}>Telegram</a>
               <a href={CONFIG.linkVK} target="_blank" rel="noreferrer" className={`text-[10px] tracking-widest uppercase cursor-pointer transition-colors duration-700 ${isLightTheme ? 'text-[#4A302B]/60 hover:text-[#4A302B]' : 'text-white/50 hover:text-white'}`}>Вконтакте</a>
             </div>
+            
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                triggerHaptic('impact', 'light');
+                setIsPrivacyModalOpen(true);
+              }}
+              className={`mt-6 text-[9px] tracking-[0.15em] uppercase transition-all duration-500 opacity-40 hover:opacity-100 ${isLightTheme ? 'text-[#4A302B] hover:text-[#4A302B]' : 'text-white hover:text-white'}`}
+            >
+              Политика конфиденциальности
+            </button>
           </div>
         </section>
 
@@ -1321,6 +1410,17 @@ export default function App() {
         {isOrderModalOpen && (
           <OrderForm 
             onClose={() => setIsOrderModalOpen(false)} 
+            isLightTheme={isLightTheme} 
+            triggerHaptic={triggerHaptic} 
+          />
+        )}
+      </AnimatePresence>
+
+      {/* --- 9. PRIVACY MODAL --- */}
+      <AnimatePresence>
+        {isPrivacyModalOpen && (
+          <PrivacyModal 
+            onClose={() => setIsPrivacyModalOpen(false)} 
             isLightTheme={isLightTheme} 
             triggerHaptic={triggerHaptic} 
           />
