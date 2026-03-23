@@ -34,7 +34,7 @@ const CONFIG = {
   linkVK: "https://vk.com/elenlime", // 👈 ВСТАВЬТЕ СЮДА ССЫЛКУ НА ВКОНТАКТЕ (между кавычек)
 
   // 👈 ВСТАВЬТЕ СЮДА ССЫЛКУ ДЛЯ КНОПКИ "ПОДЕЛИТЬСЯ" (например, прямую ссылку на вашего бота или сайт)
-  shareLink: "https://nice-app.ru", //"https://t.me/твой_бот/app" (если на бота то так выглядит ссылка)
+  shareLink: "https://t.me/твой_бот/app", //"https://t.me/твой_бот/app" (если на бота то так выглядит ссылка)
 
   // 💥 ИНТЕГРАЦИЯ С GOOGLE SHEETS (ОТЗЫВЫ) 💥
   // 👈 1. ВСТАВЬТЕ СЮДА ССЫЛКУ НА САМУ ГУГЛ ТАБЛИЦУ (для чтения отзывов без ошибок)
@@ -242,126 +242,6 @@ const TermsModal = ({ onClose, isLightTheme, triggerHaptic }) => {
             className={`group relative w-full py-4 font-medium rounded-2xl transition-all duration-300 active:scale-[0.98] overflow-hidden flex items-center justify-center ${isLightTheme ? 'bg-[#D8A0A6] text-[#150508] shadow-[0_10px_30px_rgba(216,160,166,0.2)] hover:shadow-[0_10px_40px_rgba(216,160,166,0.3)]' : 'bg-white text-black shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:shadow-[0_10px_40px_rgba(255,255,255,0.2)]'}`}
           >
             <span className="relative z-10 tracking-widest uppercase text-xs">Принимаю</span>
-            <div className={`absolute inset-0 transition-transform duration-1000 translate-x-[-100%] group-hover:translate-x-[100%] ${isLightTheme ? 'bg-gradient-to-r from-transparent via-white/20 to-transparent' : 'bg-gradient-to-r from-transparent via-black/10 to-transparent'}`}></div>
-          </button>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-};
-
-const ShareModal = ({ onClose, isLightTheme, triggerHaptic }) => {
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    if (triggerHaptic) triggerHaptic('impact', 'medium');
-  }, [triggerHaptic]);
-
-  const handleClose = () => {
-    if (triggerHaptic) triggerHaptic('impact', 'light');
-    onClose();
-  };
-
-  const handleCopy = async () => {
-    // Берем чистую ссылку из настроек, чтобы не было "простыни" с техническими параметрами
-    const link = CONFIG.shareLink && CONFIG.shareLink !== "" ? CONFIG.shareLink : window.location.origin;
-    try {
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(link);
-      } else {
-        const textArea = document.createElement("textarea");
-        textArea.value = link;
-        textArea.style.position = "absolute";
-        textArea.style.left = "-999999px";
-        document.body.prepend(textArea);
-        textArea.select();
-        document.execCommand("copy");
-        textArea.remove();
-      }
-    } catch (error) {
-      console.error(error);
-    }
-    setCopied(true);
-    if (triggerHaptic) triggerHaptic('notification', 'success');
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const overlayVars = { hidden: { opacity: 0 }, visible: { opacity: 1 } };
-  const cardVars = {
-    hidden: { y: 100, rotateX: 20, opacity: 0 },
-    visible: { y: 0, rotateX: 0, opacity: 1, transition: { type: "spring", damping: 20, stiffness: 100 } },
-    exit: { y: 50, rotateX: -20, opacity: 0, transition: { duration: 0.3 } }
-  };
-
-  return (
-    <motion.div
-      variants={overlayVars} initial="hidden" animate="visible" exit="hidden"
-      onClick={handleClose}
-      className="fixed inset-0 z-[300] flex items-center justify-center p-6 bg-black/60 backdrop-blur-xl"
-      style={{ perspective: 1000 }}
-    >
-      {/* Плавающие искры на фоне */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        {[...Array(15)].map((_, i) => (
-          <motion.div
-            key={i}
-            initial={{ x: '50vw', y: '50vh', scale: 0 }}
-            animate={{
-              x: `${Math.random() * 100}vw`,
-              y: `${Math.random() * 100}vh`,
-              scale: Math.random() * 1.5 + 0.5,
-              opacity: [0, Math.random() * 0.8 + 0.2, 0]
-            }}
-            transition={{ duration: 3 + Math.random() * 3, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute w-1 h-1 rounded-full"
-            style={{ backgroundColor: isLightTheme ? '#D8A0A6' : '#D4AF37', boxShadow: isLightTheme ? '0 0 10px #D8A0A6' : '0 0 10px #D4AF37' }}
-          />
-        ))}
-      </div>
-
-      <motion.div
-        variants={cardVars} initial="hidden" animate="visible" exit="exit"
-        onClick={(e) => e.stopPropagation()}
-        className={`relative w-full max-w-sm aspect-[3/4.5] rounded-[2.5rem] border p-8 flex flex-col items-center justify-between shadow-2xl overflow-hidden ${isLightTheme ? 'bg-[#1A080C]/90 border-[#D8A0A6]/30 shadow-[0_30px_60px_rgba(216,160,166,0.2)]' : 'bg-[#0a0a0a]/90 border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.6)]'}`}
-      >
-        {/* Размытый фон внутри карточки */}
-        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
-          <img src={CONFIG.heroPhoto} alt="bg" className="w-full h-full object-cover grayscale blur-sm" />
-          <div className={`absolute inset-0 ${isLightTheme ? 'bg-gradient-to-t from-[#1A080C] via-[#1A080C]/80 to-transparent' : 'bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent'}`}></div>
-        </div>
-
-        <button onClick={handleClose} className={`absolute top-6 right-6 z-20 transition-colors hover:scale-110 active:scale-95 ${isLightTheme ? 'text-[#F5ECEE]/60 hover:text-[#F5ECEE]' : 'text-white/60 hover:text-white'}`}>
-          <X size={20} />
-        </button>
-
-        <div className="relative z-10 flex flex-col items-center mt-6 w-full">
-          <div className={`w-28 h-28 rounded-full border-[2px] p-1.5 mb-6 shadow-2xl ${isLightTheme ? 'border-[#D8A0A6]/50 shadow-[0_0_30px_rgba(216,160,166,0.2)]' : 'border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.1)]'}`}>
-            <img src={CONFIG.heroPhoto} alt={CONFIG.mastermindName} className="w-full h-full object-cover rounded-full" />
-          </div>
-          <h3 className={`text-2xl font-light tracking-widest text-center uppercase mb-2 ${isLightTheme ? 'text-[#F5ECEE]' : 'text-white'}`}>
-            {CONFIG.heroTitle1} {CONFIG.heroTitle2}
-          </h3>
-          <p className={`text-[10px] font-medium tracking-[0.3em] uppercase text-center ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white/40'}`}>
-            Digital Asset
-          </p>
-        </div>
-
-        <div className="relative z-10 w-full mb-2">
-          <div className={`p-4 rounded-3xl border text-center mb-6 backdrop-blur-md ${isLightTheme ? 'bg-[#150508]/50 border-[#D8A0A6]/20' : 'bg-white/5 border-white/10'}`}>
-            <p className={`text-[10px] uppercase tracking-[0.2em] mb-3 ${isLightTheme ? 'text-[#F5ECEE]/60' : 'text-white/50'}`}>Закрытое приглашение</p>
-            <div className="flex justify-center">
-              <Mail size={24} strokeWidth={1} className={isLightTheme ? 'text-[#D8A0A6]' : 'text-white/70'} />
-            </div>
-          </div>
-
-          <button
-            onClick={handleCopy}
-            className={`group relative w-full py-4 font-medium rounded-2xl transition-all duration-300 active:scale-[0.98] overflow-hidden flex items-center justify-center gap-3 ${isLightTheme ? 'bg-[#D8A0A6] text-[#150508] shadow-[0_10px_30px_rgba(216,160,166,0.2)]' : 'bg-white text-black shadow-[0_10px_30px_rgba(255,255,255,0.1)]'}`}
-          >
-            {copied ? <Check size={16} /> : <Mail size={16} />}
-            <span className="relative z-10 tracking-widest uppercase text-[11px]">
-              {copied ? 'Ссылка скопирована' : 'Поделиться визиткой'}
-            </span>
             <div className={`absolute inset-0 transition-transform duration-1000 translate-x-[-100%] group-hover:translate-x-[100%] ${isLightTheme ? 'bg-gradient-to-r from-transparent via-white/20 to-transparent' : 'bg-gradient-to-r from-transparent via-black/10 to-transparent'}`}></div>
           </button>
         </div>
@@ -652,8 +532,32 @@ export default function App() {
   // State for Terms Modal
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
 
-  // State for Share Modal
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  // State & Handler for 3D Flip Share Card
+  const [isShareFlipped, setIsShareFlipped] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    const link = CONFIG.shareLink && CONFIG.shareLink !== "" ? CONFIG.shareLink : window.location.origin;
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(link);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = link;
+        textArea.style.position = "absolute";
+        textArea.style.left = "-999999px";
+        document.body.prepend(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        textArea.remove();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    setCopied(true);
+    triggerHaptic('notification', 'success');
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   // Загрузка отзывов напрямую из Google Sheets (без ошибки CORS)
   useEffect(() => {
@@ -982,7 +886,7 @@ export default function App() {
 
   // 3. Magnetic Tilt Logic
   const handleTiltMove = useCallback((e) => {
-    if (!cardRef.current || isHeroRevealed || e.pointerType === 'touch') return;
+    if (!cardRef.current || isHeroRevealed || e.pointerType === 'touch' || isShareFlipped) return;
     const rect = cardRef.current.getBoundingClientRect();
     
     const clientX = e.clientX;
@@ -1006,14 +910,16 @@ export default function App() {
     } else {
       isMaxTiltRef.current = false;
     }
-  }, [isHeroRevealed]);
+  }, [isHeroRevealed, isShareFlipped]);
 
   const resetTilt = () => {
+    if(isShareFlipped) return;
     setTilt({ rotateX: 0, rotateY: 0 });
     isMaxTiltRef.current = false;
   };
 
   const handleHeroHoldStart = (e) => {
+    if (isShareFlipped) return;
     e.stopPropagation();
     setIsHeroRevealed(true);
     triggerHaptic('impact', 'medium');
@@ -1044,6 +950,34 @@ export default function App() {
             <div className={`mt-4 text-[10px] uppercase tracking-widest ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white/40'}`}>
               Загрузка...
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* --- FLIP SPARKS BACKGROUND --- */}
+      <AnimatePresence>
+        {isShareFlipped && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[5] pointer-events-none overflow-hidden"
+          >
+            {[...Array(20)].map((_, i) => (
+              <motion.div
+                key={`spark-${i}`}
+                initial={{ x: '50vw', y: '50vh', scale: 0 }}
+                animate={{
+                  x: `${Math.random() * 100}vw`,
+                  y: `${Math.random() * 100}vh`,
+                  scale: Math.random() * 1.5 + 0.5,
+                  opacity: [0, Math.random() * 0.8 + 0.2, 0]
+                }}
+                transition={{ duration: 3 + Math.random() * 3, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute w-1 h-1 rounded-full"
+                style={{ backgroundColor: isLightTheme ? '#D8A0A6' : '#D4AF37', boxShadow: isLightTheme ? '0 0 10px #D8A0A6' : '0 0 10px #D4AF37' }}
+              />
+            ))}
           </motion.div>
         )}
       </AnimatePresence>
@@ -1082,7 +1016,7 @@ export default function App() {
                 onClick={(e) => {
                   e.stopPropagation();
                   triggerHaptic('impact', 'medium');
-                  setIsShareModalOpen(true);
+                  setIsShareFlipped(true);
                 }}
                 className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500 z-50 ${isLightTheme ? 'bg-[#D8A0A6]/10 text-[#D8A0A6] border border-[#D8A0A6]/30 shadow-[0_0_15px_rgba(216,160,166,0.2)] hover:bg-[#D8A0A6]/20' : 'bg-white/5 text-white/50 border border-white/10 hover:text-white hover:bg-white/10'}`}
               >
@@ -1104,11 +1038,13 @@ export default function App() {
           <div 
             ref={cardRef}
             onPointerDown={(e) => {
+              if (isShareFlipped) return;
               if (e.pointerType === 'mouse') {
                 e.currentTarget.setPointerCapture(e.pointerId);
               }
             }}
             onPointerUp={(e) => {
+              if (isShareFlipped) return;
               if (e.pointerType === 'mouse' && e.currentTarget.hasPointerCapture(e.pointerId)) {
                 e.currentTarget.releasePointerCapture(e.pointerId);
               }
@@ -1117,13 +1053,17 @@ export default function App() {
             onPointerMove={handleTiltMove}
             onPointerLeave={resetTilt}
             onPointerCancel={resetTilt}
-            className={`w-full relative touch-pan-y transition-all ease-out ${(tilt.rotateX !== 0 || tilt.rotateY !== 0) ? 'duration-100' : 'duration-700'} ${isHeroRevealed ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}
+            className={`w-full relative touch-pan-y transition-all ${isShareFlipped ? 'duration-[800ms] ease-[cubic-bezier(0.23,1,0.32,1)]' : (tilt.rotateX !== 0 || tilt.rotateY !== 0) ? 'duration-100 ease-out' : 'duration-700 ease-out'} ${isHeroRevealed ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}
             style={{ 
-              transform: `perspective(1000px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
+              transform: `perspective(1000px) rotateX(${isShareFlipped ? 0 : tilt.rotateX}deg) rotateY(${isShareFlipped ? 180 : tilt.rotateY}deg)`,
               transformStyle: 'preserve-3d'
             }}
           >
-            <div className={`backdrop-blur-[20px] rounded-3xl p-8 pointer-events-none transition-all duration-700 ${isLightTheme ? 'bg-[#F5ECEE]/[0.02] border-[0.5px] border-[#D8A0A6]/40 shadow-[0_20px_50px_rgba(216,160,166,0.05)]' : 'bg-white/[0.03] border-[0.5px] border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]'}`}>
+            {/* FRONT FACE */}
+            <div 
+              className={`backdrop-blur-[20px] rounded-3xl p-8 transition-all duration-700 w-full h-full ${isLightTheme ? 'bg-[#F5ECEE]/[0.02] border-[0.5px] border-[#D8A0A6]/40 shadow-[0_20px_50px_rgba(216,160,166,0.05)]' : 'bg-white/[0.03] border-[0.5px] border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]'} ${isShareFlipped ? 'pointer-events-none' : 'pointer-events-auto'}`}
+              style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+            >
               <div className={`w-10 h-10 rounded-full border flex items-center justify-center mb-8 shadow-inner transition-colors duration-700 ${isLightTheme ? 'border-[#D8A0A6]/30 bg-[#D8A0A6]/10' : 'border-white/10 bg-white/[0.02]'}`}>
                 <Sparkles className={`w-4 h-4 ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white/70'}`} strokeWidth={1.5} />
               </div>
@@ -1133,6 +1073,51 @@ export default function App() {
               <p className={`text-base font-light leading-relaxed tracking-wide transition-colors duration-700 ${isLightTheme ? 'text-[#F5ECEE]/60' : 'text-white/50'}`} style={{ transform: 'translateZ(20px)' }}>
                 {CONFIG.heroSubtitle}
               </p>
+            </div>
+
+            {/* BACK FACE (SHARE CARD) */}
+            <div
+              className={`absolute inset-0 backdrop-blur-[30px] rounded-3xl p-6 flex flex-col items-center justify-between transition-all duration-700 w-full h-full ${isLightTheme ? 'bg-[#1A080C]/90 border-[0.5px] border-[#D8A0A6]/40 shadow-[0_30px_60px_rgba(216,160,166,0.2)]' : 'bg-[#0a0a0a]/90 border-[0.5px] border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.6)]'} ${isShareFlipped ? 'pointer-events-auto' : 'pointer-events-none'}`}
+              style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)', transformStyle: 'preserve-3d' }}
+            >
+              {/* Размытый фон внутри задней карточки для глубины */}
+              <div className="absolute inset-0 z-0 opacity-20 pointer-events-none rounded-3xl overflow-hidden" style={{ transform: 'translateZ(-1px)' }}>
+                <img src={CONFIG.heroPhoto} alt="bg" className="w-full h-full object-cover grayscale blur-sm" />
+                <div className={`absolute inset-0 ${isLightTheme ? 'bg-gradient-to-t from-[#1A080C] via-[#1A080C]/80 to-transparent' : 'bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent'}`}></div>
+              </div>
+
+              <button
+                onClick={(e) => { e.stopPropagation(); triggerHaptic('impact', 'light'); setIsShareFlipped(false); }}
+                className={`absolute top-6 right-6 z-20 transition-colors hover:scale-110 active:scale-95 ${isLightTheme ? 'text-[#F5ECEE]/60 hover:text-[#F5ECEE]' : 'text-white/60 hover:text-white'}`}
+                style={{ transform: 'translateZ(30px)' }}
+              >
+                <X size={20} />
+              </button>
+
+              <div className="relative z-10 flex flex-col items-center justify-center h-full w-full pointer-events-none mt-2" style={{ transform: 'translateZ(40px)' }}>
+                <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full border-[2px] p-1 mb-4 shadow-2xl ${isLightTheme ? 'border-[#D8A0A6]/50 shadow-[0_0_30px_rgba(216,160,166,0.2)]' : 'border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.1)]'}`}>
+                  <img src={CONFIG.heroPhoto} alt={CONFIG.mastermindName} className="w-full h-full object-cover rounded-full" />
+                </div>
+                <h3 className={`text-xl sm:text-2xl font-light tracking-widest text-center uppercase mb-1 ${isLightTheme ? 'text-[#F5ECEE]' : 'text-white'}`}>
+                  {CONFIG.heroTitle1} {CONFIG.heroTitle2}
+                </h3>
+                <p className={`text-[9px] sm:text-[10px] font-medium tracking-[0.3em] uppercase text-center ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white/40'}`}>
+                  Digital Asset
+                </p>
+              </div>
+
+              <div className="relative z-10 w-full mt-auto" style={{ transform: 'translateZ(30px)' }}>
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleCopy(); }}
+                  className={`group w-full py-3.5 sm:py-4 font-medium rounded-2xl transition-all duration-300 active:scale-[0.98] overflow-hidden flex items-center justify-center gap-3 ${isLightTheme ? 'bg-[#D8A0A6] text-[#150508] shadow-[0_10px_30px_rgba(216,160,166,0.2)]' : 'bg-white text-black shadow-[0_10px_30px_rgba(255,255,255,0.1)]'}`}
+                >
+                  {copied ? <Check size={16} /> : <Mail size={16} />}
+                  <span className="relative z-10 tracking-widest uppercase text-[10px] sm:text-[11px]">
+                    {copied ? 'Ссылка скопирована' : 'Поделиться визиткой'}
+                  </span>
+                  <div className={`absolute inset-0 transition-transform duration-1000 translate-x-[-100%] group-hover:translate-x-[100%] ${isLightTheme ? 'bg-gradient-to-r from-transparent via-white/20 to-transparent' : 'bg-gradient-to-r from-transparent via-black/10 to-transparent'}`}></div>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -1678,17 +1663,6 @@ export default function App() {
         {isTermsModalOpen && (
           <TermsModal 
             onClose={() => setIsTermsModalOpen(false)} 
-            isLightTheme={isLightTheme} 
-            triggerHaptic={triggerHaptic} 
-          />
-        )}
-      </AnimatePresence>
-
-      {/* --- 11. SHARE MODAL --- */}
-      <AnimatePresence>
-        {isShareModalOpen && (
-          <ShareModal 
-            onClose={() => setIsShareModalOpen(false)} 
             isLightTheme={isLightTheme} 
             triggerHaptic={triggerHaptic} 
           />
