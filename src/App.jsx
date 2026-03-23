@@ -30,8 +30,8 @@ const CONFIG = {
   // 5. Кнопка связи и подвал (Футер)
   ctaText: "Заказать свой Digital-мир",
   footerText: "Design & Code by Elena Sotnikova",
-  linkTelegram: "https://t.me/your_telegram", // 👈 ВСТАВЬТЕ СЮДА СВОЮ ССЫЛКУ НА TELEGRAM (между кавычек)
-  linkVK: "https://vk.com/your_vk", // 👈 ВСТАВЬТЕ СЮДА СВОЮ ССЫЛКУ НА ВКОНТАКТЕ (между кавычек)
+  linkTelegram: "https://t.me/elenlime", // 👈 ВСТАВЬТЕ СЮДА СВОЮ ССЫЛКУ НА TELEGRAM (между кавычек)
+  linkVK: "https://vk.com/elenlime", // 👈 ВСТАВЬТЕ СЮДА СВОЮ ССЫЛКУ НА ВКОНТАКТЕ (между кавычек)
 
   // 💥 ИНТЕГРАЦИЯ С GOOGLE SHEETS (ОТЗЫВЫ) 💥
   // 👈 1. ВСТАВЬТЕ СЮДА ССЫЛКУ НА САМУ ГУГЛ ТАБЛИЦУ (для чтения отзывов без ошибок)
