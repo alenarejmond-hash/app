@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { 
   Send, Fingerprint, Sparkles, Lock, Key, 
-  ArrowRight, Compass, Flame, Brain, Camera, Star, X, Sun, Moon, Play, Heart, Check, Loader2, Diamond, Mail
+  ArrowRight, Compass, Flame, Brain, Camera, Star, X, Sun, Moon, Play, Heart, Check, Loader2, Diamond, Mail, Image as ImageIcon
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -47,20 +47,21 @@ const CONFIG = {
   // 👈 ВСТАВЬТЕ СЮДА ССЫЛКУ НА СКРИПТ ДЛЯ ЗАКАЗОВ (куда будут падать заявки)
   googleOrderScriptUrl: "https://script.google.com/macros/s/AKfycbyHNc08of2Xf7ETl92MY833NTSNE20aK5xncdsrt2CFw9BqGwtfK8VusHA4RNPMV1M/exec",
 
-  // 6. Галерея (Мои работы) - ТЕПЕРЬ С ПОДДЕРЖКОЙ ВИДЕО!
+  // 6. Галерея (Мои работы) - ТЕПЕРЬ С ПОДДЕРЖКОЙ ВИДЕО И ФОТО!
   // 👇 ПОДСКАЗКА ОТ ИИ:
   // title - Название проекта на карточке (например: "Шоурил 2024")
   // desc - Короткое описание под названием (например: "Главное видео")
   // icon - Иконка проекта (Можно писать: Compass, Heart, Flame, Star, Camera, Sparkles)
   // videoId - ID видео на RuTube. Это набор букв и цифр из ссылки!
-  //           Например, в ссылке rutube.ru/video/611bc8031620c28329867b1943f4d0d9/ --> ID это 611bc8031620c28329867b1943f4d0d9
-  // Если видео пока нет, оставьте "demo1", "demo2" и т.д., чтобы была красивая заглушка.
+  // photoUrl - 👈 НОВАЯ НАСТРОЙКА: Ссылка на вертикальную картинку 9:16 (если хотите показывать фото в телефоне)
+  // Если видео или фото пока нет, оставьте "demo1" для видео или удалите photoUrl. 
+  // У проектов может быть только видео, только фото, или и то и другое сразу!
   portfolio: [
-    { title: "ШОУРИЛ 2026", desc: "Лучшие моменты", icon: Compass, videoId: "611bc8031620c28329867b1943f4d0d9" },
-    { title: "БЛОГЕР", desc: "Для личного бренда", icon: Heart, videoId: "demo1" },
+    { title: "ШОУРИЛ 2026", desc: "Лучшие моменты", icon: Compass, videoId: "611bc8031620c28329867b1943f4d0d9", photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
+    { title: "БЛОГЕР", desc: "Для личного бренда", icon: Heart, videoId: "demo1", photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
     { title: "ТУРАГЕНТ", desc: "Экспертный подбор", icon: Flame, videoId: "demo2" },
-    { title: "АВТОРСКИЕ ТУРЫ", desc: "Эмоции, маршруты, атмосфера", icon: Star, videoId: "demo3" },
-    { title: "ПСИХОЛОГ", desc: "Запись на сессии, доверие", icon: Camera, videoId: "demo4" },
+    { title: "АВТОРСКИЕ ТУРЫ", desc: "Эмоции, маршруты, атмосфера", icon: Star, videoId: "demo3", photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
+    { title: "ПСИХОЛОГ", desc: "Запись на сессии, доверие", icon: Camera, photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
     { title: "ЭЗОРЕТИК", desc: "Расклады, консультации, эстетика", icon: Sparkles, videoId: "demo5" },
   ],
 
@@ -622,6 +623,7 @@ export default function App() {
 
   // State for Video Modal (Стеклянный Кинотеатр)
   const [activeVideo, setActiveVideo] = useState(null);
+  const [activePhoto, setActivePhoto] = useState(null);
 
   // State for Portfolio Carousel (Cover Flow)
   const [portfolioIndex, setPortfolioIndex] = useState(0);
@@ -1218,6 +1220,7 @@ export default function App() {
                     if (isCenter) {
                       triggerHaptic('impact', 'light');
                       if (item.videoId) setActiveVideo(item.videoId);
+                      else if (item.photoUrl) setActivePhoto(item.photoUrl);
                     } else {
                       triggerHaptic('selection');
                       setPortfolioIndex(idx);
@@ -1238,6 +1241,20 @@ export default function App() {
                         <Play size={24} className="ml-1" fill="currentColor" />
                       </div>
                     </div>
+                  )}
+
+                  {/* Кнопка Фото в правом нижнем углу */}
+                  {isCenter && item.photoUrl && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation(); // Не активируем само видео при нажатии на фото
+                        triggerHaptic('impact', 'light');
+                        setActivePhoto(item.photoUrl);
+                      }}
+                      className={`absolute bottom-5 right-5 z-30 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md border transition-transform hover:scale-110 active:scale-95 shadow-md ${isLightTheme ? 'bg-[#150508]/40 border-[#D8A0A6]/30 text-[#D8A0A6]' : 'bg-black/40 border-white/20 text-white/80'}`}
+                    >
+                      <ImageIcon size={18} />
+                    </button>
                   )}
 
                   <div className={`relative z-20 transition-colors duration-700 ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white/50'}`}>
@@ -1584,8 +1601,8 @@ export default function App() {
         </div>
       )}
 
-      {/* --- 7. VIDEO MODAL (RUTUBE) --- */}
-      {activeVideo && (
+      {/* --- 7. MEDIA MODAL (RUTUBE ИЛИ ФОТО 9:16) --- */}
+      {(activeVideo || activePhoto) && (
         <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-[30px] transition-all duration-700 ${isLightTheme ? 'bg-[#150508]/80' : 'bg-black/80'}`}>
           
           {/* Кнопка закрытия (вынесена за пределы телефона и адаптируется под Telegram) */}
@@ -1593,6 +1610,7 @@ export default function App() {
             onClick={() => {
               triggerHaptic('impact', 'light');
               setActiveVideo(null);
+              setActivePhoto(null);
             }}
             className={`absolute ${isTelegram ? 'top-28' : 'top-6 sm:top-8'} right-6 sm:right-8 z-[110] w-12 h-12 rounded-full flex items-center justify-center border backdrop-blur-md transition-all hover:scale-110 active:scale-95 shadow-xl ${isLightTheme ? 'bg-[#1A080C]/90 border-[#D8A0A6]/30 text-[#D8A0A6] shadow-[0_10px_30px_rgba(216,160,166,0.2)]' : 'bg-white/10 border-white/20 text-white hover:bg-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)]'}`}
           >
@@ -1614,7 +1632,14 @@ export default function App() {
               {/* Блики на стекле смартфона */}
               <div className="absolute inset-0 z-20 pointer-events-none rounded-[2.5rem] shadow-[inset_0_0_10px_rgba(255,255,255,0.1)]"></div>
 
-              {activeVideo?.startsWith('demo') ? (
+              {/* --- КОНТЕНТ (ФОТО ИЛИ ВИДЕО) --- */}
+              {activePhoto ? (
+                <img
+                  src={activePhoto}
+                  alt="Portfolio Story"
+                  className="absolute inset-0 w-full h-full object-cover z-10 pt-[15px] scale-[1.02] bg-black"
+                />
+              ) : activeVideo?.startsWith('demo') ? (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-[#0a0a0a]">
                   <Play size={48} className="mb-4 opacity-20 text-white" />
                   <p className="text-lg font-medium tracking-wide text-white">Скоро здесь будет новое видео</p>
