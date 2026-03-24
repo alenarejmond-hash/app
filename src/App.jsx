@@ -59,6 +59,7 @@ const CONFIG = {
   portfolio: [
     { title: "ШОУРИЛ 2026", desc: "Лучшие моменты", icon: Compass, videoId: "611bc8031620c28329867b1943f4d0d9", photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
     { title: "БЛОГЕР", desc: "Для личного бренда", icon: Heart, videoId: "demo1", photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
+    { title: "РЕЖИССЁР", desc: "Хранительница традиций", icon: Heart, videoId: "demo1", photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
     { title: "ТУРАГЕНТ", desc: "Экспертный подбор", icon: Flame, videoId: "demo2" },
     { title: "АВТОРСКИЕ ТУРЫ", desc: "Эмоции, маршруты, атмосфера", icon: Star, videoId: "demo3", photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
     { title: "ПСИХОЛОГ", desc: "Запись на сессии, доверие", icon: Camera, photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
