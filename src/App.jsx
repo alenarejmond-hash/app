@@ -933,7 +933,7 @@ export default function App() {
 
   return (
     <div 
-      className={`relative min-h-[100dvh] font-sans overflow-x-hidden select-none transition-colors duration-700 ${isLightTheme ? 'bg-[#150508] text-[#F5ECEE] selection:bg-[#D8A0A6]/30' : 'bg-[#050505] text-white/90 selection:bg-white/20'}`}
+      className={`relative min-h-[100dvh] font-sans overflow-x-clip select-none transition-colors duration-700 ${isLightTheme ? 'bg-[#150508] text-[#F5ECEE] selection:bg-[#D8A0A6]/30' : 'bg-[#050505] text-white/90 selection:bg-white/20'}`}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onClick={() => triggerHaptic('impact', 'light')}
@@ -1155,7 +1155,7 @@ export default function App() {
           <div 
             ref={portfolioRef}
             className="relative h-[280px] sm:h-[320px] w-full flex justify-center items-center touch-pan-y"
-            style={{ perspective: '1200px', transformStyle: 'preserve-3d' }}
+            style={{ perspective: '1200px' }}
             onPointerDown={(e) => {
               isDraggingPortfolio.current = true;
               touchStartX.current = e.clientX;
@@ -1700,7 +1700,7 @@ export default function App() {
           height: auto !important; 
           min-height: 100vh !important; 
           overflow-y: visible !important; 
-          overflow-x: hidden !important; 
+          overflow-x: clip !important; 
           overscroll-behavior-y: auto !important;
           touch-action: auto !important;
         }
@@ -1709,6 +1709,7 @@ export default function App() {
           height: auto !important;
           min-height: 100vh !important;
           overflow: visible !important;
+          overflow-x: clip !important;
         }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
