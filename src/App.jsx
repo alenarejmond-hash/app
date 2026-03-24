@@ -1185,7 +1185,7 @@ export default function App() {
           
           <div 
             ref={portfolioRef}
-            className="relative h-[280px] sm:h-[320px] w-full flex justify-center items-center touch-pan-y"
+            className="relative h-[280px] sm:h-[320px] w-full flex justify-center items-center touch-pan-y cursor-grab active:cursor-grabbing"
             style={{ perspective: '1200px' }}
             onPointerDown={(e) => {
               isDraggingPortfolio.current = true;
@@ -1195,23 +1195,38 @@ export default function App() {
             }}
             onPointerMove={(e) => {
               if (isDraggingPortfolio.current) {
+                if (e.pointerType === 'mouse') {
+                  e.preventDefault();
+                  if (!e.currentTarget.hasPointerCapture(e.pointerId)) {
+                    e.currentTarget.setPointerCapture(e.pointerId);
+                  }
+                }
                 touchEndX.current = e.clientX;
               }
             }}
-            onPointerUp={() => {
+            onPointerUp={(e) => {
               if (isDraggingPortfolio.current) {
                 isDraggingPortfolio.current = false;
                 handlePortfolioSwipe();
               }
+              if (e.pointerType === 'mouse' && e.currentTarget.hasPointerCapture(e.pointerId)) {
+                e.currentTarget.releasePointerCapture(e.pointerId);
+              }
             }}
-            onPointerLeave={() => {
+            onPointerLeave={(e) => {
               if (isDraggingPortfolio.current) {
                 isDraggingPortfolio.current = false;
                 handlePortfolioSwipe();
               }
+              if (e.pointerType === 'mouse' && e.currentTarget.hasPointerCapture(e.pointerId)) {
+                e.currentTarget.releasePointerCapture(e.pointerId);
+              }
             }}
-            onPointerCancel={() => {
+            onPointerCancel={(e) => {
               isDraggingPortfolio.current = false;
+              if (e.pointerType === 'mouse' && e.currentTarget.hasPointerCapture(e.pointerId)) {
+                e.currentTarget.releasePointerCapture(e.pointerId);
+              }
             }}
           >
             {CONFIG.portfolio.map((item, idx) => {
