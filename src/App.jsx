@@ -1003,7 +1003,7 @@ export default function App() {
       <canvas ref={canvasRef} className="fixed inset-0 z-[1] pointer-events-none opacity-80" />
 
       {/* Скроллируемый контент */}
-      <div className="relative z-10 w-full max-w-[500px] mx-auto flex flex-col px-6 pt-4 pb-4 gap-16">
+      <div className="relative z-10 w-full max-w-[500px] mx-auto flex flex-col px-6 pt-4 pb-8 gap-24">
         
         {/* --- 1. HERO --- */}
         <section className={`relative flex flex-col ${heroPadding}`}>
@@ -1434,7 +1434,7 @@ export default function App() {
         </section>
 
         {/* --- 5. CTA --- */}
-        <section className="flex flex-col items-center pb-6">
+        <section className="flex flex-col items-center pb-10">
           <button 
             onClick={(e) => {
               e.stopPropagation();
@@ -1697,19 +1697,17 @@ export default function App() {
       <style dangerouslySetInnerHTML={{__html: `
         html, body { 
           position: static !important;
-          margin: 0 !important;
-          padding: 0 !important;
           height: auto !important; 
-          min-height: 100% !important; 
-          overflow-y: auto !important; 
+          min-height: 100vh !important; 
+          overflow-y: visible !important; 
           overflow-x: hidden !important; 
-          overscroll-behavior-y: none !important;
+          overscroll-behavior-y: auto !important;
           touch-action: auto !important;
         }
         #root {
           display: block !important;
           height: auto !important;
-          min-height: 100% !important;
+          min-height: 100vh !important;
           overflow: visible !important;
         }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
