@@ -1003,7 +1003,7 @@ export default function App() {
       <canvas ref={canvasRef} className="fixed inset-0 z-[1] pointer-events-none opacity-80" />
 
       {/* Скроллируемый контент */}
-      <div className="relative z-10 w-full max-w-[500px] mx-auto flex flex-col px-6 pt-4 pb-8 gap-24">
+      <div className="relative z-10 w-full max-w-[500px] mx-auto flex flex-col px-6 pt-4 pb-4 gap-20">
         
         {/* --- 1. HERO --- */}
         <section className={`relative flex flex-col ${heroPadding}`}>
@@ -1288,7 +1288,7 @@ export default function App() {
         <section className="flex flex-col gap-6">
           <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#D8A0A6]/50' : 'text-white/40'}`}>Тариф</h2>
           
-          <div className="relative h-[560px] sm:h-[540px] w-full flex justify-center items-start perspective-1000 touch-pan-y">
+          <div className="relative h-[530px] w-full flex justify-center items-start perspective-1000 touch-pan-y">
             {CONFIG.tariffs.map((tariff) => {
               const isActive = activeTariff === tariff.id;
               const isBase = tariff.id === 'base';
@@ -1434,7 +1434,7 @@ export default function App() {
         </section>
 
         {/* --- 5. CTA --- */}
-        <section className="flex flex-col items-center pb-10">
+        <section className="flex flex-col items-center pb-6">
           <button 
             onClick={(e) => {
               e.stopPropagation();
@@ -1696,19 +1696,18 @@ export default function App() {
 
       <style dangerouslySetInnerHTML={{__html: `
         html, body { 
-          position: static !important;
-          height: auto !important; 
-          min-height: 100vh !important; 
-          overflow-y: visible !important; 
+          margin: 0 !important;
+          padding: 0 !important;
+          min-height: 100% !important; 
           overflow-x: hidden !important; 
-          overscroll-behavior-y: auto !important;
-          touch-action: auto !important;
+          overflow-y: auto !important; 
+          overscroll-behavior-y: none !important;
         }
         #root {
           display: block !important;
-          height: auto !important;
-          min-height: 100vh !important;
-          overflow: visible !important;
+          min-height: 100% !important;
+          overflow-x: hidden !important;
+          overflow-y: visible !important;
         }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
