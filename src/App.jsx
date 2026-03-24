@@ -1121,9 +1121,9 @@ export default function App() {
             </div>
           </div>
 
-          <div className={`mt-6 w-full flex flex-col items-center justify-center gap-3 transition-opacity duration-500 ${isHeroRevealed ? 'opacity-0' : 'opacity-100'}`}>
+          <div className={`mt-6 w-full flex flex-col items-center justify-center gap-3 transition-opacity duration-500 pointer-events-none ${isHeroRevealed ? 'opacity-0' : 'opacity-100'}`}>
              <div 
-               className="flex flex-col items-center gap-3 cursor-pointer p-4 pointer-events-auto touch-none select-none"
+               className="inline-flex flex-col items-center gap-3 cursor-pointer p-4 pointer-events-auto touch-none select-none"
                style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none', touchAction: 'none', WebkitTapHighlightColor: 'transparent' }}
                onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); return false; }}
                onPointerDown={handleHeroHoldStart}
@@ -1131,7 +1131,7 @@ export default function App() {
                onPointerLeave={handleHeroHoldEnd}
                onPointerCancel={handleHeroHoldEnd}
              >
-               <div className={`w-10 h-10 rounded-full border flex items-center justify-center animate-pulse transition-colors duration-700 ${isLightTheme ? 'border-[#D8A0A6]/20 bg-[#D8A0A6]/[0.05] shadow-[0_0_15px_rgba(216,160,166,0.1)]' : 'border-white/10 bg-white/[0.02] shadow-[0_0_15px_rgba(255,255,255,0.05)]'}`}>
+               <div className={`w-10 h-10 rounded-full border flex items-center justify-center animate-pulse transition-colors duration-700 ${isLightTheme ? 'bg-[#D8A0A6]/20 bg-[#D8A0A6]/[0.05] shadow-[0_0_15px_rgba(216,160,166,0.1)]' : 'border-white/10 bg-white/[0.02] shadow-[0_0_15px_rgba(255,255,255,0.05)]'}`}>
                   <Fingerprint className={`w-5 h-5 ${isLightTheme ? 'text-[#D8A0A6]/60' : 'text-white/50'}`} strokeWidth={1.5} />
                </div>
                <span className={`text-[10px] uppercase tracking-[0.2em] font-medium text-center transition-colors duration-700 ${isLightTheme ? 'text-[#D8A0A6]/60' : 'text-white/40'}`}>
@@ -1673,16 +1673,16 @@ export default function App() {
         html, body { 
           position: static !important;
           height: auto !important; 
-          min-height: 100vh !important; 
+          min-height: 100% !important; 
           overflow-y: visible !important; 
           overflow-x: hidden !important; 
-          overscroll-behavior-y: auto !important;
+          overscroll-behavior-y: none !important;
           touch-action: auto !important;
         }
         #root {
           display: block !important;
           height: auto !important;
-          min-height: 100vh !important;
+          min-height: 100% !important;
           overflow: visible !important;
         }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
