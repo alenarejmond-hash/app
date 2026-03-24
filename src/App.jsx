@@ -1294,14 +1294,15 @@ export default function App() {
                         initial={{ opacity: 0, scale: 0.8 }} 
                         animate={{ opacity: 1, scale: 1 }} 
                         exit={{ opacity: 0, scale: 0.9 }}
-                        /* 👇 НАСТРОЙКА ПОЗИЦИИ: Подсказка ФОТО. Меняй -top-12 (чтобы поднять/опустить) и -right-8 (чтобы сдвинуть вправо/влево) */
-                        className="absolute -top-12 -right-8 flex flex-col items-center z-40 pointer-events-none drop-shadow-2xl"
+                        className="absolute -top-12 -right-10 flex flex-col items-center z-40 pointer-events-none drop-shadow-2xl"
                       >
-                        <div className={`px-2 py-1 text-[11px] font-medium uppercase tracking-widest shadow-2xl mb-1 bg-transparent ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white'}`}>
+                        <div className={`px-2 py-1 text-[11px] font-medium uppercase tracking-widest shadow-2xl mb-1 bg-transparent whitespace-nowrap ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white'}`}>
                           Фото работ
                         </div>
-                        {/* 👇 НАСТРОЙКА СТРЕЛКИ: rotate-[135deg] (угол наклона), -translate-x-2 и translate-y-1 (микро-сдвиг стрелки к кнопке) */}
-                        <ArrowRight size={20} className={`rotate-[135deg] -translate-x-2 translate-y-1 animate-pulse drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white'}`} />
+                        <div className="flex items-center rotate-[135deg] translate-x-3 translate-y-2 animate-pulse drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                          <div className={`w-8 h-[2px] ${isLightTheme ? 'bg-[#D8A0A6]' : 'bg-white'}`}></div>
+                          <ArrowRight size={20} className={`-ml-2.5 ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white'}`} />
+                        </div>
                       </motion.div>
                     )}
                     
@@ -1310,15 +1311,13 @@ export default function App() {
                         initial={{ opacity: 0, scale: 0.8 }} 
                         animate={{ opacity: 1, scale: 1 }} 
                         exit={{ opacity: 0, scale: 0.9 }}
-                        /* 👇 НАСТРОЙКА ПОЗИЦИИ: Подсказка ВИДЕО. Меняй -left-36 (чтобы отдалить/приблизить к левому краю) и top-1/2 (выше/ниже) */
-                        className="absolute top-1/2 -left-36 -translate-y-1/2 flex items-center gap-2 z-40 pointer-events-none drop-shadow-2xl"
+                        className="absolute top-1/2 -left-[75px] sm:-left-[90px] -translate-y-1/2 flex items-center gap-1 z-40 pointer-events-none drop-shadow-2xl"
                       >
-                        <div className={`text-[11px] font-medium uppercase tracking-widest shadow-2xl bg-transparent ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white'}`}>
+                        <div className={`text-[11px] font-medium uppercase tracking-widest shadow-2xl bg-transparent whitespace-nowrap ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white'}`}>
                           Видео работ
                         </div>
-                        {/* 👇 НАСТРОЙКА УДЛИНЕННОЙ СТРЕЛКИ: w-10 (это длина палочки стрелки) */}
                         <div className="flex items-center animate-pulse drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                          <div className={`w-10 h-[2px] ${isLightTheme ? 'bg-[#D8A0A6]' : 'bg-white'}`}></div>
+                          <div className={`w-12 sm:w-16 h-[2px] ${isLightTheme ? 'bg-[#D8A0A6]' : 'bg-white'}`}></div>
                           <ArrowRight size={20} className={`-ml-2.5 ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white'}`} />
                         </div>
                       </motion.div>
