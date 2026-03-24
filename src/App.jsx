@@ -52,18 +52,18 @@ const CONFIG = {
   // title - Название проекта на карточке (например: "Шоурил 2024")
   // desc - Короткое описание под названием (например: "Главное видео")
   // icon - Иконка проекта (Можно писать: Compass, Heart, Flame, Star, Camera, Sparkles)
-  // videoId - ID видео на RuTube. Это набор букв и цифр из ссылки!
+  // videoLink - 👈 ВСТАВЬТЕ СЮДА ОБЫЧНУЮ ССЫЛКУ НА ВИДЕО (YouTube, Shorts или RuTube). Умный плеер сам её обработает!
   // photoUrl - 👈 НОВАЯ НАСТРОЙКА: Ссылка на вертикальную картинку 9:16 (если хотите показывать фото в телефоне)
   // Если видео или фото пока нет, оставьте "demo1" для видео или удалите photoUrl. 
   // У проектов может быть только видео, только фото, или и то и другое сразу!
   portfolio: [
-    { title: "ШОУРИЛ 2026", desc: "Лучшие моменты", icon: Compass, videoId: "611bc8031620c28329867b1943f4d0d9", photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
-    { title: "БЛОГЕР", desc: "Для личного бренда", icon: Heart, videoId: "demo1", photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
-    { title: "РЕЖИССЁР", desc: "Хранительница традиций", icon: Heart, videoId: "demo1", photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
-    { title: "ТУРАГЕНТ", desc: "Экспертный подбор", icon: Flame, videoId: "demo2" },
-    { title: "АВТОРСКИЕ ТУРЫ", desc: "Эмоции, маршруты, атмосфера", icon: Star, videoId: "demo3", photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
+    { title: "ШОУРИЛ 2026", desc: "Лучшие моменты", icon: Compass, videoLink: "https://rutube.ru/video/611bc8031620c28329867b1943f4d0d9/", photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
+    { title: "БЛОГЕР", desc: "Для личного бренда", icon: Heart, videoLink: "https://rutube.ru/video/private/3e7240c1b87cd5929c2f8f01f4d174e4/?p=4IUPXbjpfaztdgZ1uo_7Cg", photoUrl: "https://i.postimg.cc/KztDcrQV/polina.jpg" },
+    { title: "РЕЖИССЁР", desc: "Хранительница традиций", icon: Heart, videoLink: "demo1", photoUrl: "https://i.postimg.cc/sx48xZ3S/marina.jpg" },
+    { title: "ТУРАГЕНТ", desc: "Экспертный подбор", icon: Flame, videoLink: "demo2" },
+    { title: "АВТОРСКИЕ ТУРЫ", desc: "Эмоции, маршруты, атмосфера", icon: Star, videoLink: "demo3", photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
     { title: "ПСИХОЛОГ", desc: "Запись на сессии, доверие", icon: Camera, photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
-    { title: "ЭЗОРЕТИК", desc: "Расклады, консультации, эстетика", icon: Sparkles, videoId: "demo5" },
+    { title: "ЭЗОРЕТИК", desc: "Расклады, консультации, эстетика", icon: Sparkles, videoLink: "demo5" },
   ],
 
   // 7. Инвестиции (Тарифы) в стиле Apple Wallet
@@ -1265,7 +1265,7 @@ export default function App() {
                     if (Math.abs(touchStartX.current - touchEndX.current) > 20) return;
                     if (isCenter) {
                       triggerHaptic('impact', 'light');
-                      if (item.videoId) setActiveVideo(item.videoId);
+                      if (item.videoLink) setActiveVideo(item.videoLink);
                       else if (item.photoUrl) setActivePhoto(item.photoUrl);
                     } else {
                       triggerHaptic('selection');
@@ -1281,7 +1281,7 @@ export default function App() {
                   className={`absolute w-[200px] sm:w-[240px] h-[250px] sm:h-[280px] border rounded-[2rem] p-6 flex flex-col justify-between cursor-pointer transition-all duration-[400ms] ease-out group ${isLightTheme ? 'bg-[#1A080C]/90 border-[#D8A0A6]/30 shadow-[0_20px_50px_rgba(216,160,166,0.15)] backdrop-blur-xl' : 'bg-[#1a1a1a]/80 border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl'}`}
                 >
                   {/* Эффект Play поверх центральной карточки */}
-                  {isCenter && item.videoId && (
+                  {isCenter && item.videoLink && (
                     <div className={`absolute inset-0 rounded-[2rem] flex items-center justify-center opacity-100 transition-opacity duration-300 z-10 ${isLightTheme ? 'bg-[#150508]/40 backdrop-blur-[1px]' : 'bg-black/10 backdrop-blur-[1px]'}`}>
                       <div className={`w-14 h-14 rounded-full flex items-center justify-center backdrop-blur-md border shadow-md transition-transform animate-pulse group-hover:scale-110 ${isLightTheme ? 'bg-[#D8A0A6]/10 border-[#D8A0A6]/20 text-[#D8A0A6]/80' : 'bg-white/10 border-white/10 text-white/60'}`}>
                         <Play size={24} className="ml-1" fill="currentColor" />
@@ -1322,7 +1322,7 @@ export default function App() {
                       </motion.div>
                     )}
                     
-                    {isCenter && onboardingStep === 2 && item.videoId && (
+                    {isCenter && onboardingStep === 2 && item.videoLink && (
                       <motion.div 
                         initial={{ opacity: 0, scale: 0.8 }} 
                         animate={{ opacity: 1, scale: 1 }} 
@@ -1726,13 +1726,23 @@ export default function App() {
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-[#0a0a0a]">
                   <Play size={48} className="mb-4 opacity-20 text-white" />
                   <p className="text-lg font-medium tracking-wide text-white">Скоро здесь будет новое видео</p>
-                  <p className="text-sm mt-2 text-white/50">Добавьте ID видео с RuTube в настройки (CONFIG)</p>
+                  <p className="text-sm mt-2 text-white/50">Вставьте ссылку на видео в настройки (CONFIG)</p>
                 </div>
               ) : (
                 <iframe
                   width="100%"
                   height="100%"
-                  src={`https://rutube.ru/play/embed/${activeVideo}`}
+                  src={(() => {
+                    if (!activeVideo) return "";
+                    let url = activeVideo;
+                    // Умное преобразование любых ссылок в плеер
+                    if (url.includes("youtube.com/watch?v=")) return url.replace("watch?v=", "embed/").split("&")[0];
+                    if (url.includes("youtu.be/")) return url.replace("youtu.be/", "youtube.com/embed/").split("?")[0];
+                    if (url.includes("youtube.com/shorts/")) return url.replace("shorts/", "embed/").split("?")[0];
+                    if (url.includes("rutube.ru/video/")) return `https://rutube.ru/play/embed/${url.split("rutube.ru/video/")[1].split(/[/?]/)[0]}`;
+                    if (!url.startsWith("http")) return `https://rutube.ru/play/embed/${url}`; // Для старых ID
+                    return url;
+                  })()}
                   frameBorder="0"
                   allow="clipboard-write; autoplay"
                   allowFullScreen
