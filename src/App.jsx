@@ -58,8 +58,8 @@ const CONFIG = {
   // У проектов может быть только видео, только фото, или и то и другое сразу!
   portfolio: [
     { title: "ШОУРИЛ 2026", desc: "Лучшие моменты", icon: Compass, videoLink: "https://rutube.ru/video/611bc8031620c28329867b1943f4d0d9/", photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
-    { title: "БЛОГЕР", desc: "Для личного бренда", icon: Heart, videoLink: "https://rutube.ru/video/private/3e7240c1b87cd5929c2f8f01f4d174e4/?p=4IUPXbjpfaztdgZ1uo_7Cg", photoUrl: "https://i.postimg.cc/KztDcrQV/polina.jpg" },
-    { title: "РЕЖИССЁР", desc: "Хранительница традиций", icon: Heart, videoLink: "demo1", photoUrl: "https://i.postimg.cc/sx48xZ3S/marina.jpg" },
+    { title: "БЛОГЕР", desc: "Для личного бренда", icon: Heart, videoLink: "https://rutube.ru/video/private/3e7240c1b87cd5929c2f8f01f4d174e4/?p=4IUPXbjpfaztdgZ1uo_7Cg", photoUrl: "https://i.postimg.cc/25XBpHvn/IMG-2353.png" },
+    { title: "РЕЖИССЁР", desc: "Хранительница традиций", icon: Heart, videoLink: "demo1", photoUrl: "https://i.postimg.cc/vBVTJGGb/IMG-2359.png" },
     { title: "ТУРАГЕНТ", desc: "Экспертный подбор", icon: Flame, videoLink: "demo2" },
     { title: "АВТОРСКИЕ ТУРЫ", desc: "Эмоции, маршруты, атмосфера", icon: Star, videoLink: "demo3", photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
     { title: "ПСИХОЛОГ", desc: "Запись на сессии, доверие", icon: Camera, photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
