@@ -1062,7 +1062,7 @@ export default function App() {
                 }}
                 className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500 z-50 ${isLightTheme ? 'bg-[#D8A0A6]/10 text-[#D8A0A6] border border-[#D8A0A6]/30 shadow-[0_0_15px_rgba(216,160,166,0.2)] hover:bg-[#D8A0A6]/20' : 'bg-white/5 text-white/50 border border-white/10 hover:text-white hover:bg-white/10'}`}
               >
-                {isLightTheme ? <Diamond size={14} /> : <Moon size={14} />}
+                {isLightTheme ? <Moon size={14} /> : <Diamond size={14} />}
               </button>
             </div>
           </header>
@@ -1294,12 +1294,14 @@ export default function App() {
                         initial={{ opacity: 0, scale: 0.8 }} 
                         animate={{ opacity: 1, scale: 1 }} 
                         exit={{ opacity: 0, scale: 0.9 }}
-                        className="absolute top-[4.5rem] right-4 flex flex-col items-end z-40 pointer-events-none drop-shadow-2xl"
+                        /* 👇 НАСТРОЙКА ПОЗИЦИИ: Подсказка ФОТО. Меняй -top-12 (чтобы поднять/опустить) и -right-8 (чтобы сдвинуть вправо/влево) */
+                        className="absolute -top-12 -right-8 flex flex-col items-center z-40 pointer-events-none drop-shadow-2xl"
                       >
-                        <ArrowRight size={18} className="-rotate-45 mb-1.5 animate-bounce text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
-                        <div className={`backdrop-blur-md px-3 py-1.5 rounded-xl border text-[10px] uppercase tracking-widest shadow-2xl ${isLightTheme ? 'bg-[#150508]/70 border-[#D8A0A6]/30 text-[#D8A0A6]' : 'bg-black/60 border-white/20 text-white'}`}>
-                          Смотреть фото
+                        <div className={`px-2 py-1 text-[11px] font-medium uppercase tracking-widest shadow-2xl mb-1 bg-transparent ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white'}`}>
+                          Фото работ
                         </div>
+                        {/* 👇 НАСТРОЙКА СТРЕЛКИ: rotate-[135deg] (угол наклона), -translate-x-2 и translate-y-1 (микро-сдвиг стрелки к кнопке) */}
+                        <ArrowRight size={20} className={`rotate-[135deg] -translate-x-2 translate-y-1 animate-pulse drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white'}`} />
                       </motion.div>
                     )}
                     
@@ -1308,12 +1310,17 @@ export default function App() {
                         initial={{ opacity: 0, scale: 0.8 }} 
                         animate={{ opacity: 1, scale: 1 }} 
                         exit={{ opacity: 0, scale: 0.9 }}
-                        className="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none pb-[5.5rem] drop-shadow-2xl"
+                        /* 👇 НАСТРОЙКА ПОЗИЦИИ: Подсказка ВИДЕО. Меняй -left-36 (чтобы отдалить/приблизить к левому краю) и top-1/2 (выше/ниже) */
+                        className="absolute top-1/2 -left-36 -translate-y-1/2 flex items-center gap-2 z-40 pointer-events-none drop-shadow-2xl"
                       >
-                        <div className={`backdrop-blur-md px-3 py-1.5 rounded-xl border text-[10px] uppercase tracking-widest shadow-2xl mb-1.5 ${isLightTheme ? 'bg-[#150508]/70 border-[#D8A0A6]/30 text-[#D8A0A6]' : 'bg-black/60 border-white/20 text-white'}`}>
-                          Смотреть видео
+                        <div className={`text-[11px] font-medium uppercase tracking-widest shadow-2xl bg-transparent ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white'}`}>
+                          Видео работ
                         </div>
-                        <ArrowRight size={18} className="rotate-90 animate-bounce text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
+                        {/* 👇 НАСТРОЙКА УДЛИНЕННОЙ СТРЕЛКИ: w-10 (это длина палочки стрелки) */}
+                        <div className="flex items-center animate-pulse drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                          <div className={`w-10 h-[2px] ${isLightTheme ? 'bg-[#D8A0A6]' : 'bg-white'}`}></div>
+                          <ArrowRight size={20} className={`-ml-2.5 ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white'}`} />
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
