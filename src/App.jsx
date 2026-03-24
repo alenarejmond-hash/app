@@ -634,6 +634,10 @@ export default function App() {
   const isDraggingPortfolio = useRef(false);
   const wheelTimeoutRef = useRef(null);
 
+  // State for Onboarding Hints
+  const [onboardingStep, setOnboardingStep] = useState(0); // 0: none, 1: photo, 2: video
+  const hasTriggeredOnboarding = useRef(false);
+
   const handlePortfolioSwipe = () => {
     const swipeDistance = touchStartX.current - touchEndX.current;
     if (swipeDistance > 40) { // Свайп влево
@@ -683,6 +687,32 @@ export default function App() {
     el.addEventListener('wheel', handleWheel, { passive: false });
     return () => el.removeEventListener('wheel', handleWheel);
   }, [portfolioIndex, triggerHaptic]);
+
+  // Onboarding Trigger
+  useEffect(() => {
+    const el = portfolioRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !hasTriggeredOnboarding.current) {
+          hasTriggeredOnboarding.current = true;
+          setOnboardingStep(1); // Show Photo hint
+          
+          setTimeout(() => {
+            setOnboardingStep(2); // Show Video hint
+            setTimeout(() => {
+              setOnboardingStep(0); // Turn off
+            }, 3000);
+          }, 3000);
+        }
+      },
+      { threshold: 0.6 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   // State for Reviews (Desktop Drag)
   const reviewsRef = useRef(null);
@@ -1256,6 +1286,37 @@ export default function App() {
                       <ImageIcon size={18} />
                     </button>
                   )}
+
+                  {/* ОНБОРДИНГ - ПОДСКАЗКИ */}
+                  <AnimatePresence>
+                    {isCenter && onboardingStep === 1 && item.photoUrl && (
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0.8 }} 
+                        animate={{ opacity: 1, scale: 1 }} 
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        className="absolute top-[4.5rem] right-4 flex flex-col items-end z-40 pointer-events-none drop-shadow-2xl"
+                      >
+                        <ArrowRight size={18} className="-rotate-45 mb-1.5 animate-bounce text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
+                        <div className={`backdrop-blur-md px-3 py-1.5 rounded-xl border text-[10px] uppercase tracking-widest shadow-2xl ${isLightTheme ? 'bg-[#150508]/70 border-[#D8A0A6]/30 text-[#D8A0A6]' : 'bg-black/60 border-white/20 text-white'}`}>
+                          Смотреть фото
+                        </div>
+                      </motion.div>
+                    )}
+                    
+                    {isCenter && onboardingStep === 2 && item.videoId && (
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0.8 }} 
+                        animate={{ opacity: 1, scale: 1 }} 
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        className="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none pb-[5.5rem] drop-shadow-2xl"
+                      >
+                        <div className={`backdrop-blur-md px-3 py-1.5 rounded-xl border text-[10px] uppercase tracking-widest shadow-2xl mb-1.5 ${isLightTheme ? 'bg-[#150508]/70 border-[#D8A0A6]/30 text-[#D8A0A6]' : 'bg-black/60 border-white/20 text-white'}`}>
+                          Смотреть видео
+                        </div>
+                        <ArrowRight size={18} className="rotate-90 animate-bounce text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
                   <div className={`relative z-20 transition-colors duration-700 ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white/50'}`}>
                     <item.icon size={32} strokeWidth={1.5} />
