@@ -987,7 +987,7 @@ export default function App() {
         <img 
           src={CONFIG.heroPhoto} 
           alt={CONFIG.headerName} 
-          className={`w-full h-full object-cover object-top transition-all duration-700 ease-out origin-top ${
+          className={`w-full h-full object-cover object-[center_25%] transition-all duration-700 ease-out origin-[center_25%] ${
             isHeroRevealed 
               ? 'blur-none scale-100 opacity-100 grayscale-0' 
               : 'blur-[50px] scale-125 opacity-30 grayscale-[30%]'
