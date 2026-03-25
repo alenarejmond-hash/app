@@ -58,7 +58,7 @@ const CONFIG = {
   // У проектов может быть только видео, только фото, или и то и другое сразу!
   portfolio: [
     { title: "ШОУРИЛ 2026", desc: "Лучшие моменты", icon: Compass, videoLink: "https://rutube.ru/video/611bc8031620c28329867b1943f4d0d9/", photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
-    { title: "БЛОГЕР", desc: "Для личного бренда", icon: Heart, videoLink: "https://rutube.ru/video/private/3e7240c1b87cd5929c2f8f01f4d174e4/?p=4IUPXbjpfaztdgZ1uo_7Cg", photoUrl: "https://i.postimg.cc/25XBpHvn/IMG-2353.png" },
+    { title: "БЛОГЕР", desc: "Для личного бренда", icon: Heart, videoLink: "https://rutube.ru/video/private/5bdad759aa605c05f6e898a43cfd1952/?p=jER4pWwVpw_JdHnkopPNOA", photoUrl: "https://i.postimg.cc/25XBpHvn/IMG-2353.png" },
     { title: "РЕЖИССЁР", desc: "Хранительница традиций", icon: Heart, videoLink: "demo1", photoUrl: "https://i.postimg.cc/vBVTJGGb/IMG-2359.png" },
     { title: "ТУРАГЕНТ", desc: "Экспертный подбор", icon: Flame, videoLink: "demo2" },
     { title: "АВТОРСКИЕ ТУРЫ", desc: "Эмоции, маршруты, атмосфера", icon: Star, videoLink: "demo3", photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
@@ -1739,8 +1739,20 @@ export default function App() {
                     if (url.includes("youtube.com/watch?v=")) return url.replace("watch?v=", "embed/").split("&")[0];
                     if (url.includes("youtu.be/")) return url.replace("youtu.be/", "youtube.com/embed/").split("?")[0];
                     if (url.includes("youtube.com/shorts/")) return url.replace("shorts/", "embed/").split("?")[0];
-                    if (url.includes("rutube.ru/video/")) return `https://rutube.ru/play/embed/${url.split("rutube.ru/video/")[1].split(/[/?]/)[0]}`;
+                    
+                    // Обработка RuTube (включая приватные видео и shorts)
+                    if (url.includes("rutube.ru/")) {
+                      let id = "";
+                      const p = url.includes("?p=") ? "?p=" + url.split("?p=")[1].split("&")[0] : "";
+                      
+                      if (url.includes("/video/private/")) id = url.split("/video/private/")[1].split(/[/?]/)[0];
+                      else if (url.includes("/video/")) id = url.split("/video/")[1].split(/[/?]/)[0];
+                      else if (url.includes("/shorts/")) id = url.split("/shorts/")[1].split(/[/?]/)[0];
+                      
+                      if (id) return `https://rutube.ru/play/embed/${id}${p}`;
+                    }
                     if (!url.startsWith("http")) return `https://rutube.ru/play/embed/${url}`; // Для старых ID
+                    
                     return url;
                   })()}
                   frameBorder="0"
