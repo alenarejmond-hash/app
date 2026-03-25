@@ -625,6 +625,7 @@ export default function App() {
   // State for Video Modal (Стеклянный Кинотеатр)
   const [activeVideo, setActiveVideo] = useState(null);
   const [activePhoto, setActivePhoto] = useState(null);
+  const [isMediaLoading, setIsMediaLoading] = useState(true);
 
   // State for Portfolio Carousel (Cover Flow)
   const [portfolioIndex, setPortfolioIndex] = useState(0);
@@ -1265,8 +1266,13 @@ export default function App() {
                     if (Math.abs(touchStartX.current - touchEndX.current) > 20) return;
                     if (isCenter) {
                       triggerHaptic('impact', 'light');
-                      if (item.videoLink) setActiveVideo(item.videoLink);
-                      else if (item.photoUrl) setActivePhoto(item.photoUrl);
+                      if (item.videoLink) {
+                        setActiveVideo(item.videoLink);
+                        setIsMediaLoading(!item.videoLink.startsWith('demo'));
+                      } else if (item.photoUrl) {
+                        setActivePhoto(item.photoUrl);
+                        setIsMediaLoading(true);
+                      }
                     } else {
                       triggerHaptic('selection');
                       setPortfolioIndex(idx);
@@ -1296,6 +1302,7 @@ export default function App() {
                         e.stopPropagation(); // Не активируем само видео при нажатии на фото
                         triggerHaptic('impact', 'light');
                         setActivePhoto(item.photoUrl);
+                        setIsMediaLoading(true);
                       }}
                       className={`absolute top-5 right-5 z-30 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md border transition-transform hover:scale-110 active:scale-95 shadow-md ${isLightTheme ? 'bg-[#150508]/40 border-[#D8A0A6]/30 text-[#D8A0A6]' : 'bg-black/40 border-white/20 text-white/80'}`}
                     >
@@ -1694,6 +1701,7 @@ export default function App() {
               triggerHaptic('impact', 'light');
               setActiveVideo(null);
               setActivePhoto(null);
+              setIsMediaLoading(true);
             }}
             className={`absolute ${isTelegram ? 'top-28' : 'top-6 sm:top-8'} right-6 sm:right-8 z-[110] w-12 h-12 rounded-full flex items-center justify-center border backdrop-blur-md transition-all hover:scale-110 active:scale-95 shadow-xl ${isLightTheme ? 'bg-[#1A080C]/90 border-[#D8A0A6]/30 text-[#D8A0A6] shadow-[0_10px_30px_rgba(216,160,166,0.2)]' : 'bg-white/10 border-white/20 text-white hover:bg-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)]'}`}
           >
@@ -1715,12 +1723,30 @@ export default function App() {
               {/* Блики на стекле смартфона */}
               <div className="absolute inset-0 z-20 pointer-events-none rounded-[2.5rem] shadow-[inset_0_0_10px_rgba(255,255,255,0.1)]"></div>
 
+              {/* ИНДИКАТОР ЗАГРУЗКИ ВНУТРИ ТЕЛЕФОНА */}
+              <AnimatePresence>
+                {isMediaLoading && (
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#050505] pt-[15px]"
+                  >
+                    <Loader2 className={`w-8 h-8 animate-spin ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white/60'}`} />
+                    <span className={`text-[10px] mt-4 uppercase tracking-[0.2em] font-medium ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white/40'}`}>
+                      Загрузка...
+                    </span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               {/* --- КОНТЕНТ (ФОТО ИЛИ ВИДЕО) --- */}
               {activePhoto ? (
                 <img
                   src={activePhoto}
                   alt="Portfolio Story"
-                  className="absolute inset-0 w-full h-full object-cover z-10 pt-[15px] scale-[1.02] bg-black"
+                  onLoad={() => setIsMediaLoading(false)}
+                  className={`absolute inset-0 w-full h-full object-cover z-10 pt-[15px] scale-[1.02] bg-black transition-opacity duration-500 ${isMediaLoading ? 'opacity-0' : 'opacity-100'}`}
                 />
               ) : activeVideo?.startsWith('demo') ? (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-[#0a0a0a]">
@@ -1732,6 +1758,7 @@ export default function App() {
                 <iframe
                   width="100%"
                   height="100%"
+                  onLoad={() => setIsMediaLoading(false)}
                   src={(() => {
                     if (!activeVideo) return "";
                     let url = activeVideo;
@@ -1758,7 +1785,7 @@ export default function App() {
                   frameBorder="0"
                   allow="clipboard-write; autoplay"
                   allowFullScreen
-                  className="absolute inset-0 w-full h-full z-10 pt-[15px] scale-[1.02] bg-black"
+                  className={`absolute inset-0 w-full h-full z-10 pt-[15px] scale-[1.02] bg-black transition-opacity duration-500 ${isMediaLoading ? 'opacity-0' : 'opacity-100'}`}
                 ></iframe>
               )}
             </div>
