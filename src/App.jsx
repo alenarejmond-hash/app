@@ -53,15 +53,15 @@ const CONFIG = {
   // desc - Короткое описание под названием (например: "Главное видео")
   // icon - Иконка проекта (Можно писать: Compass, Heart, Flame, Star, Camera, Sparkles)
   // videoLink - 👈 ВСТАВЬТЕ СЮДА ОБЫЧНУЮ ССЫЛКУ НА ВИДЕО (YouTube, Shorts или RuTube). Умный плеер сам её обработает!
-  // photoUrl - 👈 НОВАЯ НАСТРОЙКА: Ссылка на вертикальную картинку 9:16 (если хотите показывать фото в телефоне)
+  // photoUrl - 👈 НОВАЯ НАСТРОЙКА: Ссылка на вертикальную картинку 9:16 (или список ссылок в квадратных скобках ['url1', 'url2'] для карусели)
   // Если видео или фото пока нет, оставьте "demo1" для видео или удалите photoUrl. 
   // У проектов может быть только видео, только фото, или и то и другое сразу!
   portfolio: [
-    { title: "ШОУРИЛ 2026", desc: "Лучшие моменты", icon: Compass, videoLink: "https://rutube.ru/video/611bc8031620c28329867b1943f4d0d9/", photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
+    { title: "ШОУРИЛ 2026", desc: "Лучшие моменты", icon: Compass, videoLink: "https://rutube.ru/video/611bc8031620c28329867b1943f4d0d9/", photoUrl: ["https://i.postimg.cc/fynZKtXQ/Snimok-ekrana-2026-03-25-v-3-18-48-PM.png", "https://i.postimg.cc/R0GhWRGz/unnamed.jpg"] },
     { title: "БЛОГЕР", desc: "Для личного бренда", icon: Heart, videoLink: "https://rutube.ru/video/private/5bdad759aa605c05f6e898a43cfd1952/?p=jER4pWwVpw_JdHnkopPNOA", photoUrl: "https://i.postimg.cc/25XBpHvn/IMG-2353.png" },
     { title: "РЕЖИССЁР", desc: "Хранительница традиций", icon: Heart, videoLink: "demo1", photoUrl: "https://i.postimg.cc/vBVTJGGb/IMG-2359.png" },
     { title: "ТУРАГЕНТ", desc: "Экспертный подбор", icon: Flame, videoLink: "demo2" },
-    { title: "АВТОРСКИЕ ТУРЫ", desc: "Эмоции, маршруты, атмосфера", icon: Star, videoLink: "demo3", photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
+    { title: "АВТОРСКИЕ ТУРЫ", desc: "Эмоции, маршруты, атмосфера", icon: Star, videoLink: "demo3", photoUrl: "https://i.postimg.cc/8zs37kJx/Snimok-ekrana-2026-03-25-v-3-17-55-PM.png" },
     { title: "ПСИХОЛОГ", desc: "Запись на сессии, доверие", icon: Camera, photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
     { title: "ЭЗОРЕТИК", desc: "Расклады, консультации, эстетика", icon: Sparkles, videoLink: "demo5" },
   ],
@@ -625,6 +625,7 @@ export default function App() {
   // State for Video Modal (Стеклянный Кинотеатр)
   const [activeVideo, setActiveVideo] = useState(null);
   const [activePhoto, setActivePhoto] = useState(null);
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const [isMediaLoading, setIsMediaLoading] = useState(true);
 
   // State for Portfolio Carousel (Cover Flow)
@@ -1271,6 +1272,7 @@ export default function App() {
                         setIsMediaLoading(!item.videoLink.startsWith('demo'));
                       } else if (item.photoUrl) {
                         setActivePhoto(item.photoUrl);
+                        setActivePhotoIndex(0);
                         setIsMediaLoading(true);
                       }
                     } else {
@@ -1302,6 +1304,7 @@ export default function App() {
                         e.stopPropagation(); // Не активируем само видео при нажатии на фото
                         triggerHaptic('impact', 'light');
                         setActivePhoto(item.photoUrl);
+                        setActivePhotoIndex(0);
                         setIsMediaLoading(true);
                       }}
                       className={`absolute top-5 right-5 z-30 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md border transition-transform hover:scale-110 active:scale-95 shadow-md ${isLightTheme ? 'bg-[#150508]/40 border-[#D8A0A6]/30 text-[#D8A0A6]' : 'bg-black/40 border-white/20 text-white/80'}`}
@@ -1701,6 +1704,7 @@ export default function App() {
               triggerHaptic('impact', 'light');
               setActiveVideo(null);
               setActivePhoto(null);
+              setActivePhotoIndex(0);
               setIsMediaLoading(true);
             }}
             className={`absolute ${isTelegram ? 'top-28' : 'top-6 sm:top-8'} right-6 sm:right-8 z-[110] w-12 h-12 rounded-full flex items-center justify-center border backdrop-blur-md transition-all hover:scale-110 active:scale-95 shadow-xl ${isLightTheme ? 'bg-[#1A080C]/90 border-[#D8A0A6]/30 text-[#D8A0A6] shadow-[0_10px_30px_rgba(216,160,166,0.2)]' : 'bg-white/10 border-white/20 text-white hover:bg-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)]'}`}
@@ -1742,12 +1746,39 @@ export default function App() {
 
               {/* --- КОНТЕНТ (ФОТО ИЛИ ВИДЕО) --- */}
               {activePhoto ? (
-                <img
-                  src={activePhoto}
-                  alt="Portfolio Story"
-                  onLoad={() => setIsMediaLoading(false)}
-                  className={`absolute inset-0 w-full h-full object-cover z-10 pt-[15px] scale-[1.02] bg-black transition-opacity duration-500 ${isMediaLoading ? 'opacity-0' : 'opacity-100'}`}
-                />
+                <>
+                  <div 
+                    className={`absolute inset-0 z-10 bg-black transition-opacity duration-500 flex overflow-x-auto snap-x snap-mandatory scrollbar-hide ${isMediaLoading ? 'opacity-0' : 'opacity-100'}`}
+                    onScroll={(e) => {
+                      const idx = Math.round(e.target.scrollLeft / e.target.offsetWidth);
+                      if (idx !== activePhotoIndex) {
+                        setActivePhotoIndex(idx);
+                      }
+                    }}
+                  >
+                    {(Array.isArray(activePhoto) ? activePhoto : [activePhoto]).map((url, i) => (
+                      <img
+                        key={i}
+                        src={url}
+                        alt={`Portfolio Story ${i + 1}`}
+                        onLoad={() => { if (i === 0) setIsMediaLoading(false); }}
+                        className="w-full h-full object-cover shrink-0 snap-center pt-[15px] scale-[1.02]"
+                      />
+                    ))}
+                  </div>
+                  
+                  {/* Индикаторы карусели (точки) */}
+                  {Array.isArray(activePhoto) && activePhoto.length > 1 && (
+                    <div className="absolute bottom-6 left-0 w-full z-30 flex justify-center gap-1.5 pointer-events-none">
+                      {activePhoto.map((_, i) => (
+                        <div 
+                          key={i} 
+                          className={`h-1.5 rounded-full transition-all duration-300 ${i === activePhotoIndex ? 'w-4 bg-white' : 'w-1.5 bg-white/40'}`}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </>
               ) : activeVideo?.startsWith('demo') ? (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-[#0a0a0a]">
                   <Play size={48} className="mb-4 opacity-20 text-white" />
