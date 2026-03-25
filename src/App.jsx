@@ -57,7 +57,7 @@ const CONFIG = {
   // Если видео или фото пока нет, оставьте "demo1" для видео или удалите photoUrl. 
   // У проектов может быть только видео, только фото, или и то и другое сразу!
   portfolio: [
-    { title: "ШОУРИЛ 2026", desc: "Лучшие моменты", icon: Compass, videoLink: "https://rutube.ru/video/611bc8031620c28329867b1943f4d0d9/", photoUrl: ["https://i.postimg.cc/fynZKtXQ/Snimok-ekrana-2026-03-25-v-3-18-48-PM.png", "https://i.postimg.cc/R0GhWRGz/unnamed.jpg"] },
+    { title: "ШОУРИЛ 2026", desc: "Лучшие моменты", icon: Compass, videoLink: "https://rutube.ru/video/611bc8031620c28329867b1943f4d0d9/", photoUrl: ["https://i.postimg.cc/fynZKtXQ/Snimok-ekrana-2026-03-25-v-3-18-48-PM.png"] },
     { title: "БЛОГЕР", desc: "Для личного бренда", icon: Heart, videoLink: "https://rutube.ru/video/private/5bdad759aa605c05f6e898a43cfd1952/?p=jER4pWwVpw_JdHnkopPNOA", photoUrl: "https://i.postimg.cc/25XBpHvn/IMG-2353.png" },
     { title: "РЕЖИССЁР", desc: "Хранительница традиций", icon: Heart, videoLink: "demo1", photoUrl: "https://i.postimg.cc/vBVTJGGb/IMG-2359.png" },
     { title: "ТУРАГЕНТ", desc: "Экспертный подбор", icon: Flame, videoLink: "demo2" },
