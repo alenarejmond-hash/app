@@ -62,7 +62,7 @@ const CONFIG = {
     { title: "РЕЖИССЁР", desc: "Хранительница традиций", icon: Heart, videoLink: "demo1", photoUrl: "https://i.postimg.cc/vBVTJGGb/IMG-2359.png" },
     { title: "ТУРАГЕНТ", desc: "Экспертный подбор", icon: Flame, videoLink: "demo2" },
     { title: "АВТОРСКИЕ ТУРЫ", desc: "Эмоции, маршруты, атмосфера", icon: Star, videoLink: "demo3", photoUrl: "https://i.postimg.cc/8zs37kJx/Snimok-ekrana-2026-03-25-v-3-17-55-PM.png" },
-    { title: "ПСИХОЛОГ", desc: "Запись на сессии, доверие", icon: Camera, photoUrl: "https://i.postimg.cc/R0GhWRGz/unnamed.jpg" },
+    { title: "ПСИХОЛОГ", desc: "Запись на сессии, доверие", icon: Camera, photoUrl: "" },
     { title: "ЭЗОРЕТИК", desc: "Расклады, консультации, эстетика", icon: Sparkles, videoLink: "demo5" },
   ],
 
