@@ -1,10 +1,18 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { 
   Send, Fingerprint, Sparkles, Lock, Key, 
-  ArrowRight, Compass, Flame, Brain, Camera, Star, X, Sun, Moon, Play, Heart, Check, Loader2, Diamond, Mail, Image as ImageIcon
+  ArrowRight, Compass, Flame, Brain, Camera, Star, X, Sun, Moon, Play, Heart, Check, Loader2, Diamond, Mail, Image as ImageIcon, Maximize, Settings
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
+
+if (typeof window !== 'undefined' && !document.getElementById('tg-web-app-script')) {
+  const script = document.createElement('script');
+  script.id = 'tg-web-app-script';
+  script.src = 'https://telegram.org/js/telegram-web-app.js';
+  script.async = true;
+  document.head.appendChild(script);
+}
 
 // =========================================================================
 // 🛠 ЗОНА НАСТРОЕК: МЕНЯЙТЕ СВОИ ДАННЫЕ, ФОТО И ТЕКСТЫ ЗДЕСЬ
@@ -34,7 +42,7 @@ const CONFIG = {
   linkVK: "https://vk.com/elenlime", // 👈 ВСТАВЬТЕ СЮДА ССЫЛКУ НА ВКОНТАКТЕ (между кавычек)
 
   // 👈 ВСТАВЬТЕ СЮДА ССЫЛКУ ДЛЯ КНОПКИ "ПОДЕЛИТЬСЯ" (например, прямую ссылку на вашего бота или сайт)
-  shareLink: "https://t.me/твой_бот/app", //"https://t.me/твой_бот/app" (если на бота то так выглядит ссылка)
+  shareLink: "https://vk.com/app12345678", // 👈 Сюда лучше вставить ссылку на ваше VK Mini App
 
   // 💥 ИНТЕГРАЦИЯ С GOOGLE SHEETS (ОТЗЫВЫ) 💥
   // 👈 1. ВСТАВЬТЕ СЮДА ССЫЛКУ НА САМУ ГУГЛ ТАБЛИЦУ (для чтения отзывов без ошибок)
@@ -45,25 +53,21 @@ const CONFIG = {
 
   // 💥 ИНТЕГРАЦИЯ С GOOGLE SHEETS (ЗАКАЗЫ) 💥
   // 👈 ВСТАВЬТЕ СЮДА ССЫЛКУ НА СКРИПТ ДЛЯ ЗАКАЗОВ (куда будут падать заявки)
-  googleOrderScriptUrl: "https://script.google.com/macros/s/AKfycbyHNc08of2Xf7ETl92MY833NTSNE20aK5xncdsrt2CFw9BqGwtfK8VusHA4RNPMV1M/exec",
+  googleOrderScriptUrl: "https://script.google.com/macros/s/AKfycbyoSupm9t2iYd4cM_KEDFh_slZSwlnvPol8PvMWF8fS_HtlGzFeiQJ8_aihCuAi3zop/exec",
 
-  // 6. Галерея (Мои работы) - ТЕПЕРЬ С ПОДДЕРЖКОЙ ВИДЕО И ФОТО!
+  // 6. Галерея (Мои работы) - ТЕПЕРЬ ЖИВЫЕ ШАБЛОНЫ (LIVE DEMO)
   // 👇 ПОДСКАЗКА ОТ ИИ:
-  // title - Название проекта на карточке (например: "Шоурил 2024")
-  // desc - Короткое описание под названием (например: "Главное видео")
+  // title - Название проекта на карточке (минимализм, только суть)
   // icon - Иконка проекта (Можно писать: Compass, Heart, Flame, Star, Camera, Sparkles)
-  // videoLink - 👈 ВСТАВЬТЕ СЮДА ОБЫЧНУЮ ССЫЛКУ НА ВИДЕО (YouTube, Shorts или RuTube). Умный плеер сам её обработает!
-  // photoUrl - 👈 НОВАЯ НАСТРОЙКА: Ссылка на вертикальную картинку 9:16 (или список ссылок в квадратных скобках ['url1', 'url2'] для карусели)
-  // Если видео или фото пока нет, оставьте "demo1" для видео или удалите photoUrl. 
-  // У проектов может быть только видео, только фото, или и то и другое сразу!
+  // demoLink - 👈 ВСТАВЬТЕ СЮДА ССЫЛКУ НА ВАШ ШАБЛОН (загруженный на ваш хостинг)
   portfolio: [
-    { title: "ШОУРИЛ 2026", desc: "Лучшие моменты", icon: Compass, videoLink: "https://rutube.ru/video/611bc8031620c28329867b1943f4d0d9/", photoUrl: ["https://i.postimg.cc/fynZKtXQ/Snimok-ekrana-2026-03-25-v-3-18-48-PM.png"] },
-    { title: "БЛОГЕР", desc: "Для личного бренда", icon: Heart, videoLink: "https://rutube.ru/video/private/5bdad759aa605c05f6e898a43cfd1952/?p=jER4pWwVpw_JdHnkopPNOA", photoUrl: "https://i.postimg.cc/25XBpHvn/IMG-2353.png" },
-    { title: "РЕЖИССЁР", desc: "Хранительница традиций", icon: Heart, videoLink: "demo1", photoUrl: "https://i.postimg.cc/vBVTJGGb/IMG-2359.png" },
-    { title: "ТУРАГЕНТ", desc: "Экспертный подбор", icon: Flame, videoLink: "demo2" },
-    { title: "АВТОРСКИЕ ТУРЫ", desc: "Эмоции, маршруты, атмосфера", icon: Star, videoLink: "demo3", photoUrl: "https://i.postimg.cc/8zs37kJx/Snimok-ekrana-2026-03-25-v-3-17-55-PM.png" },
-    { title: "ПСИХОЛОГ", desc: "Запись на сессии, доверие", icon: Camera, photoUrl: "" },
-    { title: "ЭЗОРЕТИК", desc: "Расклады, консультации, эстетика", icon: Sparkles, videoLink: "demo5" },
+    { title: "ШОУРИЛ 2026", icon: Compass, demoLink: "https://turagent.nice-app.ru/" }, // Замените ссылку на свою
+    { title: "БЛОГЕР", icon: Heart, demoLink: "https://turagent.nice-app.ru/" }, // Замените ссылку на свою
+    { title: "РЕЖИССЁР", icon: Heart, demoLink: "https://turagent.nice-app.ru/" }, // Замените ссылку на свою
+    { title: "ТУРАГЕНТ", icon: Flame, demoLink: "https://turagent.nice-app.ru/" }, // Замените ссылку на свою
+    { title: "АВТОРСКИЕ ТУРЫ", icon: Star, demoLink: "https://turagent.nice-app.ru/" }, // Замените ссылку на свою
+    { title: "ПСИХОЛОГ", icon: Camera, demoLink: "https://turagent.nice-app.ru/" }, // Замените ссылку на свою
+    { title: "ЭЗОРЕТИК", icon: Sparkles, demoLink: "https://turagent.nice-app.ru/" }, // Замените ссылку на свою
   ],
 
   // 7. Инвестиции (Тарифы) в стиле Apple Wallet
@@ -81,7 +85,7 @@ const CONFIG = {
       subtitle: 'Авторская архитектура',
       price: '7 000 ₽',
       oldPrice: '10 000 ₽',
-      features: ['Premium-шаблон из моей базы', 'Адаптация под ваш контент и цвета', 'Мини-апп в ТГ/ВК + веб-версия (PWA)', 'Поддомен имя.nice-app.ru навсегда', 'Бот + пост + запуск «под ключ»(в тг)', 'Запуск за 3-5 дней', 'Один платеж. Никаких подписок'],
+      features: ['Premium-шаблон из моей базы', 'Адаптация под ваш контент и цвета', 'Мини-апп в ТГ/ВК + веб-версия (PWA)', 'Поддомен имя.nice-app.ru навсегда', 'Бот + пост + запуск «под ключ»(в тг/вк)', 'Запуск за 3-5 дней', 'Один платеж. Никаких подписок'],
     },
     {
       id: 'custom',
@@ -89,7 +93,7 @@ const CONFIG = {
       subtitle: 'Haute Couture в коде',
       price: 'от 8 000 ₽',
       oldPrice: 'от 15 000 ₽',
-      features: ['Уникальный дизайн и логика «с нуля»', 'Сложные 3D и WebGL эффекты', 'Мини-апп в ТГ/ВК + веб-версия (PWA)', 'Поддомен имя.nice-app.ru навсегда', 'Подключение вашего личного домена (помощь с покупкой и настройкой)', 'Бот + пост + запуск «под ключ»(в тг)', 'Запуск за 5-7 дней', 'Без аренды: Ваш личный цифровой актив навсегда'],
+      features: ['Уникальный дизайн и логика «с нуля»', 'Сложные 3D и WebGL эффекты', 'Мини-апп в ТГ/ВК + веб-версия (PWA)', 'Поддомен имя.nice-app.ru навсегда', 'Подключение вашего личного домена (помощь с покупкой и настройкой)', 'Бот + пост + запуск «под ключ»(в тг/вк)', 'Запуск за 5-7 дней', 'Без аренды: Ваш личный цифровой актив навсегда'],
     }
   ],
 
@@ -142,7 +146,7 @@ const PrivacyModal = ({ onClose, isLightTheme, triggerHaptic }) => {
           <div className="space-y-4 overflow-y-auto max-h-[50vh] pr-2 scrollbar-hide">
             <div>
               <h4 className={`text-sm font-bold tracking-widest mb-1 ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white/80'}`}>Только суть</h4>
-              <p className="text-xs font-light leading-relaxed">Мы ценим ваше личное пространство. Собираем только то, что необходимо для создания вашего проекта: имя и контакт (Telegram или номер телефона).</p>
+              <p className="text-xs font-light leading-relaxed">Мы ценим ваше личное пространство. Собираем только то, что необходимо для создания вашего проекта: имя и контакт (Telegram/VK или номер телефона).</p>
             </div>
             <div>
               <h4 className={`text-sm font-bold tracking-widest mb-1 ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white/80'}`}>Никакого спама</h4>
@@ -229,7 +233,7 @@ const TermsModal = ({ onClose, isLightTheme, triggerHaptic }) => {
             </div>
             <div>
               <h4 className={`text-sm font-bold tracking-widest mb-1 ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white/80'}`}>Владение</h4>
-              <p className="text-xs font-light leading-relaxed">После полной оплаты вы получаете полные права на бота и Mini App. Никаких ежемесячных платежей.</p>
+              <p className="text-xs font-light leading-relaxed">После полной оплаты вы получаете полные права на проект. Никаких ежемесячных платежей.</p>
             </div>
           </div>
 
@@ -252,19 +256,15 @@ const TermsModal = ({ onClose, isLightTheme, triggerHaptic }) => {
   );
 };
 
-const OrderForm = ({ onClose, isLightTheme, triggerHaptic }) => {
+const OrderForm = ({ onClose, onSuccess, isLightTheme, triggerHaptic }) => {
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm({
     defaultValues: { tariff: 'Pro', domain: false }
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
 
   useEffect(() => {
-    const handleResize = () => setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-    window.addEventListener('resize', handleResize);
     triggerHaptic('impact', 'light');
-    return () => window.removeEventListener('resize', handleResize);
   }, [triggerHaptic]);
 
   const watchTariff = watch('tariff');
@@ -273,17 +273,15 @@ const OrderForm = ({ onClose, isLightTheme, triggerHaptic }) => {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     try {
-      // 1. Формируем JSON строго по твоему ТЗ
       const payload = {
         action: 'newOrder',
         name: data.name,
-        contact: data.contact, // 👈 Наш новый контакт
+        contact: data.contact, 
         tariff: data.tariff,
         domain: data.domain,
         date: new Date().toLocaleDateString('ru-RU')
       };
 
-      // 2. 👈 ВСТАВЬ СЮДА СВОЮ ССЫЛКУ НА GOOGLE SCRIPT ЗАМЕСТО ЗАГЛУШКИ
       const scriptUrl = "<YOUR_GOOGLE_SCRIPT_URL>";
 
       if (scriptUrl !== "<YOUR_GOOGLE_SCRIPT_URL>") {
@@ -294,7 +292,6 @@ const OrderForm = ({ onClose, isLightTheme, triggerHaptic }) => {
           body: JSON.stringify(payload)
         });
       } else if (CONFIG.googleOrderScriptUrl && !CONFIG.googleOrderScriptUrl.includes("ТВОЯ_ССЫЛКА")) {
-        // Оставила fallback на случай, если ссылка прописана вверху в CONFIG
         await fetch(CONFIG.googleOrderScriptUrl, {
           method: 'POST',
           mode: 'no-cors',
@@ -304,15 +301,12 @@ const OrderForm = ({ onClose, isLightTheme, triggerHaptic }) => {
       }
       
       setIsSuccess(true);
+      if (onSuccess) onSuccess(); // Сообщаем главному компоненту, что всё прошло супер!
       triggerHaptic('notification', 'success');
       
+      // Разблокируем экран, закрывая ТОЛЬКО модалку через 3 секунды
       setTimeout(() => {
-        const tg = window.Telegram?.WebApp;
-        if (tg && typeof tg.close === 'function') {
-          tg.close();
-        } else {
-          onClose();
-        }
+        onClose(); // 👈 Убираем окошко успеха, пользователь остается в мини-аппе
       }, 3000);
     } catch (error) {
       console.error("Ошибка отправки:", error);
@@ -335,7 +329,6 @@ const OrderForm = ({ onClose, isLightTheme, triggerHaptic }) => {
       variants={overlayVars} initial="hidden" animate="visible" exit="hidden"
       className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md"
     >
-      {/* Тот самый встроенный салют без багов внешних библиотек */}
       {isSuccess && (
         <div className="fixed inset-0 pointer-events-none z-[300] overflow-hidden">
           {[...Array(60)].map((_, i) => (
@@ -393,7 +386,7 @@ const OrderForm = ({ onClose, isLightTheme, triggerHaptic }) => {
               <input 
                 {...register('contact', { required: true })}
                 type="text" 
-                placeholder="@username или номер телефона" 
+                placeholder="ID ВКонтакте или телефон" 
                 className={`w-full border rounded-2xl px-5 py-4 text-sm focus:outline-none transition-all duration-300 ${isLightTheme ? 'bg-[#F5ECEE]/5 border-[#F5ECEE]/10 text-[#F5ECEE] placeholder-[#F5ECEE]/40 focus:border-[#D8A0A6] focus:bg-[#2A0F14] focus:shadow-[0_0_20px_rgba(216,160,166,0.15)]' : 'bg-white/5 border-white/10 text-white placeholder-white/30 focus:border-white/40 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(255,255,255,0.1)]'}`}
               />
               {errors.contact && <span className="text-red-500 text-xs mt-1 ml-2 font-medium">Контакт обязателен</span>}
@@ -454,6 +447,7 @@ export default function App() {
   const canvasRef = useRef(null);
   const particlesRef = useRef([]);
   const ripplesRef = useRef([]);
+  const smallDotsRef = useRef([]);
   
   // State for Loading Spinner
   const [isAppLoading, setIsAppLoading] = useState(true);
@@ -483,6 +477,14 @@ export default function App() {
       document.head.appendChild(metaTheme);
     }
     metaTheme.content = bgColor;
+
+    // Синхронизация цветов шапки Telegram с текущей темой
+    try {
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.setHeaderColor(bgColor);
+        window.Telegram.WebApp.setBackgroundColor(bgColor);
+      }
+    } catch(e) {}
   }, [isLightTheme]);
   
   // State for Magnetic Tilt & Hero Photo Reveal
@@ -492,23 +494,23 @@ export default function App() {
   const pointerPos = useRef({ x: -1000, y: -1000 });
   
   const [isHeroRevealed, setIsHeroRevealed] = useState(false);
-  const [isTelegram, setIsTelegram] = useState(false);
+  const [isTG, setIsTG] = useState(false);
 
-  // 0. Безопасная функция для вибрации
+  // 0. Нативная вибрация Telegram
   const triggerHaptic = useCallback((type = 'impact', style = 'light') => {
     try {
-      const tg = window.Telegram?.WebApp;
-      if (!tg || !tg.HapticFeedback) return;
-      
-      if (type === 'impact' && typeof tg.HapticFeedback.impactOccurred === 'function') {
-        tg.HapticFeedback.impactOccurred(style);
-      } else if (type === 'selection' && typeof tg.HapticFeedback.selectionChanged === 'function') {
-        tg.HapticFeedback.selectionChanged();
-      } else if (type === 'notification' && typeof tg.HapticFeedback.notificationOccurred === 'function') {
-        tg.HapticFeedback.notificationOccurred(style);
+      const tg = window.Telegram?.WebApp?.HapticFeedback;
+      if (!tg) return;
+
+      if (type === 'impact') {
+        tg.impactOccurred(style === 'light' ? 'light' : 'medium');
+      } else if (type === 'selection') {
+        tg.selectionChanged();
+      } else if (type === 'notification') {
+        tg.notificationOccurred(style === 'error' ? 'error' : 'success');
       }
     } catch (e) {
-      console.error('Haptic error:', e);
+      console.error('TG Haptic error:', e);
     }
   }, []);
 
@@ -527,6 +529,8 @@ export default function App() {
 
   // State for Order Modal
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  // НОВОЕ: состояние блокировки главной кнопки после отправки брифа
+  const [isOrderSubmitted, setIsOrderSubmitted] = useState(false);
 
   // State for Privacy Modal
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
@@ -538,6 +542,7 @@ export default function App() {
   const [isShareFlipped, setIsShareFlipped] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // Копирование (в Telegram работает нативный буфер обмена)
   const handleCopy = async () => {
     const link = CONFIG.shareLink && CONFIG.shareLink !== "" ? CONFIG.shareLink : window.location.origin;
     try {
@@ -553,49 +558,41 @@ export default function App() {
         document.execCommand("copy");
         textArea.remove();
       }
-    } catch (error) {
-      console.error(error);
+      setCopied(true);
+      triggerHaptic('notification', 'success');
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Clipboard error:", err);
     }
-    setCopied(true);
-    triggerHaptic('notification', 'success');
-    setTimeout(() => setCopied(false), 2000);
   };
 
-  // Загрузка отзывов напрямую из Google Sheets (без ошибки CORS)
+  // Загрузка отзывов напрямую из Google Sheets
   useEffect(() => {
     if (CONFIG.googleSheetUrl && !CONFIG.googleSheetUrl.includes("ТВОЯ_ССЫЛКА")) {
       try {
-        // Вытаскиваем ID таблицы из твоей ссылки
         const sheetIdMatch = CONFIG.googleSheetUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
         if (sheetIdMatch && sheetIdMatch[1]) {
           const sheetId = sheetIdMatch[1];
-          // Кодируем русские буквы и пробелы, чтобы браузер не выдавал ошибку "Failed to fetch"
           const sheetName = encodeURIComponent('Опубликованные отзывы');
-          // Нативный Google API для безопасного чтения таблиц
           const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
           
           fetch(url)
             .then(res => {
-              // Если Гугл не отдает данные (нет публичного доступа), выбрасываем понятную ошибку
-              if (!res.ok) throw new Error("Нет доступа к таблице. Убедитесь, что в настройках Google Таблицы включен доступ 'Все, у кого есть ссылка -> Читатель'");
+              if (!res.ok) throw new Error("Нет доступа к таблице.");
               return res.text();
             })
             .then(text => {
-              // Очищаем ответ от технической оболочки Google
               const jsonStr = text.substring(47).slice(0, -2);
               const data = JSON.parse(jsonStr);
               
               if (data.table && data.table.rows) {
                 const fetchedReviews = data.table.rows.map(row => {
-                  // Пытаемся взять готовый формат (f) или сырой (v)
                   let dateStr = row.c[1]?.f || row.c[1]?.v || '';
-                  
-                  // Если пришел формат Date(2024,2,15), вытаскиваем из него цифры
                   if (typeof dateStr === 'string' && dateStr.includes('Date(')) {
                     const match = dateStr.match(/Date\((\d+),\s*(\d+),\s*(\d+)/);
                     if (match) {
                       const y = match[1];
-                      const m = String(parseInt(match[2]) + 1).padStart(2, '0'); // В Гугле месяцы с 0
+                      const m = String(parseInt(match[2]) + 1).padStart(2, '0');
                       const d = String(match[3]).padStart(2, '0');
                       dateStr = `${d}.${m}.${y}`;
                     }
@@ -611,24 +608,17 @@ export default function App() {
                 if (fetchedReviews.length > 0) setReviewsList(fetchedReviews.reverse());
               }
             })
-            .catch(err => {
-              // Более понятный вывод ошибки в консоль
-              console.error("⚠️ Ошибка загрузки отзывов. Проверьте настройки приватности в Google Таблице:", err);
-            });
+            .catch(err => console.error("Ошибка загрузки отзывов:", err));
         }
       } catch (e) {
-        console.error("Ошибка обработки ссылки на таблицу:", e);
+        console.error("Ошибка обработки ссылки:", e);
       }
     }
   }, []);
 
-  // State for Video Modal (Стеклянный Кинотеатр)
-  const [activeVideo, setActiveVideo] = useState(null);
-  const [activePhoto, setActivePhoto] = useState(null);
-  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
-  const [isMediaLoading, setIsMediaLoading] = useState(true);
+  const [expandedDemo, setExpandedDemo] = useState(null);
+  const [isDemoLoading, setIsDemoLoading] = useState(true);
 
-  // State for Portfolio Carousel (Cover Flow)
   const [portfolioIndex, setPortfolioIndex] = useState(0);
   const touchStartX = useRef(0);
   const touchStartY = useRef(0);
@@ -637,16 +627,12 @@ export default function App() {
   const isDraggingPortfolio = useRef(false);
   const wheelTimeoutRef = useRef(null);
 
-  // State for Onboarding Hints
-  const [onboardingStep, setOnboardingStep] = useState(0); // 0: none, 1: photo, 2: video
-  const hasTriggeredOnboarding = useRef(false);
-
   const handlePortfolioSwipe = () => {
     const swipeDistance = touchStartX.current - touchEndX.current;
-    if (swipeDistance > 40) { // Свайп влево
+    if (swipeDistance > 40) { 
       triggerHaptic('selection');
       setPortfolioIndex(prev => Math.min(prev + 1, CONFIG.portfolio.length - 1));
-    } else if (swipeDistance < -40) { // Свайп вправо
+    } else if (swipeDistance < -40) { 
       triggerHaptic('selection');
       setPortfolioIndex(prev => Math.max(prev - 1, 0));
     }
@@ -661,24 +647,21 @@ export default function App() {
       const isScrollingDown = e.deltaY > 0;
       const isScrollingUp = e.deltaY < 0;
 
-      // Если дошли до края карусели, отпускаем скролл, чтобы можно было листать страницу дальше
       if (isVerticalScroll) {
         if (isScrollingUp && portfolioIndex === 0) return;
         if (isScrollingDown && portfolioIndex === CONFIG.portfolio.length - 1) return;
       }
 
-      // Внутри карусели перехватываем прокрутку страницы на себя
       e.preventDefault();
 
       if (wheelTimeoutRef.current) return;
 
       const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
 
-      // Порог срабатывания скролла
       if (delta > 15) {
         triggerHaptic('selection');
         setPortfolioIndex(prev => Math.min(prev + 1, CONFIG.portfolio.length - 1));
-        wheelTimeoutRef.current = setTimeout(() => wheelTimeoutRef.current = null, 350); // Задержка для плавности одного перелистывания
+        wheelTimeoutRef.current = setTimeout(() => wheelTimeoutRef.current = null, 350); 
       } else if (delta < -15) {
         triggerHaptic('selection');
         setPortfolioIndex(prev => Math.max(prev - 1, 0));
@@ -686,47 +669,18 @@ export default function App() {
       }
     };
 
-    // passive: false обязателен для работы e.preventDefault()
     el.addEventListener('wheel', handleWheel, { passive: false });
     return () => el.removeEventListener('wheel', handleWheel);
   }, [portfolioIndex, triggerHaptic]);
 
-  // Onboarding Trigger
-  useEffect(() => {
-    const el = portfolioRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !hasTriggeredOnboarding.current) {
-          hasTriggeredOnboarding.current = true;
-          setOnboardingStep(1); // Show Photo hint
-          
-          setTimeout(() => {
-            setOnboardingStep(2); // Show Video hint
-            setTimeout(() => {
-              setOnboardingStep(0); // Turn off
-            }, 3000);
-          }, 3000);
-        }
-      },
-      { threshold: 0.6 }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  // State for Reviews (Desktop Drag)
   const reviewsRef = useRef(null);
   const isDraggingReviews = useRef(false);
   const startXReviews = useRef(0);
   const scrollLeftReviews = useRef(0);
 
-  // Отступ для Hero-блока в зависимости от платформы
-  const [heroPadding, setHeroPadding] = useState('pt-28');
+  // Отступ для Hero-блока в зависимости от платформы (для ВК делаем с запасом на их шапку)
+  const [heroPadding, setHeroPadding] = useState('pt-12');
 
-  // 0.0 Блокировка Pinch-to-Zoom
   useEffect(() => {
     const preventZoom = (e) => {
       if (e.touches && e.touches.length > 1) {
@@ -746,49 +700,46 @@ export default function App() {
     return () => document.removeEventListener('touchmove', preventZoom);
   }, []);
 
-  // 1. Инициализация Telegram
+  // 1. Инициализация Telegram Mini App
   useEffect(() => {
-    try {
-      const tg = window.Telegram?.WebApp;
-      if (tg) {
-        // Динамический отступ: pt-16 для браузера, pt-28 для Telegram
-        if (tg.platform === 'unknown' || !tg.platform) {
-          setHeroPadding('pt-10');
-          setIsTelegram(false);
-        } else {
-          setHeroPadding('pt-28');
-          setIsTelegram(true);
+    const initTG = async () => {
+      try {
+        let attempts = 0;
+        while (!window.Telegram?.WebApp && attempts < 20) {
+          await new Promise(r => setTimeout(r, 100));
+          attempts++;
         }
+        if (!window.Telegram?.WebApp) throw new Error("TG Bridge timeout");
 
-        if (typeof tg.ready === 'function') tg.ready();
-        if (typeof tg.expand === 'function') tg.expand();
-        if (typeof tg.requestFullscreen === 'function') tg.requestFullscreen();
-        if (typeof tg.disableVerticalSwipes === 'function') tg.disableVerticalSwipes();
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
         
-        const enforceFullscreen = () => {
-          if (typeof tg.expand === 'function') tg.expand();
-          if (typeof tg.disableVerticalSwipes === 'function') tg.disableVerticalSwipes();
-        };
-        
-        setTimeout(enforceFullscreen, 100);
-        setTimeout(enforceFullscreen, 500);
-        
-        if (typeof tg.onEvent === 'function') {
-          tg.onEvent('viewportChanged', enforceFullscreen);
+        // Блокируем закрытие свайпом вниз и запрашиваем подтверждение
+        try {
+          if (tg.isVersionAtLeast && tg.isVersionAtLeast('7.7') && tg.disableVerticalSwipes) tg.disableVerticalSwipes();
+          if (tg.isVersionAtLeast && tg.isVersionAtLeast('6.2') && tg.enableClosingConfirmation) tg.enableClosingConfirmation();
+          if (tg.isVersionAtLeast && tg.isVersionAtLeast('8.0') && tg.requestFullscreen) tg.requestFullscreen(); 
+        } catch (e) {
+          console.warn('Advanced TG features missing', e);
         }
-        if (typeof tg.setHeaderColor === 'function') {
-          tg.setHeaderColor('#050505'); // Оставим темным для нативности
-        }
-        return () => {
-          if (tg && typeof tg.offEvent === 'function') tg.offEvent('viewportChanged', enforceFullscreen);
-        };
+        
+        // Синхронизируем цвета шапки при старте
+        const bgColor = isLightTheme ? '#150508' : '#050505';
+        tg.setHeaderColor(bgColor);
+        tg.setBackgroundColor(bgColor);
+        
+        setIsTG(true);
+        setHeroPadding('pt-10'); // Оптимальный отступ для TG
+      } catch (error) {
+        console.error('TG Bridge Init Error:', error);
+        setIsTG(false);
+        setHeroPadding('pt-4'); // Фолбэк для браузера
       }
-    } catch (error) {
-      console.error('Telegram API Error:', error);
-    }
-  }, []);
+    };
+    initTG();
+  }, [isLightTheme]);
 
-  // 1.5 Блокировка вертикального скролла ПРИ горизонтальном свайпе карточек
   useEffect(() => {
     const el = portfolioRef.current;
     if (!el) return;
@@ -796,12 +747,10 @@ export default function App() {
       if (!touchStartX.current || !touchStartY.current) return;
       const deltaX = Math.abs(e.touches[0].clientX - touchStartX.current);
       const deltaY = Math.abs(e.touches[0].clientY - touchStartY.current);
-      // Если движение пальца больше по горизонтали, чем по вертикали — блокируем скролл страницы
       if (deltaX > deltaY && deltaX > 3) {
         if (e.cancelable) e.preventDefault();
       }
     };
-    // passive: false обязательно, чтобы работал preventDefault()
     el.addEventListener('touchmove', handleTouchMove, { passive: false });
     return () => el.removeEventListener('touchmove', handleTouchMove);
   }, []);
@@ -835,8 +784,36 @@ export default function App() {
       }
     }
 
+    if (smallDotsRef.current.length === 0) {
+      for (let i = 0; i < 40; i++) {
+        smallDotsRef.current.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 1.5,
+          vy: (Math.random() - 0.5) * 1.5,
+          radius: Math.random() * 1.5 + 0.5,
+          alpha: Math.random() * 0.4 + 0.1
+        });
+      }
+    }
+
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      smallDotsRef.current.forEach(dot => {
+        dot.x += dot.vx;
+        dot.y += dot.vy;
+
+        if (dot.x < -dot.radius) dot.x = canvas.width + dot.radius;
+        if (dot.x > canvas.width + dot.radius) dot.x = -dot.radius;
+        if (dot.y < -dot.radius) dot.y = canvas.height + dot.radius;
+        if (dot.y > canvas.height + dot.radius) dot.y = -dot.radius;
+
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
+        ctx.fillStyle = themeRef.current ? `rgba(216, 160, 166, ${dot.alpha})` : `rgba(255, 255, 255, ${dot.alpha})`;
+        ctx.fill();
+      });
 
       particlesRef.current.forEach(p => {
         const dx = pointerPos.current.x - p.x;
@@ -862,7 +839,6 @@ export default function App() {
         if (p.y < -p.radius) p.y = canvas.height + p.radius;
         if (p.y > canvas.height + p.radius) p.y = -p.radius;
 
-        // Золотые для базовой темной темы + Rose Gold для Wine темы
         const isCustom = activeTariffRef.current === 'custom';
         const customColor = themeRef.current ? 'rgba(216, 160, 166, 0.08)' : 'rgba(212, 175, 55, 0.05)';
         const pColor = isCustom ? customColor : (themeRef.current ? 'rgba(216, 160, 166, 0.05)' : darkColors[p.colorIndex]);
@@ -887,7 +863,6 @@ export default function App() {
           continue;
         }
 
-        // Розовое золото для Wine темы
         const rColorBase = themeRef.current ? `rgba(216, 160, 166, ` : `rgba(255, 255, 255, `;
         const rGrad = ctx.createRadialGradient(r.x, r.y, Math.max(0, r.radius - 30), r.x, r.y, r.radius);
         rGrad.addColorStop(0, rColorBase + `0)`);
@@ -910,7 +885,6 @@ export default function App() {
     };
   }, []);
 
-  // Обработчики касаний для Canvas
   const handlePointerDown = (e) => {
     triggerHaptic('impact', 'light');
     ripplesRef.current.push({ x: e.clientX, y: e.clientY, radius: 0, speed: 6, alpha: 0.8, fade: 0.015 });
@@ -919,7 +893,6 @@ export default function App() {
     pointerPos.current = { x: e.clientX, y: e.clientY };
   };
 
-  // 3. Magnetic Tilt Logic
   const handleTiltMove = useCallback((e) => {
     if (!cardRef.current || isHeroRevealed || e.pointerType === 'touch' || isShareFlipped) return;
     const rect = cardRef.current.getBoundingClientRect();
@@ -972,7 +945,6 @@ export default function App() {
       onClick={() => triggerHaptic('impact', 'light')}
       onContextMenu={(e) => e.preventDefault()}
     >
-      {/* --- LOADING SPINNER --- */}
       <AnimatePresence>
         {isAppLoading && (
           <motion.div
@@ -989,7 +961,6 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* --- FLIP SPARKS BACKGROUND --- */}
       <AnimatePresence>
         {isShareFlipped && (
           <motion.div
@@ -1017,7 +988,6 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* --- 0. HERO BACKGROUND PHOTO --- */}
       <div className={`absolute top-0 left-0 w-full h-screen z-0 pointer-events-none overflow-hidden transition-colors duration-700 ${isLightTheme ? 'bg-[#150508]' : 'bg-[#050505]'}`}>
         <img 
           src={CONFIG.heroPhoto} 
@@ -1032,13 +1002,10 @@ export default function App() {
         <div className={`absolute inset-0 transition-colors duration-700 ${isLightTheme ? 'bg-gradient-to-b from-transparent via-[#150508]/80 to-[#150508]' : 'bg-gradient-to-b from-transparent via-[#050505]/40 to-[#050505]'}`}></div>
       </div>
 
-      {/* Фиксированный Canvas на фоне */}
       <canvas ref={canvasRef} className="fixed inset-0 z-[1] pointer-events-none opacity-80" />
 
-      {/* Скроллируемый контент */}
       <div className="relative z-10 w-full max-w-[500px] mx-auto flex flex-col px-6 pt-4 pb-8 gap-24">
         
-        {/* --- 1. HERO --- */}
         <section className={`relative flex flex-col ${heroPadding}`}>
           <header className={`flex items-center justify-between mb-5 ml-2 transition-opacity duration-500 ${isHeroRevealed ? 'opacity-0' : 'opacity-100'}`}>
             <div className={`flex items-center gap-2 ${isLightTheme ? 'text-[#F5ECEE]/60' : 'text-white/50'}`}>
@@ -1115,7 +1082,6 @@ export default function App() {
               className={`absolute inset-0 backdrop-blur-[30px] rounded-3xl p-6 flex flex-col items-center justify-between transition-all duration-700 w-full h-full ${isLightTheme ? 'bg-[#1A080C]/90 border-[0.5px] border-[#D8A0A6]/40 shadow-[0_30px_60px_rgba(216,160,166,0.2)]' : 'bg-[#0a0a0a]/90 border-[0.5px] border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.6)]'} ${isShareFlipped ? 'pointer-events-auto' : 'pointer-events-none'}`}
               style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)', transformStyle: 'preserve-3d' }}
             >
-              {/* Размытый фон внутри задней карточки для глубины */}
               <div className="absolute inset-0 z-0 opacity-20 pointer-events-none rounded-3xl overflow-hidden" style={{ transform: 'translateZ(-1px)' }}>
                 <img src={CONFIG.heroPhoto} alt="bg" className="w-full h-full object-cover grayscale blur-sm" />
                 <div className={`absolute inset-0 ${isLightTheme ? 'bg-gradient-to-t from-[#1A080C] via-[#1A080C]/80 to-transparent' : 'bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent'}`}></div>
@@ -1144,7 +1110,7 @@ export default function App() {
               <div className="relative z-10 w-full mt-auto" style={{ transform: 'translateZ(30px)' }}>
                 <button
                   onClick={(e) => { e.stopPropagation(); handleCopy(); }}
-                  className={`group w-full py-3.5 sm:py-4 font-medium rounded-2xl transition-all duration-300 active:scale-[0.98] overflow-hidden flex items-center justify-center gap-3 ${isLightTheme ? 'bg-[#D8A0A6] text-[#150508] shadow-[0_10px_30px_rgba(216,160,166,0.2)]' : 'bg-white text-black shadow-[0_10px_30px_rgba(255,255,255,0.1)]'}`}
+                  className={`group relative w-full py-3.5 sm:py-4 font-medium rounded-2xl transition-all duration-300 active:scale-[0.98] overflow-hidden flex items-center justify-center gap-3 ${isLightTheme ? 'bg-[#D8A0A6] text-[#150508] shadow-[0_10px_30px_rgba(216,160,166,0.2)]' : 'bg-white text-black shadow-[0_10px_30px_rgba(255,255,255,0.1)]'}`}
                 >
                   {copied ? <Check size={16} /> : <Mail size={16} />}
                   <span className="relative z-10 tracking-widest uppercase text-[10px] sm:text-[11px]">
@@ -1236,7 +1202,6 @@ export default function App() {
               const isCenter = distance === 0;
               const absDistance = Math.abs(distance);
               
-              // Настройки пространственной 3D-трансформации
               let transform = 'translateX(0px) translateZ(0px) rotateY(0deg) scale(1)';
               let zIndex = 10;
               let opacity = 0;
@@ -1267,96 +1232,29 @@ export default function App() {
                     if (Math.abs(touchStartX.current - touchEndX.current) > 20) return;
                     if (isCenter) {
                       triggerHaptic('impact', 'light');
-                      if (item.videoLink) {
-                        setActiveVideo(item.videoLink);
-                        setIsMediaLoading(!item.videoLink.startsWith('demo'));
-                      } else if (item.photoUrl) {
-                        setActivePhoto(item.photoUrl);
-                        setActivePhotoIndex(0);
-                        setIsMediaLoading(true);
-                      }
+                      setExpandedDemo(item);
+                      setIsDemoLoading(true);
                     } else {
                       triggerHaptic('selection');
                       setPortfolioIndex(idx);
                     }
                   }}
-                  style={{
-                    transform,
-                    zIndex,
-                    opacity,
-                    pointerEvents,
-                  }}
+                  style={{ transform, zIndex, opacity, pointerEvents }}
                   className={`absolute w-[200px] sm:w-[240px] h-[250px] sm:h-[280px] border rounded-[2rem] p-6 flex flex-col justify-between cursor-pointer transition-all duration-[400ms] ease-out group ${isLightTheme ? 'bg-[#1A080C]/90 border-[#D8A0A6]/30 shadow-[0_20px_50px_rgba(216,160,166,0.15)] backdrop-blur-xl' : 'bg-[#1a1a1a]/80 border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl'}`}
                 >
-                  {/* Эффект Play поверх центральной карточки */}
-                  {isCenter && item.videoLink && (
-                    <div className={`absolute inset-0 rounded-[2rem] flex items-center justify-center opacity-100 transition-opacity duration-300 z-10 ${isLightTheme ? 'bg-[#150508]/40 backdrop-blur-[1px]' : 'bg-black/10 backdrop-blur-[1px]'}`}>
-                      <div className={`w-14 h-14 rounded-full flex items-center justify-center backdrop-blur-md border shadow-md transition-transform animate-pulse group-hover:scale-110 ${isLightTheme ? 'bg-[#D8A0A6]/10 border-[#D8A0A6]/20 text-[#D8A0A6]/80' : 'bg-white/10 border-white/10 text-white/60'}`}>
-                        <Play size={24} className="ml-1" fill="currentColor" />
+                  {isCenter && (
+                    <div className={`absolute inset-0 rounded-[2rem] flex items-center justify-center opacity-100 transition-opacity duration-300 z-10 ${isLightTheme ? 'bg-[#150508]/20 backdrop-blur-[2px]' : 'bg-black/20 backdrop-blur-[2px]'}`}>
+                      <div className={`w-16 h-16 rounded-full flex items-center justify-center backdrop-blur-md border shadow-2xl transition-transform animate-pulse group-hover:scale-110 ${isLightTheme ? 'bg-[#D8A0A6]/20 border-[#D8A0A6]/40 text-[#D8A0A6]' : 'bg-white/20 border-white/20 text-white'}`}>
+                        <Maximize size={24} strokeWidth={1.5} />
                       </div>
                     </div>
                   )}
-
-                  {/* Кнопка Фото в правом верхнем углу */}
-                  {isCenter && item.photoUrl && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation(); // Не активируем само видео при нажатии на фото
-                        triggerHaptic('impact', 'light');
-                        setActivePhoto(item.photoUrl);
-                        setActivePhotoIndex(0);
-                        setIsMediaLoading(true);
-                      }}
-                      className={`absolute top-5 right-5 z-30 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md border transition-transform hover:scale-110 active:scale-95 shadow-md ${isLightTheme ? 'bg-[#150508]/40 border-[#D8A0A6]/30 text-[#D8A0A6]' : 'bg-black/40 border-white/20 text-white/80'}`}
-                    >
-                      <ImageIcon size={18} />
-                    </button>
-                  )}
-
-                  {/* ОНБОРДИНГ - ПОДСКАЗКИ */}
-                  <AnimatePresence>
-                    {isCenter && onboardingStep === 1 && item.photoUrl && (
-                      <motion.div 
-                        initial={{ opacity: 0, scale: 0.8 }} 
-                        animate={{ opacity: 1, scale: 1 }} 
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        className="absolute -top-12 -right-10 flex flex-col items-center z-40 pointer-events-none drop-shadow-2xl"
-                      >
-                        <div className={`px-2 py-1 text-[11px] font-medium uppercase tracking-widest shadow-2xl mb-1 bg-transparent whitespace-nowrap ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white'}`}>
-                          Фото работ
-                        </div>
-                        <div className="flex items-center rotate-[135deg] translate-x-3 translate-y-2 animate-pulse drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                          <div className={`w-8 h-[2px] ${isLightTheme ? 'bg-[#D8A0A6]' : 'bg-white'}`}></div>
-                          <ArrowRight size={20} className={`-ml-2.5 ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white'}`} />
-                        </div>
-                      </motion.div>
-                    )}
-                    
-                    {isCenter && onboardingStep === 2 && item.videoLink && (
-                      <motion.div 
-                        initial={{ opacity: 0, scale: 0.8 }} 
-                        animate={{ opacity: 1, scale: 1 }} 
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        className="absolute top-1/2 -left-[75px] sm:-left-[90px] -translate-y-1/2 flex items-center gap-1 z-40 pointer-events-none drop-shadow-2xl"
-                      >
-                        <div className={`text-[11px] font-medium uppercase tracking-widest shadow-2xl bg-transparent whitespace-nowrap ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white'}`}>
-                          Видео работ
-                        </div>
-                        <div className="flex items-center animate-pulse drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                          <div className={`w-12 sm:w-16 h-[2px] ${isLightTheme ? 'bg-[#D8A0A6]' : 'bg-white'}`}></div>
-                          <ArrowRight size={20} className={`-ml-2.5 ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white'}`} />
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
 
                   <div className={`relative z-20 transition-colors duration-700 ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white/50'}`}>
                     <item.icon size={32} strokeWidth={1.5} />
                   </div>
                   <div className="relative z-20">
-                    {/* Уменьшенный шрифт для заголовка портфолио */}
-                    <h3 className={`text-[13px] uppercase tracking-widest font-medium transition-colors duration-700 mb-1.5 ${isLightTheme ? 'text-[#F5ECEE]' : 'text-white'}`}>{item.title}</h3>
-                    <p className={`text-xs font-light transition-colors duration-700 ${isLightTheme ? 'text-[#F5ECEE]/60' : 'text-white/40'}`}>{item.desc}</p>
+                    <h3 className={`text-[13px] uppercase tracking-widest font-medium transition-colors duration-700 ${isLightTheme ? 'text-[#F5ECEE]' : 'text-white'}`}>{item.title}</h3>
                   </div>
                 </div>
               );
@@ -1377,7 +1275,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* --- 4. ТАРИФЫ (APPLE WALLET VIBE) --- */}
+        {/* --- 4. ТАРИФЫ (APPLE WALWAL VIBE) --- */}
         <section className="flex flex-col gap-6">
           <h2 className={`text-xs uppercase tracking-[0.3em] mb-2 transition-colors duration-700 ${isLightTheme ? 'text-[#D8A0A6]/50' : 'text-white/40'}`}>Тариф</h2>
           
@@ -1531,16 +1429,22 @@ export default function App() {
           <button 
             onClick={(e) => {
               e.stopPropagation();
+              if (isOrderSubmitted) return; // 👈 Не даем открыть форму снова, если уже отправлено
               triggerHaptic('impact', 'medium');
               setIsOrderModalOpen(true);
             }}
-            className={`group relative w-full h-16 rounded-2xl backdrop-blur-[20px] border-[0.5px] flex items-center justify-center gap-3 transition-all duration-500 active:scale-[0.98] overflow-hidden mb-8 ${isLightTheme ? 'bg-[#D8A0A6]/10 hover:bg-[#D8A0A6]/20 border-[#D8A0A6]/30 shadow-[0_10px_40px_rgba(216,160,166,0.15)]' : 'bg-white/[0.05] hover:bg-white/[0.1] border-white/20 shadow-[0_10px_40px_rgba(255,255,255,0.03)]'}`}
+            disabled={isOrderSubmitted}
+            className={`group relative w-full h-16 rounded-2xl backdrop-blur-[20px] border-[0.5px] flex items-center justify-center gap-3 transition-all duration-500 overflow-hidden mb-8 ${isOrderSubmitted ? 'opacity-50 cursor-not-allowed' : 'active:scale-[0.98]'} ${isLightTheme ? 'bg-[#D8A0A6]/10 hover:bg-[#D8A0A6]/20 border-[#D8A0A6]/30 shadow-[0_10px_40px_rgba(216,160,166,0.15)]' : 'bg-white/[0.05] hover:bg-white/[0.1] border-white/20 shadow-[0_10px_40px_rgba(255,255,255,0.03)]'}`}
           >
-            <div className={`absolute inset-0 transition-transform duration-1000 translate-x-[-100%] group-hover:translate-x-[100%] ${isLightTheme ? 'bg-gradient-to-r from-transparent via-[#D8A0A6]/30 to-transparent' : 'bg-gradient-to-r from-transparent via-white/10 to-transparent'}`}></div>
+            <div className={`absolute inset-0 transition-transform duration-1000 translate-x-[-100%] ${!isOrderSubmitted ? 'group-hover:translate-x-[100%]' : ''} ${isLightTheme ? 'bg-gradient-to-r from-transparent via-[#D8A0A6]/30 to-transparent' : 'bg-gradient-to-r from-transparent via-white/10 to-transparent'}`}></div>
             <span className={`text-[13px] uppercase tracking-[0.2em] font-medium relative z-10 transition-colors duration-700 ${isLightTheme ? 'text-[#F5ECEE]' : 'text-white/90'}`}>
-              {CONFIG.ctaText}
+              {isOrderSubmitted ? 'Бриф отправлен' : CONFIG.ctaText}
             </span>
-            <ArrowRight className={`w-4 h-4 relative z-10 group-hover:translate-x-1 transition-all ${isLightTheme ? 'text-[#F5ECEE]/80' : 'text-white/70'}`} strokeWidth={1.5} />
+            {!isOrderSubmitted ? (
+              <ArrowRight className={`w-4 h-4 relative z-10 group-hover:translate-x-1 transition-all ${isLightTheme ? 'text-[#F5ECEE]/80' : 'text-white/70'}`} strokeWidth={1.5} />
+            ) : (
+              <Check className={`w-4 h-4 relative z-10 ${isLightTheme ? 'text-[#F5ECEE]/80' : 'text-white/70'}`} strokeWidth={1.5} />
+            )}
           </button>
 
           <div className="text-center">
@@ -1662,7 +1566,6 @@ export default function App() {
                     }
                     triggerHaptic('notification', 'success');
 
-                    // Отправка в Google Sheets
                     if (CONFIG.googleScriptUrl && !CONFIG.googleScriptUrl.includes("ТВОЯ_ССЫЛКА")) {
                       fetch(CONFIG.googleScriptUrl, {
                         method: 'POST',
@@ -1694,148 +1597,93 @@ export default function App() {
         </div>
       )}
 
-      {/* --- 7. MEDIA MODAL (RUTUBE ИЛИ ФОТО 9:16) --- */}
-      {(activeVideo || activePhoto) && (
-        <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-[30px] transition-all duration-700 ${isLightTheme ? 'bg-[#150508]/80' : 'bg-black/80'}`}>
-          
-          {/* Кнопка закрытия (вынесена за пределы телефона и адаптируется под Telegram) */}
-          <button
-            onClick={() => {
-              triggerHaptic('impact', 'light');
-              setActiveVideo(null);
-              setActivePhoto(null);
-              setActivePhotoIndex(0);
-              setIsMediaLoading(true);
-            }}
-            className={`absolute ${isTelegram ? 'top-28' : 'top-6 sm:top-8'} right-6 sm:right-8 z-[110] w-12 h-12 rounded-full flex items-center justify-center border backdrop-blur-md transition-all hover:scale-110 active:scale-95 shadow-xl ${isLightTheme ? 'bg-[#1A080C]/90 border-[#D8A0A6]/30 text-[#D8A0A6] shadow-[0_10px_30px_rgba(216,160,166,0.2)]' : 'bg-white/10 border-white/20 text-white hover:bg-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)]'}`}
+      {/* --- 7. DEMO MODAL (ЛИКВИДНЫЙ МОРФИНГ / FULL SCREEN) --- */}
+      <AnimatePresence>
+        {expandedDemo && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8, borderRadius: '4rem' }}
+            animate={{ opacity: 1, scale: 1, borderRadius: '0rem' }}
+            exit={{ opacity: 0, scale: 0.8, borderRadius: '4rem' }}
+            transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+            className={`fixed inset-0 z-[500] flex flex-col items-center justify-center p-6 overflow-hidden ${isLightTheme ? 'bg-[#150508]' : 'bg-[#050505]'}`}
           >
-            <X size={24} />
-          </button>
+            {/* Декоративное свечение на фоне */}
+            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 opacity-10 blur-[100px] rounded-full pointer-events-none ${isLightTheme ? 'bg-[#D8A0A6]' : 'bg-white'}`}></div>
 
-          {/* Обёртка для позиционирования телефона */}
-          <div className="relative flex justify-center items-center">
-            
-            {/* Виртуальный iPhone (Apple Vibe) */}
-            <div className={`relative w-[300px] sm:w-[340px] aspect-[9/19.5] max-h-[85vh] rounded-[3rem] sm:rounded-[3.5rem] border-[10px] sm:border-[14px] overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.5)] animate-in zoom-in-95 duration-500 transition-colors ${isLightTheme ? 'bg-black border-[#2A1116] shadow-[0_0_50px_rgba(216,160,166,0.15)]' : 'bg-black border-[#1f1f1f] shadow-[0_0_50px_rgba(255,255,255,0.05)]'}`}>
+            <div className="relative z-10 flex flex-col items-center text-center max-w-sm">
+              <div className={`w-20 h-20 rounded-full border flex items-center justify-center mb-8 animate-pulse shadow-[0_0_30px_rgba(255,255,255,0.05)] ${isLightTheme ? 'bg-[#D8A0A6]/10 border-[#D8A0A6]/30 text-[#D8A0A6]' : 'bg-white/5 border-white/10 text-white/80'}`}>
+                <Sparkles size={32} strokeWidth={1.5} />
+              </div>
               
-              {/* Dynamic Island (Челка iPhone) */}
-              <div className="absolute top-2 left-1/2 -translate-x-1/2 w-[90px] h-[26px] bg-black rounded-full z-30 shadow-[inset_0_0_2px_rgba(255,255,255,0.15)] flex justify-end items-center px-2">
-                {/* Глазок камеры */}
-                <div className="w-2.5 h-2.5 rounded-full bg-[#0a0a0a] border border-[#222]"></div>
+              <h2 className={`text-2xl font-light tracking-wide mb-3 ${isLightTheme ? 'text-[#F5ECEE]' : 'text-white'}`}>
+                Симуляция готова
+              </h2>
+              <p className={`text-[13px] font-light leading-relaxed mb-6 ${isLightTheme ? 'text-[#F5ECEE]/60' : 'text-white/50'}`}>
+                Интерактивный прототип <strong className={`font-medium tracking-wide ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white'}`}>«{expandedDemo.title}»</strong> откроется в новой вкладке для идеального погружения без искажений.
+              </p>
+
+              {/* 👇 ЗДЕСЬ МЕНЯЕТСЯ РАЗМЕР ЖЕЛТОГО ТЕКСТА И ШЕСТЕРЕНКИ 👇 */}
+              {/* 1. Чтобы изменить размер текста, меняй классы 'text-xs sm:text-sm' (например, на 'text-[10px]') */}
+              <div className={`flex items-center justify-center gap-2 mb-8 text-xs sm:text-sm font-bold tracking-widest uppercase ${isLightTheme ? 'text-[#D8A0A6] drop-shadow-[0_0_12px_rgba(216,160,166,0.8)]' : 'text-[#D4AF37] drop-shadow-[0_0_12px_rgba(212,175,55,0.8)]'}`}>
+                <span>Нажми</span>
+                {/* 2. Чтобы изменить размер шестеренки, меняй 'w-5 h-5' (например, на 'w-4 h-4' или 'w-3 h-3') */}
+                <Settings className="w-5 h-5 animate-[spin_4s_linear_infinite]" />
+                <span>чтобы увидеть все дизайны</span>
               </div>
 
-              {/* Блики на стекле смартфона */}
-              <div className="absolute inset-0 z-20 pointer-events-none rounded-[2.5rem] shadow-[inset_0_0_10px_rgba(255,255,255,0.1)]"></div>
-
-              {/* ИНДИКАТОР ЗАГРУЗКИ ВНУТРИ ТЕЛЕФОНА */}
-              <AnimatePresence>
-                {isMediaLoading && (
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#050505] pt-[15px]"
-                  >
-                    <Loader2 className={`w-8 h-8 animate-spin ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white/60'}`} />
-                    <span className={`text-[10px] mt-4 uppercase tracking-[0.2em] font-medium ${isLightTheme ? 'text-[#D8A0A6]' : 'text-white/40'}`}>
-                      Загрузка...
-                    </span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* --- КОНТЕНТ (ФОТО ИЛИ ВИДЕО) --- */}
-              {activePhoto ? (
-                <>
-                  <div 
-                    className={`absolute inset-0 z-10 bg-black transition-opacity duration-500 flex overflow-x-auto snap-x snap-mandatory scrollbar-hide ${isMediaLoading ? 'opacity-0' : 'opacity-100'}`}
-                    onScroll={(e) => {
-                      const idx = Math.round(e.target.scrollLeft / e.target.offsetWidth);
-                      if (idx !== activePhotoIndex) {
-                        setActivePhotoIndex(idx);
-                      }
-                    }}
-                  >
-                    {(Array.isArray(activePhoto) ? activePhoto : [activePhoto]).map((url, i) => (
-                      <img
-                        key={i}
-                        src={url}
-                        alt={`Portfolio Story ${i + 1}`}
-                        onLoad={() => { if (i === 0) setIsMediaLoading(false); }}
-                        className="w-full h-full object-cover shrink-0 snap-center pt-[15px] scale-[1.02]"
-                      />
-                    ))}
-                  </div>
+              {/* 👇 ЗДЕСЬ МЕНЯЕТСЯ ВЫСОТА КНОПКИ "ОТКРЫТЬ LIVE-ДЕМО" 👇 */}
+              {/* Чтобы сделать кнопку ТОНЬШЕ:
+                  1. Удали в className ниже класс 'min-h-[64px]' 
+                  2. Измени классы 'py-5 sm:py-6' на меньшие значения (например, напиши просто 'py-3' или 'py-2') */}
+              <button
+                onClick={() => {
+                  triggerHaptic('impact', 'medium');
+                  const url = expandedDemo.demoLink;
                   
-                  {/* Индикаторы карусели (точки) */}
-                  {Array.isArray(activePhoto) && activePhoto.length > 1 && (
-                    <div className="absolute bottom-6 left-0 w-full z-30 flex justify-center gap-1.5 pointer-events-none">
-                      {activePhoto.map((_, i) => (
-                        <div 
-                          key={i} 
-                          className={`h-1.5 rounded-full transition-all duration-300 ${i === activePhotoIndex ? 'w-4 bg-white' : 'w-1.5 bg-white/40'}`}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </>
-              ) : activeVideo?.startsWith('demo') ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-[#0a0a0a]">
-                  <Play size={48} className="mb-4 opacity-20 text-white" />
-                  <p className="text-lg font-medium tracking-wide text-white">Скоро здесь будет новое видео</p>
-                  <p className="text-sm mt-2 text-white/50">Вставьте ссылку на видео в настройки (CONFIG)</p>
-                </div>
-              ) : (
-                <iframe
-                  width="100%"
-                  height="100%"
-                  onLoad={() => setIsMediaLoading(false)}
-                  src={(() => {
-                    if (!activeVideo) return "";
-                    let url = activeVideo;
-                    // Умное преобразование любых ссылок в плеер
-                    if (url.includes("youtube.com/watch?v=")) return url.replace("watch?v=", "embed/").split("&")[0];
-                    if (url.includes("youtu.be/")) return url.replace("youtu.be/", "youtube.com/embed/").split("?")[0];
-                    if (url.includes("youtube.com/shorts/")) return url.replace("shorts/", "embed/").split("?")[0];
-                    
-                    // Обработка RuTube (включая приватные видео и shorts)
-                    if (url.includes("rutube.ru/")) {
-                      let id = "";
-                      const p = url.includes("?p=") ? "?p=" + url.split("?p=")[1].split("&")[0] : "";
-                      
-                      if (url.includes("/video/private/")) id = url.split("/video/private/")[1].split(/[/?]/)[0];
-                      else if (url.includes("/video/")) id = url.split("/video/")[1].split(/[/?]/)[0];
-                      else if (url.includes("/shorts/")) id = url.split("/shorts/")[1].split(/[/?]/)[0];
-                      
-                      if (id) return `https://rutube.ru/play/embed/${id}${p}`;
-                    }
-                    if (!url.startsWith("http")) return `https://rutube.ru/play/embed/${url}`; // Для старых ID
-                    
-                    return url;
-                  })()}
-                  frameBorder="0"
-                  allow="clipboard-write; autoplay"
-                  allowFullScreen
-                  className={`absolute inset-0 w-full h-full z-10 pt-[15px] scale-[1.02] bg-black transition-opacity duration-500 ${isMediaLoading ? 'opacity-0' : 'opacity-100'}`}
-                ></iframe>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+                  if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+                    // Умное открытие для Telegram
+                    window.Telegram.WebApp.openLink(url);
+                  } else {
+                    // Умное открытие для обычных браузеров
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    a.click();
+                  }
+                }}
+                className={`group relative w-full py-2 sm:py-2] font-medium rounded-2xl transition-all duration-300 active:scale-[0.98] overflow-hidden flex items-center justify-center gap-3 mb-6 ${isLightTheme ? 'bg-[#D8A0A6] text-[#150508] shadow-[0_10px_30px_rgba(216,160,166,0.2)] hover:shadow-[0_10px_40px_rgba(216,160,166,0.3)]' : 'bg-white text-black shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:shadow-[0_10px_40px_rgba(255,255,255,0.2)]'}`}
+              >
+                <span className="relative z-10 tracking-widest uppercase text-[11px] font-bold">Открыть Live-Демо</span>
+                <ArrowRight size={16} className="relative z-10 group-hover:translate-x-1 transition-transform" />
+                <div className={`absolute inset-0 transition-transform duration-1000 translate-x-[-100%] group-hover:translate-x-[100%] ${isLightTheme ? 'bg-gradient-to-r from-transparent via-white/20 to-transparent' : 'bg-gradient-to-r from-transparent via-black/10 to-transparent'}`}></div>
+              </button>
 
-      {/* --- 8. ORDER MODAL --- */}
+              <button
+                onClick={() => {
+                  triggerHaptic('impact', 'light');
+                  setExpandedDemo(null);
+                }}
+                className={`text-[10px] tracking-widest uppercase pb-1 border-b transition-colors active:scale-95 ${isLightTheme ? 'text-[#D8A0A6]/60 border-[#D8A0A6]/30 hover:text-[#D8A0A6]' : 'text-white/40 border-white/20 hover:text-white'}`}
+              >
+                Отменить и вернуться
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {isOrderModalOpen && (
           <OrderForm 
             onClose={() => setIsOrderModalOpen(false)} 
+            onSuccess={() => setIsOrderSubmitted(true)}
             isLightTheme={isLightTheme} 
             triggerHaptic={triggerHaptic} 
           />
         )}
       </AnimatePresence>
 
-      {/* --- 9. PRIVACY MODAL --- */}
       <AnimatePresence>
         {isPrivacyModalOpen && (
           <PrivacyModal 
@@ -1846,7 +1694,6 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* --- 10. TERMS MODAL --- */}
       <AnimatePresence>
         {isTermsModalOpen && (
           <TermsModal 
