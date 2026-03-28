@@ -679,7 +679,7 @@ export default function App() {
   const scrollLeftReviews = useRef(0);
 
   // Отступ для Hero-блока в зависимости от платформы (для ВК делаем с запасом на их шапку)
-  const [heroPadding, setHeroPadding] = useState('pt-12');
+  const [heroPadding, setHeroPadding] = useState('pt-20');
 
   useEffect(() => {
     const preventZoom = (e) => {
@@ -730,11 +730,11 @@ export default function App() {
         tg.setBackgroundColor(bgColor);
         
         setIsTG(true);
-        setHeroPadding('pt-10'); // Оптимальный отступ для TG
+        setHeroPadding('pt-24'); // Увеличенный отступ для TG (добавили ~1 см воздуха сверху)
       } catch (error) {
         console.error('TG Bridge Init Error:', error);
         setIsTG(false);
-        setHeroPadding('pt-4'); // Фолбэк для браузера
+        setHeroPadding('pt-12'); // Фолбэк для браузера
       }
     };
     initTG();
